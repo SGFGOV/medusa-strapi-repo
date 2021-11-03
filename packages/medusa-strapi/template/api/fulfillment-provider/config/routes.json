@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/fulfillment-providers",
+      "handler": "fulfillment-provider.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/fulfillment-providers/count",
+      "handler": "fulfillment-provider.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/fulfillment-providers/:id",
+      "handler": "fulfillment-provider.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/fulfillment-providers",
+      "handler": "fulfillment-provider.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/fulfillment-providers/:id",
+      "handler": "fulfillment-provider.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/fulfillment-providers/:id",
+      "handler": "fulfillment-provider.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

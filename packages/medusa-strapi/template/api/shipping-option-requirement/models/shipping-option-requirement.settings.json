@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_option_requirements",
+  "info": {
+    "name": "Shipping Option Requirement",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "requirement_type": {
+      "type": "enumeration",
+      "enum": [
+        "min_subtotal",
+        "max_subtotal"
+      ]
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "shipping_option": {
+      "via": "shipping_option_requirements",
+      "model": "shipping-option"
+    }
+  }
+}
