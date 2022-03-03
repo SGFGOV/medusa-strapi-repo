@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::payment-provider.payment-provider', ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug('Syncing Payment Providers....');
     try {
@@ -58,4 +60,4 @@ module.exports = {
     }
     return strapiPaymentProvidersIds;
   }
-};
+}));
