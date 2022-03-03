@@ -4,7 +4,7 @@
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-async function createOrUpdateRegionAfterDelegation(region, action='create') {
+async function createOrUpdateRegionAfterDelegation(region, action = 'create') {
   const { currency, countries, payment_providers, fulfillment_providers, ...payload } = region
 
   if (currency) {
@@ -33,7 +33,9 @@ async function createOrUpdateRegionAfterDelegation(region, action='create') {
   return create.id;
 }
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::region.region', ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug('Syncing Region....');
     try {
@@ -99,4 +101,4 @@ module.exports = {
       return false;
     }
   }
-};
+}));
