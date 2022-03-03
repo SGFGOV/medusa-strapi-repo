@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
- * to customize this controller
+ *  shipping-profile controller
  */
 
-module.exports = {};
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::shipping-profile.shipping-profile');

@@ -19,7 +19,9 @@ async function createShippingProfileAfterDelegation(shippingProfile) {
   return create.id;
 }
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::shipping-profile.shipping-profile', ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug('Syncing Shipping Profile....');
     try {
@@ -65,4 +67,4 @@ module.exports = {
     const shippingProfileStrapiId = await createShippingProfileAfterDelegation(shippingProfile);
     return shippingProfileStrapiId;
   }
-};
+}));
