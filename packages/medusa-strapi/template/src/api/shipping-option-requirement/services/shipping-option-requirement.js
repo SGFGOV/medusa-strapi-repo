@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::shipping-option-requirement.shipping-option-requirement', ({ strapi }) => ({
   async handleOneToManyRelation(shippingOptionRequirements) {
     const shippingOptionRequirementStrapiIds = [];
     try {
@@ -34,4 +36,4 @@ module.exports = {
       throw new Error('Delegated creation failed');
     }
   }
-};
+}));
