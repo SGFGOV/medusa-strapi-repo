@@ -9,7 +9,7 @@ async function createShippingOptionAfterDelegation(shippingOption) {
   const { region, 'profile': shipping_profile, 'requirements': shipping_option_requirements, 'provider': fulfillment_provider, ...createPayload } = shippingOption;
 
   if (region) {
-    createPayload.region =  await strapi.services.region.handleManyToOneRelation(region, 'shipping-option');
+    createPayload.region = await strapi.services.region.handleManyToOneRelation(region, 'shipping-option');
   }
 
   if (shipping_profile) {
@@ -28,8 +28,9 @@ async function createShippingOptionAfterDelegation(shippingOption) {
   return create.id;
 }
 
+const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = {
+module.exports = createCoreService('api::shipping-option.shipping-option', ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug('Syncing Shipping Options....');
 
@@ -93,4 +94,4 @@ module.exports = {
 
 
   }
-};
+}));
