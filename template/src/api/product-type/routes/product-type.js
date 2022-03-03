@@ -1,4 +1,10 @@
-{
+'use strict';
+
+/**
+ * product-type router.
+ */
+
+module.exports = {
   "routes": [
     {
       "method": "GET",
