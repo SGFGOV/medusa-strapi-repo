@@ -1,8 +1,7 @@
-"use strict"
+'use strict';
 
 /**
- * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
- * to customize this controller
+ *  product-variant controller
  */
 
 function performCleanups(productVariantBody) {
@@ -17,7 +16,9 @@ function performCleanups(productVariantBody) {
   delete productVariantBody.length
 }
 
-module.exports = {
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::product-variant.product-variant', {
   async findOne(ctx) {
     try {
       const { medusaId } = ctx.params
@@ -121,4 +122,4 @@ module.exports = {
       return strapi.config.functions.response.serverError(ctx, e)
     }
   },
-}
+})

@@ -5,7 +5,7 @@
  * to customize this service
  */
 
-async function createOrUpdateProductVariantAfterDelegation(productVariant, action='create', forceUpdateRelation=false) {
+async function createOrUpdateProductVariantAfterDelegation(productVariant, action = 'create', forceUpdateRelation = false) {
   const { 'prices': money_amounts, 'options': product_option_values, ...payload } = productVariant;
   if (money_amounts) {
     payload.money_amounts = await strapi.services['money-amount'].handleOneToManyRelation(money_amounts, forceUpdateRelation);
@@ -29,7 +29,9 @@ async function createOrUpdateProductVariantAfterDelegation(productVariant, actio
   return create.id;
 }
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::product-variant.product-variant', ({ strapi }) => ({
   async handleOneToManyRelation(productVariants, caller, forceUpdate) {
     const productVariantsIds = [];
 
@@ -96,4 +98,4 @@ module.exports = {
       return false;
     }
   }
-};
+}));
