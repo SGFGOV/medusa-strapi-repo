@@ -1,4 +1,10 @@
-{
+'use strict';
+
+/**
+ * country router.
+ */
+
+module.exports = {
   "routes": [
     {
       "method": "GET",
