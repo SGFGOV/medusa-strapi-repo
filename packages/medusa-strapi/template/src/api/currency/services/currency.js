@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::currency.currency', ({ strapi }) => ({
   async handleManyToOneRelation(currency) {
     try {
       const found = await strapi.services.currency.findOne({
@@ -23,5 +25,4 @@ module.exports = {
     }
 
   }
-
-};
+}));
