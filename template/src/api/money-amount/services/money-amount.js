@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }) => ({
   async handleOneToManyRelation(money_amounts, forceUpdate) {
     const moneyAmountsStrapiIds = [];
     if (money_amounts && money_amounts.length) {
@@ -24,7 +26,7 @@ module.exports = {
             if (forceUpdate) {
               const update = await strapi.query('money-amount', '').update({
                 medusa_id: money_amount.medusa_id
-              },{
+              }, {
                 amount: money_amount.amount,
                 sale_amount: money_amount.sale_amount
               });
@@ -49,4 +51,4 @@ module.exports = {
 
     return moneyAmountsStrapiIds;
   }
-};
+}));
