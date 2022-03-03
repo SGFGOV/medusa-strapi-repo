@@ -1,11 +1,12 @@
-"use strict"
+'use strict';
 
 /**
- * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
- * to customize this controller
+ *  image controller
  */
 
-module.exports = {
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::region.region', {
   async findOne(ctx) {
     try {
       const { medusaId } = ctx.params
@@ -71,4 +72,4 @@ module.exports = {
       return strapi.config.functions.response.serverError(ctx, e)
     }
   },
-}
+})
