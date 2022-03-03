@@ -1,11 +1,12 @@
-"use strict"
+'use strict';
 
 /**
- * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
- * to customize this controller
+ *  product controller
  */
 
-module.exports = {
+const { createCoreController } = require('@strapi/strapi').factories;
+
+module.exports = createCoreController('api::product.product', {
   async findOne(ctx) {
     try {
       const { productId } = ctx.params
@@ -95,4 +96,4 @@ module.exports = {
       return strapi.config.functions.response.serverError(ctx, e)
     }
   },
-}
+});

@@ -4,7 +4,7 @@
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-async function createOrUpdateProductAfterDelegation(product, action="create", forceUpdateRelation=false) {
+async function createOrUpdateProductAfterDelegation(product, action = "create", forceUpdateRelation = false) {
   const { 'options': product_options, 'variants': product_variants, 'tags': product_tags, 'profile': shipping_profile, 'type': product_type, 'collection': product_collection, images, ...payload } = product;
   if (product_options) {
     payload.product_options = await strapi.services['product-option'].handleOneToManyRelation(product_options, forceUpdateRelation);
@@ -48,7 +48,9 @@ async function createOrUpdateProductAfterDelegation(product, action="create", fo
   return create.id;
 }
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::product.product', ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug('Syncing Products...');
     try {
@@ -97,4 +99,4 @@ module.exports = {
       return false;
     }
   }
-};
+}));
