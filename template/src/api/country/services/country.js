@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::country.country', ({ strapi }) => ({
   async handleOneToManyRelation(countries, parent) {
 
     const countriesStrapiIds = [];
@@ -39,4 +41,4 @@ module.exports = {
     }
 
   }
-};
+}));
