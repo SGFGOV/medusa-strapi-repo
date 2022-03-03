@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::image.image', ({ strapi }) => ({
   async handleManyToManyRelation(images) {
     const strapiImagesIds = [];
 
@@ -32,4 +34,4 @@ module.exports = {
     }
     return strapiImagesIds;
   }
-};
+}));
