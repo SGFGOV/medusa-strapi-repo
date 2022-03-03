@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::product-collection.product-collection', ({ strapi }) => ({
   async handleManyToOneRelation(product_collection) {
     try {
       if (!product_collection.medusa_id) {
@@ -28,4 +30,4 @@ module.exports = {
       throw new Error('Delegated creation failed');
     }
   }
-};
+}));
