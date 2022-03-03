@@ -9,7 +9,9 @@ async function createFulfillmentProviderAfterDelegation(fulfillmentProvider) {
   return create.id;
 }
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::fulfillment-provider.fulfillment-provider', ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug('Syncing Fulfillment Providers....');
     try {
@@ -79,4 +81,4 @@ module.exports = {
       throw new Error('Delegated creation failed');
     }
   }
-};
+}));
