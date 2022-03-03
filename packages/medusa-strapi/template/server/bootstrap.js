@@ -155,7 +155,7 @@ async function isFirstRun() {
 //   await strapi.query('user', 'users-permissions').update({ id: medusaUserId }, { role: medusaRoleId })
 // }
 
-module.exports = async () => {
+module.exports = async ({ strapi }) => {
   try {
     if (!(await hasSuperUser())) {
       await createSuperUser()

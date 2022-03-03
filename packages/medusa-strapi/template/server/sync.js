@@ -21,7 +21,7 @@ async function deleteAllEntries() {
   strapi.log.info("All existing entries deleted")
 }
 
-module.exports = async () => {
+module.exports = async ({ strapi }) => {
   try {
     // return;
     await deleteAllEntries()
