@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::product-option-value.product-option-value', ({ strapi }) => ({
   async handleOneToManyRelation(product_option_values, forceUpdate) {
     const productOptionValuesStrapiIds = [];
     if (product_option_values && product_option_values.length) {
@@ -24,7 +26,7 @@ module.exports = {
             if (forceUpdate) {
               const update = await strapi.query('product-option-value', '').update({
                 medusa_id: product_option_value.medusa_id
-              },{
+              }, {
                 value: product_option_value.value,
               });
               if (update) {
@@ -49,4 +51,4 @@ module.exports = {
 
     return productOptionValuesStrapiIds;
   }
-};
+}));
