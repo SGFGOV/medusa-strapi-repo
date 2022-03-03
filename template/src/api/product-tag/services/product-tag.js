@@ -5,7 +5,9 @@
  * to customize this service
  */
 
-module.exports = {
+const { createCoreService } = require('@strapi/strapi').factories;
+
+module.exports = createCoreService('api::product-tag.product-tag', ({ strapi }) => ({
   async handleManyToManyRelation(product_tags) {
     const strapiProductTagsIds = [];
 
@@ -32,4 +34,4 @@ module.exports = {
     }
     return strapiProductTagsIds;
   }
-};
+}));

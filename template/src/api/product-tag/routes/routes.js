@@ -1,4 +1,10 @@
-{
+'use strict';
+
+/**
+ * product-tag router.
+ */
+
+module.exports = {
   "routes": [
     {
       "method": "GET",
