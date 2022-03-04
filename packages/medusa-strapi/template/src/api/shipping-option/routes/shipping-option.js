@@ -7,54 +7,18 @@
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
 module.exports = createCoreRouter('api::shipping-option.shipping-option', {
-  "routes": [
-    {
-      "method": "GET",
-      "path": "/shipping-options",
-      "handler": "shipping-option.find",
-      "config": {
-        "policies": []
-      }
+  prefix: '',
+  only: ['find', 'findOne', 'create', 'update', 'delete'],
+  except: [],
+  config: {
+    find: {
+      auth: false,
+      policies: [],
+      middlewares: [],
     },
-    {
-      "method": "GET",
-      "path": "/shipping-options/count",
-      "handler": "shipping-option.count",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/shipping-options/:id",
-      "handler": "shipping-option.findOne",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/shipping-options",
-      "handler": "shipping-option.create",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "PUT",
-      "path": "/shipping-options/:id",
-      "handler": "shipping-option.update",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/shipping-options/:id",
-      "handler": "shipping-option.delete",
-      "config": {
-        "policies": []
-      }
-    }
-  ]
+    findOne: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
 });
