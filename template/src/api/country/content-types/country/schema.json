@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "countries",
   "info": {
-    "name": "Country",
+    "singularName": "country",
+    "pluralName": "countries",
+    "displayName": "Country",
     "description": ""
   },
   "options": {

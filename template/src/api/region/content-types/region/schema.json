@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "regions",
   "info": {
-    "name": "Region",
+    "singularName": "region",
+    "pluralName": "regions",
+    "displayName": "Region",
     "description": ""
   },
   "options": {

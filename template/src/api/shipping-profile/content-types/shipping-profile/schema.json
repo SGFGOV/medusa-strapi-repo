@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "shipping_profiles",
   "info": {
-    "name": "Shipping Profile",
+    "singularName": "shipping-profile",
+    "pluralName": "shipping-profiles",
+    "displayName": "Shipping Profile",
     "description": ""
   },
   "options": {

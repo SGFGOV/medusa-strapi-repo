@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "images",
   "info": {
-    "name": "Image",
+    "singularName": "image",
+    "pluralName": "images",
+    "displayName": "Image",
     "description": ""
   },
   "options": {
