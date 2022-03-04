@@ -8,17 +8,15 @@
 const axios = require('axios');
 
 module.exports = {
-  lifecycles: {
-    async afterUpdate(result, params, data) {
-      await axios.post('http://localhost:9000/hooks/update-medusa', {
-        type: 'productVariant',
-        data
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
+  async afterUpdate(result, params, data) {
+    await axios.post('http://localhost:9000/hooks/update-medusa', {
+      type: 'productVariant',
+      data
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
 
-      })
-    }
+    })
   }
 };
