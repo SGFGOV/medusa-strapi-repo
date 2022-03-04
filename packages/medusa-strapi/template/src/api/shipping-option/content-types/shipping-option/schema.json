@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "shipping_options",
   "info": {
-    "name": "Shipping Option",
+    "singularName": "shipping-option",
+    "pluralName": "shipping-options",
+    "displayName": "Shipping Option",
     "description": ""
   },
   "options": {

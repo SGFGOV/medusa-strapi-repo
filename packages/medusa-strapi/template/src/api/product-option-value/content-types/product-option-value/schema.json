@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "product_option_values",
   "info": {
-    "name": "Product Option Value",
+    "singularName": "product-option-value",
+    "pluralName": "product-option-values",
+    "displayName": "Product Option Value",
     "description": ""
   },
   "options": {

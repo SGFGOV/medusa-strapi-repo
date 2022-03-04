@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "money_amounts",
   "info": {
-    "name": "Money Amount",
+    "singularName": "money-amount",
+    "pluralName": "money-amounts",
+    "displayName": "Money Amount",
     "description": ""
   },
   "options": {

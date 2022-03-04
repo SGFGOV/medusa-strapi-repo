@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "currencies",
   "info": {
-    "name": "Currency",
+    "singularName": "currency",
+    "pluralName": "currencies",
+    "displayName": "Currency",
     "description": ""
   },
   "options": {

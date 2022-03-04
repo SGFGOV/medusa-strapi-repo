@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "shipping_option_requirements",
   "info": {
-    "name": "Shipping Option Requirement",
+    "singularName": "shipping-option-requirement",
+    "pluralName": "shipping-option-requirements",
+    "displayName": "Shipping Option Requirement",
     "description": ""
   },
   "options": {

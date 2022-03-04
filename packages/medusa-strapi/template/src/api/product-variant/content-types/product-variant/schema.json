@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "product_variants",
   "info": {
-    "name": "Product Variant",
+    "singularName": "product-variant",
+    "pluralName": "product-variants",
+    "displayName": "Product Variant",
     "description": ""
   },
   "options": {

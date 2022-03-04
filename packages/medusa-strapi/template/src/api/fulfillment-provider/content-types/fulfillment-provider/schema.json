@@ -2,7 +2,9 @@
   "kind": "collectionType",
   "collectionName": "fulfillment_providers",
   "info": {
-    "name": "Fulfillment Provider",
+    "singularName": "fulfillment-provider",
+    "pluralName": "fulfillment-providers",
+    "displayName": "Fulfillment Provider",
     "description": ""
   },
   "options": {
