@@ -4,7 +4,9 @@
  * country router.
  */
 
-module.exports = {
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::country.country', {
   routes: [
     {
       method: "GET",
@@ -55,4 +57,4 @@ module.exports = {
       }
     }
   ]
-};
+});
