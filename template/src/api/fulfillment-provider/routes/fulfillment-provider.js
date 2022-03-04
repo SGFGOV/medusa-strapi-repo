@@ -7,54 +7,18 @@
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
 module.exports = createCoreRouter('api::fulfillment-provider.fulfillment-provider', {
-  "routes": [
-    {
-      "method": "GET",
-      "path": "/fulfillment-providers",
-      "handler": "fulfillment-provider.find",
-      "config": {
-        "policies": []
-      }
+  prefix: '',
+  only: ['find', 'findOne', 'create', 'update', 'delete'],
+  except: [],
+  config: {
+    find: {
+      auth: false,
+      policies: [],
+      middlewares: [],
     },
-    {
-      "method": "GET",
-      "path": "/fulfillment-providers/count",
-      "handler": "fulfillment-provider.count",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/fulfillment-providers/:id",
-      "handler": "fulfillment-provider.findOne",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/fulfillment-providers",
-      "handler": "fulfillment-provider.create",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "PUT",
-      "path": "/fulfillment-providers/:id",
-      "handler": "fulfillment-provider.update",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/fulfillment-providers/:id",
-      "handler": "fulfillment-provider.delete",
-      "config": {
-        "policies": []
-      }
-    }
-  ]
+    findOne: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
 });

@@ -7,54 +7,18 @@
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
 module.exports = createCoreRouter('api::product.product', {
-  "routes": [
-    {
-      "method": "GET",
-      "path": "/products",
-      "handler": "product.find",
-      "config": {
-        "policies": []
-      }
+  prefix: '',
+  only: ['find', 'findOne', 'create', 'update', 'delete'],
+  except: [],
+  config: {
+    find: {
+      auth: false,
+      policies: [],
+      middlewares: [],
     },
-    {
-      "method": "GET",
-      "path": "/products/count",
-      "handler": "product.count",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/products/:medusaId",
-      "handler": "product.findOne",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/products",
-      "handler": "product.create",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "PUT",
-      "path": "/products/:medusaId",
-      "handler": "product.update",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/products/:medusaId",
-      "handler": "product.delete",
-      "config": {
-        "policies": []
-      }
-    }
-  ]
+    findOne: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
 });

@@ -7,54 +7,18 @@
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
 module.exports = createCoreRouter('api::money-amount.money-amount', {
-  "routes": [
-    {
-      "method": "GET",
-      "path": "/money-amounts",
-      "handler": "money-amount.find",
-      "config": {
-        "policies": []
-      }
+  prefix: '',
+  only: ['find', 'findOne', 'create', 'update', 'delete'],
+  except: [],
+  config: {
+    find: {
+      auth: false,
+      policies: [],
+      middlewares: [],
     },
-    {
-      "method": "GET",
-      "path": "/money-amounts/count",
-      "handler": "money-amount.count",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/money-amounts/:id",
-      "handler": "money-amount.findOne",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/money-amounts",
-      "handler": "money-amount.create",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "PUT",
-      "path": "/money-amounts/:id",
-      "handler": "money-amount.update",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/money-amounts/:id",
-      "handler": "money-amount.delete",
-      "config": {
-        "policies": []
-      }
-    }
-  ]
+    findOne: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
 });

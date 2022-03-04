@@ -7,54 +7,18 @@
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
 module.exports = createCoreRouter('api::product-collection.product-collection', {
-  "routes": [
-    {
-      "method": "GET",
-      "path": "/product-collections",
-      "handler": "product-collection.find",
-      "config": {
-        "policies": []
-      }
+  prefix: '',
+  only: ['find', 'findOne', 'create', 'update', 'delete'],
+  except: [],
+  config: {
+    find: {
+      auth: false,
+      policies: [],
+      middlewares: [],
     },
-    {
-      "method": "GET",
-      "path": "/product-collections/count",
-      "handler": "product-collection.count",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "GET",
-      "path": "/product-collections/:id",
-      "handler": "product-collection.findOne",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/product-collections",
-      "handler": "product-collection.create",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "PUT",
-      "path": "/product-collections/:id",
-      "handler": "product-collection.update",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "DELETE",
-      "path": "/product-collections/:id",
-      "handler": "product-collection.delete",
-      "config": {
-        "policies": []
-      }
-    }
-  ]
+    findOne: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
 });
