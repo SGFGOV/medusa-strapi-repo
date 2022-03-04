@@ -1,10 +1,12 @@
 'use strict';
 
 /**
- * country router.
+ * shipping-profile router.
  */
 
-module.exports = {
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::shipping-profile.shipping-profile', {
   "routes": [
     {
       "method": "GET",
@@ -55,4 +57,4 @@ module.exports = {
       }
     }
   ]
-}
+});

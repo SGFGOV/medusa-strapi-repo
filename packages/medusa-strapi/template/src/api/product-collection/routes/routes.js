@@ -4,7 +4,9 @@
  * product-collection router.
  */
 
-module.exports = {
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::product-collection.product-collection', {
   "routes": [
     {
       "method": "GET",
@@ -55,4 +57,4 @@ module.exports = {
       }
     }
   ]
-}
+});

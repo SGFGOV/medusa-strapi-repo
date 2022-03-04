@@ -1,10 +1,12 @@
 'use strict';
 
 /**
- * country router.
+ * money-amount router.
  */
 
-module.exports = {
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::money-amount.money-amount', {
   "routes": [
     {
       "method": "GET",
@@ -55,4 +57,4 @@ module.exports = {
       }
     }
   ]
-}
+});

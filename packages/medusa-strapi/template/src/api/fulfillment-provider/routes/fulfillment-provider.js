@@ -1,10 +1,12 @@
 'use strict';
 
 /**
- * country router.
+ * fulfillment-provider router.
  */
 
-module.exports = {
+const { createCoreRouter } = require('@strapi/strapi').factories;
+
+module.exports = createCoreRouter('api::fulfillment-provider.fulfillment-provider', {
   "routes": [
     {
       "method": "GET",
@@ -55,4 +57,4 @@ module.exports = {
       }
     }
   ]
-}
+});
