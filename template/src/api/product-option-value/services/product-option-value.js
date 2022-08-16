@@ -18,13 +18,13 @@ module.exports = createCoreService('api::product-option-value.product-option-val
             delete product_option_value.id;
           }
 
-          const found = await strapi.services['product-option-value'].findOne({
+          const found = await strapi.db.query('api::product-option-value.product-option-value').findOne({
             medusa_id: product_option_value.medusa_id
           })
           if (found) {
 
             if (forceUpdate) {
-              const update = await strapi.query('product-option-value', '').update({
+              const update = await strapi.db.query('api::product-option-value.product-option-value').update({
                 medusa_id: product_option_value.medusa_id
               }, {
                 value: product_option_value.value,
@@ -39,11 +39,12 @@ module.exports = createCoreService('api::product-option-value.product-option-val
             continue;
           }
 
-          const create = await strapi.services['product-option-value'].create(product_option_value);
+          const create = await strapi.entityService.create('api::product-option-value.product-option-value', {
+            data: product_option_value
+          });
           productOptionValuesStrapiIds.push({ id: create.id });
         } catch (e) {
-          console.log(e.data.medusa_id);
-          console.log(e);
+          console.log(e)
           throw new Error('Delegated creation failed');
         }
       }

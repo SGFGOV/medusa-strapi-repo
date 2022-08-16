@@ -22,7 +22,7 @@ module.exports = createCoreService('api::country.country', ({ strapi }) => ({
             delete country.region_id
           }
 
-          const found = await strapi.query('country', '').findOne({
+          const found = await strapi.db.query('api::country.country').findOne({
             medusa_id: country.medusa_id
           });
           if (found) {
@@ -30,7 +30,7 @@ module.exports = createCoreService('api::country.country', ({ strapi }) => ({
             continue;
           }
 
-          const create = await strapi.services.country.create(country);
+          const create = await strapi.entityService.create('api::country.country', { data: country });
           countriesStrapiIds.push({ id: create.id });
         }
       }

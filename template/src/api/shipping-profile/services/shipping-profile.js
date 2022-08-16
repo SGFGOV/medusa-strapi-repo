@@ -12,10 +12,10 @@ async function createShippingProfileAfterDelegation(shippingProfile) {
   }
 
   if (shipping_options) {
-    createPayload.shipping_options = await strapi.services['shipping-option'].handleOneToManyRelation(shipping_options, 'shipping-profile')
+    createPayload.shipping_options = await strapi.service('api::shipping-option.shipping-option').handleOneToManyRelation(shipping_options, 'shipping-profile')
   }
 
-  const create = await strapi.services['shipping-profile'].create(createPayload);
+  const create = await strapi.entityService.create('api::shipping-profile.shipping-profile', { data: createPayload });
   return create.id;
 }
 
@@ -32,7 +32,7 @@ module.exports = createCoreService('api::shipping-profile.shipping-profile', ({ 
             delete shipping_profile.id
           }
 
-          const found = await strapi.query('shipping-profile', '').findOne({ medusa_id: shipping_profile.medusa_id });
+          const found = await strapi.db.query('api::shipping-profile.shipping-profile').findOne({ medusa_id: shipping_profile.medusa_id });
           if (found) {
             continue;
           }
@@ -59,7 +59,7 @@ module.exports = createCoreService('api::shipping-profile.shipping-profile', ({ 
       delete shippingProfile.shipping_options;
     }
 
-    const found = await strapi.query('shipping-profile', '').findOne({ medusa_id: shippingProfile.medusa_id });
+    const found = await strapi.db.query('api::shipping-profile.shipping-profile').findOne({ medusa_id: shippingProfile.medusa_id });
     if (found) {
       return found.id;
     }

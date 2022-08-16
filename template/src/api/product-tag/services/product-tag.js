@@ -16,7 +16,7 @@ module.exports = createCoreService('api::product-tag.product-tag', ({ strapi }) 
         product_tag.medusa_id = product_tag.id.toString();
         delete product_tag.id;
 
-        const found = await strapi.query('product-tag', '').findOne({
+        const found = await strapi.db.query('api::product-tag.product-tag').findOne({
           medusa_id: product_tag.medusa_id
         })
 
@@ -25,7 +25,7 @@ module.exports = createCoreService('api::product-tag.product-tag', ({ strapi }) 
           continue;
         }
 
-        const create = await strapi.services['product-tag'].create(product_tag);
+        const create = await strapi.entityService.create('api::product-tag.product-tag', { data: product_tag });
         strapiProductTagsIds.push({ id: create.id });
       }
     } catch (e) {
