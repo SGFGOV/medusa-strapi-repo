@@ -10,7 +10,7 @@ module.exports = {
   async afterUpdate(result, params, data) {
     await axios.post('http://localhost:9000/hooks/update-medusa', {
       type: 'region',
-      data
+      data: result.result
     }, {
       headers: {
         'Content-Type': 'application/json'

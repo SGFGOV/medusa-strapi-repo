@@ -23,14 +23,16 @@ module.exports = createCoreController('api::product-variant.product-variant', {
     try {
       const { medusaId } = ctx.params
       const productVariant = await strapi
-        .query("product-variant", "")
-        .findOne({ product_variant_id: medusaId })
+        .strapi.db.query("api::product-variant.product-variant")
+        .findOne({ 
+          where: {product_variant_id: medusaId}
+         })
       if (productVariant && productVariant.id) {
-        return strapi.config.functions.response.success(ctx, { productVariant })
+        return ctx.body = { productVariant }
       }
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
   async create(ctx) {
@@ -40,7 +42,7 @@ module.exports = createCoreController('api::product-variant.product-variant', {
       const product = productVariantBody.product
       // The product for this productVariant must exist. Otherwise we error out.
       if (!product) {
-        return strapi.config.functions.response.badRequest(
+        return ctx.badRequest(
           ctx,
           "Orphaned product variant"
         )
@@ -48,15 +50,14 @@ module.exports = createCoreController('api::product-variant.product-variant', {
 
       performCleanups(productVariantBody)
 
-      const create = await strapi.services[
-        "product-variant"
-      ].createWithRelations(productVariantBody)
+      const create = await strapi.service('api::product-variant.product-variant').createWithRelations(productVariantBody)
       if (create) {
-        return strapi.config.functions.response.success(ctx, { id: create })
+        return ctx.body = { id: create }
       }
-      return strapi.config.functions.response.badRequest(ctx)
+      return ctx.badRequest(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      console.log(e);
+      return ctx.internalServerError(ctx, e)
     }
   },
   async update(ctx) {
@@ -67,7 +68,7 @@ module.exports = createCoreController('api::product-variant.product-variant', {
       const product = productVariantBody.product
       // The product for this productVariant must exist. Otherwise we error out.
       if (!product) {
-        return strapi.config.functions.response.badRequest(
+        return ctx.badRequest(
           ctx,
           "Orphaned product variant"
         )
@@ -75,31 +76,27 @@ module.exports = createCoreController('api::product-variant.product-variant', {
 
       performCleanups(productVariantBody)
 
-      const found = await strapi.query("product-variant", "").findOne({
+      const found = await strapi.db.query('api::product-variant.product-variant').findOne({
         medusa_id: medusaId,
       })
 
       if (found) {
-        const update = await strapi.services[
-          "product-variant"
-        ].updateWithRelations(productVariantBody)
+        const update = await strapi.db.query('api::product-variant.product-variant').updateWithRelations(productVariantBody)
         if (update) {
-          return strapi.config.functions.response.success(ctx, { id: update })
+          return ctx.body = { id: update }
         } else {
-          return strapi.config.functions.response.serverError(ctx, "ERROR")
+          return ctx.internalServerError(ctx, "ERROR")
         }
       }
 
-      const create = await strapi.services[
-        "product-variant"
-      ].createWithRelations(productVariantBody)
+      const create = await strapi.service('api::product-variant.product-variant').createWithRelations(productVariantBody)
       if (create) {
-        return strapi.config.functions.response.success(ctx, { id: create })
+        return ctx.body = { id: create }
       }
 
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
   async delete(ctx) {
@@ -112,14 +109,14 @@ module.exports = createCoreController('api::product-variant.product-variant', {
         await strapi.query("product-variant", "").delete({
           medusa_id: medusaId,
         })
-        return strapi.config.functions.response.success(ctx, {
+        return ctx.body = {
           id: productVariant.id,
-        })
+        }
       }
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
       console.log("Error occurred while trying to delete product variant")
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
 })
