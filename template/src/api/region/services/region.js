@@ -8,28 +8,28 @@ async function createOrUpdateRegionAfterDelegation(region, action = 'create') {
   const { currency, countries, payment_providers, fulfillment_providers, ...payload } = region
 
   if (currency) {
-    payload.currency = await strapi.services.currency.handleManyToOneRelation(currency);
+    payload.currency = await strapi.service('api::currency.currency').handleManyToOneRelation(currency);
   }
 
   if (countries && countries.length) {
-    payload.countries = await strapi.services.country.handleOneToManyRelation(countries, 'region');
+    payload.countries = await strapi.service('api::country.country').handleOneToManyRelation(countries, 'region');
   }
 
   if (payment_providers && payment_providers.length) {
-    payload.payment_providers = await strapi.services['payment-provider'].handleManyToManyRelation(payment_providers, 'region');
+    payload.payment_providers = await strapi.service('api::payment-provider.payment-provider').handleManyToManyRelation(payment_providers, 'region');
   }
 
   if (fulfillment_providers && fulfillment_providers.length) {
-    payload.fulfillment_providers = await strapi.services['fulfillment-provider'].handleManyToManyRelation(fulfillment_providers, 'region');
+    payload.fulfillment_providers = await strapi.service('api::fulfillment-provider.fulfillment-provider').handleManyToManyRelation(fulfillment_providers, 'region');
   }
 
   if (action === 'update') {
-    const update = await strapi.services.region.update({ medusa_id: region.medusa_id }, payload);
+    const update = await strapi.db.query('api::region.region').update({ medusa_id: region.medusa_id }, payload);
     console.log(update);
     return update.id;
   }
 
-  const create = await strapi.services.region.create(payload);
+  const create = await strapi.entityService.create('api::region.region', { data: payload });
   return create.id;
 }
 
@@ -44,7 +44,7 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
           region.medusa_id = region.id.toString();
           delete region.id;
 
-          const found = await strapi.query('region', '').findOne({ medusa_id: region.medusa_id });
+          const found = await strapi.db.query('api::region.region').findOne({ medusa_id: region.medusa_id });
           if (found) {
             continue;
           }
@@ -66,7 +66,7 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
       region.medusa_id = region.id.toString();
       delete region.id;
 
-      const found = await strapi.query('region', '').findOne({ medusa_id: region.medusa_id });
+      const found = await strapi.db.query('api::region.region').findOne({ medusa_id: region.medusa_id });
       if (found) {
         return found.id;
       }

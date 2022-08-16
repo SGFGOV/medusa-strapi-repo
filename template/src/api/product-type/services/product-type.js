@@ -15,14 +15,14 @@ module.exports = createCoreService('api::product-type.product-type', ({ strapi }
         delete product_type.id;
       }
 
-      const found = await strapi.services['product-type'].findOne({
+      const found = await strapi.service('api::product-type.product-type').findOne({
         medusa_id: product_type.medusa_id
       })
       if (found) {
         return found.id;
       }
 
-      const create = await strapi.services['product-type'].create(product_type);
+      const create = await strapi.entityService.create('api::product-type.product-type', { data: product_type });
       return create.id;
 
     } catch (e) {

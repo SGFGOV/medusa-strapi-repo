@@ -18,13 +18,13 @@ module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }
             delete money_amount.id;
           }
 
-          const found = await strapi.services['money-amount'].findOne({
-            medusa_id: money_amount.medusa_id
+          const found = await strapi.db.query('api::money-amount.money-amount').findOne({
+            where: {medusa_id: money_amount.medusa_id}
           })
           if (found) {
 
             if (forceUpdate) {
-              const update = await strapi.query('money-amount', '').update({
+              const update = await strapi.db.query('api::money-amount.money-amount').update({
                 medusa_id: money_amount.medusa_id
               }, {
                 amount: money_amount.amount,
@@ -40,7 +40,9 @@ module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }
             continue;
           }
 
-          const create = await strapi.services['money-amount'].create(money_amount);
+          const create = await strapi.entityService.create('api::money-amount.money-amount', {
+            data: money_amount
+          });
           moneyAmountsStrapiIds.push({ id: create.id });
         } catch (e) {
           console.log(e);
