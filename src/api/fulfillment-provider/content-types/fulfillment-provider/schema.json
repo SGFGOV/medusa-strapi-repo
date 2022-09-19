@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "fulfillment_providers",
+  "info": {
+    "singularName": "fulfillment-provider",
+    "pluralName": "fulfillment-providers",
+    "displayName": "Fulfillment Provider",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "is_installed": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "regions": {
+      "via": "fulfillment_providers",
+      "collection": "region"
+    },
+    "shipping_options": {
+      "via": "fulfillment_provider",
+      "collection": "shipping-option"
+    }
+  }
+}

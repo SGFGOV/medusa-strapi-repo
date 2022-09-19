@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "countries",
+  "info": {
+    "singularName": "country",
+    "pluralName": "countries",
+    "displayName": "Country",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "iso_2": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "iso_3": {
+      "type": "string",
+      "required": true
+    },
+    "num_code": {
+      "type": "integer",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "display_name": {
+      "type": "string",
+      "required": true
+    },
+    "region": {
+      "via": "countries",
+      "model": "region"
+    },
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    }
+  }
+}

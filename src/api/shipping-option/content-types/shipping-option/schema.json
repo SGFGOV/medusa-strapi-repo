@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_options",
+  "info": {
+    "singularName": "shipping-option",
+    "pluralName": "shipping-options",
+    "displayName": "Shipping Option",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "name": {
+      "type": "string"
+    },
+    "price_type": {
+      "type": "enumeration",
+      "enum": [
+        "flat_rate",
+        "calculated"
+      ],
+      "required": true
+    },
+    "amount": {
+      "type": "decimal",
+      "required": false
+    },
+    "is_return": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "admin_only": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "data": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "shipping_option_requirements": {
+      "via": "shipping_option",
+      "collection": "shipping-option-requirement"
+    },
+    "region": {
+      "via": "shipping_options",
+      "model": "region"
+    },
+    "shipping_profile": {
+      "via": "shipping_options",
+      "model": "shipping-profile"
+    },
+    "fulfillment_provider": {
+      "via": "shipping_options",
+      "model": "fulfillment-provider"
+    }
+  }
+}
