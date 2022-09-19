@@ -1,0 +1,100 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_variants",
+  "info": {
+    "singularName": "product-variant",
+    "pluralName": "product-variants",
+    "displayName": "Product Variant",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "sku": {
+      "type": "string",
+      "unique": true
+    },
+    "barcode": {
+      "type": "string",
+      "unique": true
+    },
+    "ean": {
+      "type": "string",
+      "unique": true
+    },
+    "upc": {
+      "type": "string",
+      "unique": true
+    },
+    "variant_rank": {
+      "type": "integer",
+      "private": true,
+      "default": 0
+    },
+    "inventory_quantity": {
+      "type": "integer",
+      "required": true
+    },
+    "allow_backorder": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "manage_inventory": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "hs_code": {
+      "type": "string"
+    },
+    "origin_country": {
+      "type": "string"
+    },
+    "mid_code": {
+      "type": "string"
+    },
+    "material": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "decimal"
+    },
+    "height": {
+      "type": "decimal"
+    },
+    "width": {
+      "type": "decimal"
+    },
+    "product_variant_length": {
+      "type": "decimal"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "product": {
+      "via": "product_variants",
+      "model": "product"
+    },
+    "money_amounts": {
+      "via": "product_variant",
+      "collection": "money-amount"
+    },
+    "product_option_values": {
+      "via": "product_variant",
+      "collection": "product-option-value"
+    }
+  }
+}

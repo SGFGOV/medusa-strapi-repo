@@ -1,0 +1,8 @@
+node_modules
+*-lock.json
+license.txt
+exports
+*.cache
+build
+.strapi-updater.json
+*.sh
