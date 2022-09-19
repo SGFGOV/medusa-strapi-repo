@@ -1,0 +1,117 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "handle": {
+      "type": "string"
+    },
+    "is_giftcard": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "proposed",
+        "published",
+        "rejected"
+      ],
+      "default": "draft",
+      "required": true
+    },
+    "thumbnail": {
+      "type": "string"
+    },
+    "discountable": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "weight": {
+      "type": "decimal"
+    },
+    "product_length": {
+      "type": "decimal"
+    },
+    "width": {
+      "type": "decimal"
+    },
+    "height": {
+      "type": "decimal"
+    },
+    "hs_code": {
+      "type": "string"
+    },
+    "origin_country": {
+      "type": "string"
+    },
+    "mid_code": {
+      "type": "string"
+    },
+    "material": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "product_variants": {
+      "via": "product",
+      "collection": "product-variant"
+    },
+    "product_options": {
+      "via": "product",
+      "collection": "product-option"
+    },
+    "images": {
+      "via": "products",
+      "collection": "image",
+      "dominant": true
+    },
+    "shipping_profile": {
+      "via": "products",
+      "model": "shipping-profile"
+    },
+    "product_collection": {
+      "via": "products",
+      "model": "product-collection"
+    },
+    "product_type": {
+      "via": "products",
+      "model": "product-type"
+    },
+    "product_tags": {
+      "via": "products",
+      "collection": "product-tag",
+      "dominant": true
+    }
+  }
+}

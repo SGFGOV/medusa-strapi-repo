@@ -1,4 +1,47 @@
 {
-    "name": "medusa-strapi",
-    "version": "1.0.8"
+  "name": "strapi-medusa",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "dependencies": {
+    "@aws-sdk/credential-provider-node": "^3.100.0",
+    "@aws-sdk/hash-node": "^3.78.0",
+    "@aws-sdk/protocol-http": "^3.78.0",
+    "@aws-sdk/signature-v4": "^3.78.0",
+    "@aws-sdk/util-format-url": "^3.78.0",
+    "@strapi/logger": "^4.3.6",
+    "@strapi/plugin-i18n": "4.1.8",
+    "@strapi/plugin-users-permissions": "4.1.8",
+    "@strapi/strapi": "4.1.8",
+    "css-loader": "^6.7.1",
+    "download-file-sync": "^1.0.4",
+    "fs": "^0.0.1-security",
+    "i": "^0.3.7",
+    "npm": "^8.12.1",
+    "pg": "8.6.0",
+    "strapi-middleware-cache": "^2.1.7",
+    "style-loader": "^3.3.1"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "cf4e61c7-d5e1-4c5c-821c-ff7e4f22bb4e",
+    "template": "https://github.com/SGFGOV/strapi-medusa-template.git"
+  },
+  "engines": {
+    "node": ">=12.x.x <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^5.73.0"
   }
+}

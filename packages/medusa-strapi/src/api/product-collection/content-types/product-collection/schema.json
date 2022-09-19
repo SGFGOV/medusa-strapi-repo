@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_collections",
+  "info": {
+    "singularName": "product-collection",
+    "pluralName": "product-collections",
+    "displayName": "Product Collection",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "handle": {
+      "type": "string",
+      "required": false,
+      "unique": true
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "products": {
+      "via": "product_collection",
+      "collection": "product"
+    }
+  }
+}
