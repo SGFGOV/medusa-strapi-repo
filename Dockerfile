@@ -1,10 +1,10 @@
 FROM strapi/base
 
 
-ARG AWS_DEFAULT_REGION 
-ARG AWS_ACCESS_KEY_ID 
-ARG AWS_SECRET_ACCESS_KEY 
-ARG AWS_SESSION_TOKEN 
+#ARG AWS_DEFAULT_REGION 
+#ARG AWS_ACCESS_KEY_ID 
+#ARG AWS_SECRET_ACCESS_KEY 
+#ARG AWS_SESSION_TOKEN 
 #RUN echo $AWS_DEFAULT_REGION 
 #RUN echo $AWS_ACCESS_KEY_ID 
 #RUN echo $AWS_SECRET_ACCESS_KEY 
@@ -34,16 +34,9 @@ COPY ./yarn.lock ./
 
 COPY . .
 
-
-RUN yarn install --ignore-platform
-
-
-
 ENV NODE_ENV production
 
-#RUN yarn --ignore-platform
-
-RUN yarn build 
+RUN yarn install --ignore-platform --network-timeout 10000000 && yarn build
 
 EXPOSE 1337
 
