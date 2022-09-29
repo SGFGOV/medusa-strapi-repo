@@ -6,3 +6,15 @@ exports
 build
 .strapi-updater.json
 *.sh
+*.env
+./ebextensions
+./github
+./husky
+./platform
+contentful-migrations
+node_modules
+coverage
+temp
+uploads
+.env
+*.env
