@@ -16,7 +16,7 @@ module.exports = createCoreService('api::image.image', ({ strapi }) => ({
         image.medusa_id = image.id.toString();
         delete image.id;
 
-        const found = await strapi.query('image', '').findOne({
+        const found = await strapi.db.query('api::image.image').findOne({
           medusa_id: image.medusa_id
         })
 
@@ -25,7 +25,7 @@ module.exports = createCoreService('api::image.image', ({ strapi }) => ({
           continue;
         }
 
-        const create = await strapi.services['image'].create(image);
+        const create = await strapi.entityService.create('api::image.image', { data: image });
         strapiImagesIds.push({ id: create.id });
       }
     } catch (e) {

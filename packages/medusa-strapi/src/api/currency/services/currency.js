@@ -10,14 +10,14 @@ const { createCoreService } = require('@strapi/strapi').factories;
 module.exports = createCoreService('api::currency.currency', ({ strapi }) => ({
   async handleManyToOneRelation(currency) {
     try {
-      const found = await strapi.services.currency.findOne({
-        code: currency.code
+      const found = await strapi.db.query('api::currency.currency').findOne({
+        where: {code: currency.code}
       });
       if (found) {
         return found.id;
       }
 
-      const create = await strapi.services.currency.create(currency);
+      const create = await strapi.entityService.create('api::currency.currency', { data: currency });
       return create.id;
     } catch (e) {
       console.log(e);

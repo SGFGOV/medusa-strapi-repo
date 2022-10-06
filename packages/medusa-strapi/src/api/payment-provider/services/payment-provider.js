@@ -18,12 +18,12 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
             delete paymentProvider.id
           }
 
-          const found = await strapi.query('payment-provider', '').findOne({ medusa_id: paymentProvider.medusa_id });
+          const found = await strapi.db.query('api::payment-provider.payment-provider').findOne({ medusa_id: paymentProvider.medusa_id });
           if (found) {
             continue
           }
 
-          const create = await strapi.services['payment-provider'].create(paymentProvider);
+          const create = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
         }
       }
       strapi.log.info('Payment Providers synced');
@@ -42,7 +42,7 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
         paymentProvider.medusa_id = paymentProvider.id.toString();
         delete paymentProvider.id;
 
-        const found = await strapi.query('payment-provider', '').findOne({
+        const found = await strapi.db.query('api::payment-provider.payment-provider').findOne({
           medusa_id: paymentProvider.medusa_id
         })
 
@@ -51,7 +51,7 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
           continue;
         }
 
-        const create = await strapi.services['payment-provider'].create(paymentProvider);
+        const create = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
         strapiPaymentProvidersIds.push({ id: create.id });
       }
     } catch (e) {

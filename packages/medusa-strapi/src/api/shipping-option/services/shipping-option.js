@@ -9,22 +9,22 @@ async function createShippingOptionAfterDelegation(shippingOption) {
   const { region, 'profile': shipping_profile, 'requirements': shipping_option_requirements, 'provider': fulfillment_provider, ...createPayload } = shippingOption;
 
   if (region) {
-    createPayload.region = await strapi.services.region.handleManyToOneRelation(region, 'shipping-option');
+    createPayload.region = await strapi.service('api::region.region').handleManyToOneRelation(region, 'shipping-option');
   }
 
   if (shipping_profile) {
-    createPayload.shipping_profile = await strapi.services['shipping-profile'].handleManyToOneRelation(shipping_profile, 'shipping-option');
+    createPayload.shipping_profile = await strapi.service('api::shipping-profile.shipping-profile').handleManyToOneRelation(shipping_profile, 'shipping-option');
   }
 
   if (shipping_option_requirements && shipping_option_requirements.length) {
-    createPayload.shipping_option_requirements = await strapi.services['shipping-option-requirement'].handleOneToManyRelation(shipping_option_requirements, 'shipping-option');
+    createPayload.shipping_option_requirements = await strapi.service('api::shipping-option-requirement.shipping-option-requirement').handleOneToManyRelation(shipping_option_requirements, 'shipping-option');
   }
 
   if (fulfillment_provider) {
-    createPayload.fulfillment_provider = await strapi.services['fulfillment-provider'].handleManyToOneRelation(fulfillment_provider, 'shipping-option');
+    createPayload.fulfillment_provider = await strapi.service('api::fulfillment-provider.fulfillment-provider').handleManyToOneRelation(fulfillment_provider, 'shipping-option');
   }
 
-  const create = await strapi.services['shipping-option'].create(createPayload);
+  const create = await strapi.entityService.create('api::shipping-option.shipping-option', { data: createPayload });
   return create.id;
 }
 
@@ -42,7 +42,7 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
             delete shipping_option.id
           }
 
-          const found = await strapi.query('shipping-option', '').findOne({ medusa_id: shipping_option.medusa_id });
+          const found = await strapi.db.query('api::shipping-option.shipping-option').findOne({ medusa_id: shipping_option.medusa_id });
           if (found) {
             continue;
           }
@@ -75,7 +75,7 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
             delete shippingOption.profile;
           }
 
-          const found = await strapi.query('shipping-option', '').findOne({ medusa_id: shippingOption.medusa_id });
+          const found = await strapi.db.query('api::shipping-option.shipping-option').findOne({ medusa_id: shippingOption.medusa_id });
           if (found) {
             shippingOptionsStrapiIds.push({ id: found.id });
             continue;
