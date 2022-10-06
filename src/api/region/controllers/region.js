@@ -14,11 +14,11 @@ module.exports = createCoreController('api::region.region', {
         .query("region", "")
         .findOne({ region_id: medusaId })
       if (region && region.id) {
-        return strapi.config.functions.response.success(ctx, { region })
+        return ctx.body = { region };
       }
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx)
+      return ctx.internalServerError(ctx)
     }
   },
   async create(ctx) {
@@ -28,15 +28,15 @@ module.exports = createCoreController('api::region.region', {
         (key) => regionBody[key] === undefined && delete regionBody[key]
       )
 
-      const create = await strapi.services.region.createWithRelations(
+      const create = await strapi.service('api::region.region').createWithRelations(
         regionBody
       )
       if (create) {
-        return strapi.config.functions.response.success(ctx, { id: create })
+        return ctx.body = { id: create }
       }
-      return strapi.config.functions.response.badRequest(ctx)
+      return ctx.badRequest(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
   async update(ctx) {
@@ -47,29 +47,29 @@ module.exports = createCoreController('api::region.region', {
         (key) => regionBody[key] === undefined && delete regionBody[key]
       )
 
-      const found = await strapi.query("region", "").findOne({
+      const found = await strapi.db.query('api::region.region').findOne({
         medusa_id: medusaId,
       })
 
       if (found) {
-        const update = await strapi.services.region.updateWithRelations(
+        const update = await strapi.db.query('api::region.region').updateWithRelations(
           regionBody
         )
         if (update) {
-          return strapi.config.functions.response.success(ctx, { id: update })
+          return ctx.body = { id: update }
         }
       }
 
-      const create = await strapi.services.region.createWithRelations(
+      const create = await strapi.service('api::region.region').createWithRelations(
         regionBody
       )
       if (create) {
-        return strapi.config.functions.response.success(ctx, { id: create })
+        return ctx.body = { id: create }
       }
 
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
 })

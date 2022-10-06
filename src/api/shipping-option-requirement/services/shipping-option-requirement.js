@@ -18,7 +18,7 @@ module.exports = createCoreService('api::shipping-option-requirement.shipping-op
             delete shippingOptionRequirement.id;
           }
 
-          const found = await strapi.query('shipping-option-requirement', '').findOne({
+          const found = await strapi.db.query('api::shipping-option-requirement.shipping-option-requirement').findOne({
             medusa_id: shippingOptionRequirement.medusa_id
           });
           if (found) {
@@ -26,7 +26,7 @@ module.exports = createCoreService('api::shipping-option-requirement.shipping-op
             continue;
           }
 
-          const create = await strapi.services['shipping-option-requirement'].create(shippingOptionRequirement);
+          const create = await strapi.entityService.create('api::shipping-option-requirement.shipping-option-requirement', { data: shippingOptionRequirement });
           shippingOptionRequirementStrapiIds.push({ id: create.id });
         }
       }

@@ -14,26 +14,28 @@ module.exports = createCoreController('api::product.product', {
         .query("product", "")
         .findOne({ product_id: productId })
       if (product && product.id) {
-        return strapi.config.functions.response.success(ctx, { product })
+        return ctx.body = {
+          product
+        };
       }
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
   async create(ctx) {
     try {
       const productBody = ctx.request.body
 
-      const create = await strapi.services.product.createWithRelations(
+      const create = await strapi.service('api::product.product').createWithRelations(
         productBody
       )
       if (create) {
-        return strapi.config.functions.response.success(ctx, { id: create })
+        return ctx.body = { id: create };
       }
-      return strapi.config.functions.response.badRequest(ctx)
+      return ctx.badRequest(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
   async update(ctx) {
@@ -44,31 +46,31 @@ module.exports = createCoreController('api::product.product', {
       productBody.product_length = productBody.length
       delete productBody.length
 
-      const found = await strapi.query("product", "").findOne({
+      const found = await strapi.db.query('api::product.product').findOne({
         medusa_id: medusaId,
       })
 
       if (found) {
-        const update = await strapi.services["product"].updateWithRelations(
+        const update = await strapi.db.query('api::product.product').updateWithRelations(
           productBody
         )
         if (update) {
-          return strapi.config.functions.response.success(ctx, { id: update })
+          return ctx.body = { id: update }
         } else {
-          return strapi.config.functions.response.serverError(ctx, "ERROR")
+          return ctx.internalServerError(ctx, "ERROR")
         }
       }
 
-      const create = await strapi.services["product"].createWithRelations(
+      const create = await strapi.service('api::product.product').createWithRelations(
         productBody
       )
       if (create) {
-        return strapi.config.functions.response.success(ctx, { id: create })
+        return ctx.body = { id: create }
       }
 
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
   async delete(ctx) {
@@ -86,14 +88,14 @@ module.exports = createCoreController('api::product.product', {
         await strapi.query("product", "").delete({
           medusa_id: medusaId,
         })
-        return strapi.config.functions.response.success(ctx, {
-          id: product.id,
-        })
+        return ctx.body = {
+          id: product.id
+        }
       }
-      return strapi.config.functions.response.notFound(ctx)
+      return ctx.notFound(ctx)
     } catch (e) {
       console.log("Error occurred while trying to delete product variant")
-      return strapi.config.functions.response.serverError(ctx, e)
+      return ctx.internalServerError(ctx, e)
     }
   },
 });

@@ -5,7 +5,7 @@
  * to customize this service
  */
 async function createFulfillmentProviderAfterDelegation(fulfillmentProvider) {
-  const create = await strapi.services['fulfillment-provider'].create(fulfillmentProvider);
+  const create = await strapi.entityService.create('api::fulfillment-provider.fulfillment-provider', { data: fulfillmentProvider });
   return create.id;
 }
 
@@ -22,12 +22,12 @@ module.exports = createCoreService('api::fulfillment-provider.fulfillment-provid
             delete fulfillmentProvider.id
           }
 
-          const found = await strapi.query('fulfillment-provider', '').findOne({ medusa_id: fulfillmentProvider.medusa_id });
+          const found = await strapi.db.query('api::fulfillment-provider.fulfillment-provider').findOne({ medusa_id: fulfillmentProvider.medusa_id });
           if (found) {
             continue
           }
 
-          const create = await strapi.services['fulfillment-provider'].create(fulfillmentProvider);
+          const create = await strapi.entityService.create('api::fulfillment-provider.fulfillment-provider', { data: fulfillmentProvider });
         }
       }
       strapi.log.info('Fulfillment Providers synced');
@@ -45,7 +45,7 @@ module.exports = createCoreService('api::fulfillment-provider.fulfillment-provid
         fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
         delete fulfillmentProvider.id;
 
-        const found = await strapi.query('fulfillment-provider', '').findOne({
+        const found = await strapi.db.query('api::fulfillment-provider.fulfillment-provider').findOne({
           medusa_id: fulfillmentProvider.medusa_id
         })
 
@@ -54,7 +54,7 @@ module.exports = createCoreService('api::fulfillment-provider.fulfillment-provid
           continue;
         }
 
-        const create = await strapi.services['fulfillment-provider'].create(fulfillmentProvider);
+        const create = await strapi.entityService.create('api::fulfillment-provider.fulfillment-provider', { data: fulfillmentProvider });
         strapiFulfillmentProvidersIds.push({ id: create.id });
       }
     } catch (e) {
@@ -69,7 +69,7 @@ module.exports = createCoreService('api::fulfillment-provider.fulfillment-provid
       fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
       delete fulfillmentProvider.id;
 
-      const found = await strapi.query('fulfillment-provider', '').findOne({ medusa_id: fulfillmentProvider.medusa_id });
+      const found = await strapi.db.query('api::fulfillment-provider.fulfillment-provider').findOne({ medusa_id: fulfillmentProvider.medusa_id });
       if (found) {
         return found.id;
       }

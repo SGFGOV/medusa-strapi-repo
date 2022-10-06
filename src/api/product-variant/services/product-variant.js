@@ -8,24 +8,27 @@
 async function createOrUpdateProductVariantAfterDelegation(productVariant, action = 'create', forceUpdateRelation = false) {
   const { 'prices': money_amounts, 'options': product_option_values, ...payload } = productVariant;
   if (money_amounts) {
-    payload.money_amounts = await strapi.services['money-amount'].handleOneToManyRelation(money_amounts, forceUpdateRelation);
+    payload.money_amounts = await strapi.service('api::money-amount.money-amount').handleOneToManyRelation(money_amounts, forceUpdateRelation);
   }
 
   if (product_option_values) {
-    payload.product_option_values = await strapi.services['product-option-value'].handleOneToManyRelation(product_option_values, forceUpdateRelation);
+    payload.product_option_values = await strapi.service('api::product-option-value.product-option-value').handleOneToManyRelation(product_option_values, forceUpdateRelation);
   }
 
-  const exists = await strapi.query('product-variant', '').findOne({
+  const exists = await strapi.db.query('api::product-variant.product-variant').findOne({
     medusa_id: productVariant.medusa_id
   });
 
   if (action === 'update' || exists) {
-    const update = await strapi.services['product-variant'].update({ medusa_id: productVariant.medusa_id }, payload);
+    const update = await strapi.db.query('api::product-variant.product-variant').update({
+      where: { id: exists.id },
+      data: payload
+    });
     return update.id;
   }
 
 
-  const create = await strapi.services['product-variant'].create(payload);
+  const create = await strapi.entityService.create('api::product-variant.product-variant', { data: payload });
   return create.id;
 }
 
@@ -48,7 +51,7 @@ module.exports = createCoreService('api::product-variant.product-variant', ({ st
             delete productVariant.product;
           }
 
-          const found = await strapi.query('product-variant', '').findOne({ medusa_id: productVariant.medusa_id });
+          const found = await strapi.db.query('api::product-variant.product-variant').findOne({ medusa_id: productVariant.medusa_id });
           if (found) {
             if (forceUpdate) {
               const update = await this.updateWithRelations(productVariant);

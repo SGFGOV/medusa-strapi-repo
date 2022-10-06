@@ -68,11 +68,12 @@ module.exports = async ({ strapi }) => {
     return true
   } catch (e) {
     // console.log(e);
-    if (e.code === "ECONNREFUSED") {
-      strapi.log.fatal(
-        "Unable to connect to Medusa server. Please make sure Medusa server is up and running"
+     
+      strapi.log.info(
+        "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
+        JSON.stringify(e)
       )
       process.exit(1)
-    }
+    
   }
 }
