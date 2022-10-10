@@ -25,7 +25,7 @@ async function deleteAllEntries() {
   }catch(error)
 
   {
-    strapi.log.info("unable to flush entity "+queryKey)
+    strapi.log.info("unable to flush entity "+queryKey,JSON.stringify(err))
   }
   }
   }
@@ -73,7 +73,7 @@ module.exports = async ({ strapi }) => {
         "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
         JSON.stringify(e)
       )
-      process.exit(1)
+     // process.exit(1)
     
   }
 }
