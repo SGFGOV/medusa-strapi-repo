@@ -18,3 +18,4 @@ temp
 uploads
 .env
 *.env
+.vscode

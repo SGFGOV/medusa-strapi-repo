@@ -18,8 +18,10 @@
     "@aws-sdk/util-format-url": "^3.78.0",
     "@strapi/logger": "^4.3.6",
     "@strapi/plugin-i18n": "4.1.8",
+    "@strapi/plugin-seo": "^1.7.5",
     "@strapi/plugin-users-permissions": "4.1.8",
     "@strapi/strapi": "4.1.8",
+    "add": "^2.0.6",
     "css-loader": "^6.7.1",
     "download-file-sync": "^1.0.4",
     "fs": "^0.0.1-security",
@@ -27,7 +29,8 @@
     "npm": "^8.12.1",
     "pg": "8.6.0",
     "strapi-middleware-cache": "^2.1.7",
-    "style-loader": "^3.3.1"
+    "style-loader": "^3.3.1",
+    "yarn": "^1.22.19"
   },
   "author": {
     "name": "A Strapi developer"
@@ -42,6 +45,13 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint": "^8.25.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "typescript": "^4.8.4",
     "webpack": "^5.73.0"
   }
 }
