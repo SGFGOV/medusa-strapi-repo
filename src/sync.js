@@ -39,7 +39,7 @@ module.exports = async ({ strapi }) => {
     await deleteAllEntries() 
     const medusaServerUrl =  `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}/hooks/seed`
     strapi.log.info("attempting to connect with medusa server on ",medusaServerUrl)
-    let seedData = await axios.post(
+    const seedData = await axios.post(
       medusaServerUrl,
       {},
       {}

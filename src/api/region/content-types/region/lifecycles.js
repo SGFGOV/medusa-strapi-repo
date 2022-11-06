@@ -8,7 +8,7 @@ const axios = require('axios');
 
 module.exports = {
   async afterUpdate(result, params, data) {
-    await axios.post('http://localhost:9000/hooks/update-medusa', {
+    await axios.post(`${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}/hooks/update-medus`, {
       type: 'region',
       data: result.result
     }, {
