@@ -1,27 +1,12 @@
 const { HttpRequest } = require('@aws-sdk/protocol-http')
-  , { SignatureV4 } = require('@aws-sdk/signature-v4')
-  , { defaultProvider } = require("@aws-sdk/credential-provider-node")
-  , { Hash } = require('@aws-sdk/hash-node')
-  , { formatUrl } = require('@aws-sdk/util-format-url');
+  ; const { SignatureV4 } = require('@aws-sdk/signature-v4')
+  ; const { defaultProvider } = require("@aws-sdk/credential-provider-node")
+  ; const { Hash } = require('@aws-sdk/hash-node')
+  ; const { formatUrl } = require('@aws-sdk/util-format-url');
 const { connection } = require('mongoose');
-const fs = require('fs');
 const { env } = require('process');
-const _ = require('lodash')
-const https = require('https');
 
 
-function stream2buffer(stream) {
-
-  return new Promise((resolve, reject) => {
-
-    const _buf = [];
-
-    stream.on("data", (chunk) => _buf.push(chunk));
-    stream.on("end", () => resolve(Buffer.concat(_buf)));
-    stream.on("error", (err) => reject(err));
-
-  });
-}
 
 function getCertificate() {
   const certificateURL = "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem"
@@ -31,7 +16,7 @@ function getCertificate() {
 }
 
 
-/*getCertificate =(async()=>
+/* getCertificate =(async()=>
 {
 
 
@@ -43,7 +28,7 @@ const request = await https.get(certificateURL || process.env.AWS_CERTIFICATE_UR
 const getIamAuthToken = async () => {
 
   try{
-    /*const credentials = {
+    /* const credentials = {
       region: process.env.AWS_REGION,
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -91,18 +76,10 @@ const getIamAuthToken = async () => {
   }
 }
 
-async function updateConnection(connection, token) {
-  return new Promise((resolve, reject) => {
-    connection.connection.connection.password = process.env.DATABASE_PASSWORD || token || "postgres"
-    resolve(connection)
-  })
 
-
-}
-
-async function iamTokenWrapper(connection) {
+async function iamTokenWrapper() {
   try {
-    let token = await getIamAuthToken();
+    const token = await getIamAuthToken();
     //   let result = await updateConnection(connection,token)      
     // now process r2
     return token;     // this will be the resolved value of the returned promise
@@ -126,16 +103,16 @@ function DatabaseConfiguration({ env }) {
   };
   let token = undefined
   if(process.env.AWS_ENABLED)
-    token =getToken()
+    {token =getToken()}
   
 
-  let awsConnection = {
+  const awsConnection = {
     connection: {
       client: `${process.env.RDS_DATABASE_TYPE || "postgres"}`,
       connection: {
         host: env('DATABASE_HOST', process.env.RDS_HOSTNAME || "127.0.0.1"),
         port: env.int('DATABASE_PORT', parseInt(process.env.RDS_PORT,10) || 5432),
-        database: env('DATABASE_NAME', process.env.RDS_DATABASE || "medusa-docker"),
+        database: env('DATABASE_NAME', process.env.RDS_DATABASE || "postgres_strapi"),
         user: env('DATABASE_USERNAME', process.env.RDS_USERNAME || "postgres"),
         password: getToken || env('DATABASE_PASSWORD', "postgres"),
         ssl: env.bool('DATABASE_SSL', {
@@ -146,20 +123,20 @@ function DatabaseConfiguration({ env }) {
     },
   }
 
-  let noAwsConnection = {
+  const noAwsConnection = {
     connection: {
       client: "postgres",
       connection: {
         host: env('DATABASE_HOST',  "127.0.0.1"),
         port: env.int('DATABASE_PORT', "5432"),
-        database: env('DATABASE_NAME', "medusa-docker"),
+        database: env('DATABASE_NAME', "postgres_strapi"),
         user: env('DATABASE_USERNAME', "postgres"),
         password:  env('DATABASE_PASSWORD', "postgres"),
       },
     },
   }
 
-  let connection = process.env.AWS_ENABLED?awsConnection:noAwsConnection
+  const connection = process.env.AWS_ENABLED=="true"?awsConnection:noAwsConnection
 
   console.log(connection)
 
