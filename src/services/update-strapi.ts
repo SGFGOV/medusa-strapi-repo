@@ -621,7 +621,7 @@ class UpdateStrapiService extends BaseService {
       // console.log(response);
       this.strapiDefaultMedusaUserAuthToken = response.data.jwt;
       this.strapiDefaultUserProfile = response.data.user;
-      this.strapiDefaultUserId = response.data.user.id;
+      this.strapiDefaultUserId = response.data.user?.id;
       return response;
     } catch (error) {
       this.logger.error("unable to register default user",
