@@ -1,12 +1,13 @@
 {
   "name": "@sgftech/strapi-plugin-medusajs",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "This is the description of the plugin.",
   "strapi": {
     "name": "strapi-plugin-medusajs",
     "description": "Description of strapi-plugin-medusajs plugin",
     "kind": "plugin"
   },
+  "repository": "https://github.com/SGFGOV/strapi-plugin-medusajs.git",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "fs": "^0.0.1-security"
