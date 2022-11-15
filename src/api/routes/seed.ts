@@ -27,6 +27,8 @@ export default async (req, res) => {
         shippingOptionRepository,
     );
 
+    const storeService = req.scope.resolve("storeService");
+
     const productFields = [
       "id",
       "title",

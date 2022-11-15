@@ -7,6 +7,7 @@ import { regionService, productService, redisClient,
   enableMocks,
   disableMocks } from "../__mocks__/service-mocks";
 import { randomInt } from "crypto";
+import { AxiosResponse } from "axios";
 
 
 // This sets the mock adapter on the default instance
@@ -101,6 +102,11 @@ describe("StrapiService", () => {
       await service.deleteDefaultMedusaUser();
       expect(service.loginAsDefaultMedusaUser()).toThrow();
     }, 30000);
+    it("medusa sync check", async () =>{
+      const result = await service.startInterface() as AxiosResponse;
+      expect(result.status).toBeGreaterThanOrEqual(200);
+      expect(result.status).toBeLessThan(300);
+    });
   });
 
 

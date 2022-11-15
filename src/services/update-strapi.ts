@@ -101,7 +101,7 @@ class UpdateStrapiService extends BaseService {
     this.isHealthy = false;
     this.checkStrapiHealth().then((res) => {
       if (res) {
-        logger.info("Strapi Health Check Ok");
+        this.logger.info("Strapi Health Check Ok");
         this.isHealthy = res;
       }
     });
@@ -110,10 +110,11 @@ class UpdateStrapiService extends BaseService {
     this.redis_ = redisClient;
   }
 
-  async startInterface():Promise<void|Error> {
+  async startInterface():Promise<AxiosResponse|Error> {
     try {
-      await this.intializeServer();
+      const result = await this.intializeServer();
       this.logger.info("Successfully Bootstrapped the strapi server");
+      return result;
     } catch (e) {
       this.logger.error(`Unable to  bootstrap the strapi server, 
         please check configuration , ${e}`);
@@ -646,10 +647,23 @@ class UpdateStrapiService extends BaseService {
   */
 
 
-  async configureStrapiMedusa(): Promise<any> {
+  async configureStrapiMedusaForUser(email?:string,
+      password?:string): Promise<any> {
     try {
+      let jwt="";
+      if (!email) {
+        jwt = (await this.loginAsDefaultMedusaUser()).data.jwt;
+      } else {
+        jwt = ((await this.loginToStrapi(email,
+            password)) as AxiosResponse).data.jwt;
+      }
       const result= await axios.post(`${
-        this.strapi_url}/api/synchronise-medusa-tables`, {});
+        this.
+            strapi_url}/strapi-plugin-medusajs/synchronise-medusa-tables`, {}, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
       this.logger.info("successfully configured two way sync<-->medusa");
       return result;
     } catch (error) {
@@ -901,9 +915,9 @@ class UpdateStrapiService extends BaseService {
   async intializeServer(): Promise<AxiosResponse> {
     await this.registerOrLoginAdmin();
     if (this.strapiAdminAuthToken) {
-      const user = await this.registerDefaultMedusaUser();
+      const user = await this.registerOrLoginDefaultMedusaUser();
       if (user) {
-        const response = await this.configureStrapiMedusa();
+        const response = await this.configureStrapiMedusaForUser();
         if (response.status < 300) {
           this.logger.info("medusa-strapi-successfully-bootstrapped");
           return response;
@@ -947,13 +961,13 @@ class UpdateStrapiService extends BaseService {
   }
 
 
-  async registerOrLoginDefaultMedusaUser():Promise<void> {
+  async registerOrLoginDefaultMedusaUser():Promise<AxiosResponse> {
     try {
       await this.registerDefaultMedusaUser();
     } catch (e) {
       this.logger.info("default user already registered", JSON.stringify(e));
     }
-    await this.loginAsDefaultMedusaUser();
+    return await this.loginAsDefaultMedusaUser();
   }
 }
 
