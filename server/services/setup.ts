@@ -173,7 +173,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     const paymentProviders = seedData.data.paymentProviders
     const fulfillmentProviders = seedData.data.fulfillmentProviders
     const shippingProfiles = seedData.data.shippingProfiles
-    const stores = seedData.data.stores
+    //const stores = seedData.data.stores
 
     await strapi.services["api::fulfillment-provider.fulfillment-provider"].bootstrap(
       fulfillmentProviders
@@ -183,7 +183,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     await strapi.services["api::shipping-option.shipping-option"].bootstrap(shippingOptions)
     await strapi.services["api::shipping-profile.shipping-profile"].bootstrap(shippingProfiles)
     await strapi.services["api::product.product"].bootstrap(products)
-    await strapi.services["api::store.store"].bootstrap(stores)
+    //await strapi.services["api::store.store"].bootstrap(stores)
 
     strapi.log.info("SYNC FINISHED")
 
