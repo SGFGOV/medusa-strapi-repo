@@ -617,7 +617,8 @@ class UpdateStrapiService extends BaseService {
       const authParams = {
         ...this.options_.strapi_default_user,
       };
-      const response = await this.registerMedusaUser(authParams);
+      const { response } =
+         await this.registerMedusaUser(authParams);
       // console.log(response);
       this.strapiDefaultMedusaUserAuthToken = response.data.jwt;
       this.strapiDefaultUserProfile = response.data.user;
@@ -849,24 +850,32 @@ class UpdateStrapiService extends BaseService {
         "user", undefined, undefined, auth);
   }*/
 
-  async registerMedusaUser(auth:MedusaUserType):Promise<AxiosResponse> {
+  async registerMedusaUser(auth:MedusaUserType)
+  :Promise<{response:AxiosResponse, adminResponse:AxiosResponse}> {
     let response:AxiosResponse;
     try {
       response = await axios.
           post(`${this.strapi_url}/strapi-plugin-medusajs/create-medusa-user`,
               auth,
           );
+      if (response.status == 200) {
+        response = await this.strapiSend("get", "users", "me");
+      }
     } catch (e) {
       this.logger.error("unable to register user "+JSON.stringify(e));
     }
     try {
       const roleId = await this.getAuthorRoleId();
-      await this. strapiAdminSend("post", "user", undefined, undefined, {
-        ...auth, role: roleId });
+      const adminResponse = await this.
+          strapiAdminSend("post", "user", undefined, undefined,
+              {
+                email: auth.email,
+                password: auth.password,
+                role: roleId });
+      return { response, adminResponse };
     } catch (e) {
       this.logger.error("unable to register user as Author"+JSON.stringify(e));
     }
-    return response;
   }
 
 

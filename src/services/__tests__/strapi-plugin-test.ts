@@ -92,11 +92,12 @@ describe("StrapiService", () => {
     });
 
     it("register or login default medusa user", async () => {
-      await service.registerOrLoginDefaultMedusaUser();
+      const response = await service.registerOrLoginDefaultMedusaUser();
       console.log(service.strapiDefaultUserId);
       expect(service.strapiDefaultMedusaUserAuthToken).toBeDefined();
       expect(service.strapiDefaultMedusaUserAuthToken.length).
           toBeGreaterThan(0);
+      expect(response.data.user.id).toBeDefined();
     }, 30000);
     it("delete medusa user", async () => {
       await service.deleteDefaultMedusaUser();
