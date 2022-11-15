@@ -1,0 +1,64 @@
+{
+  "name": "@sgftech/strapi-plugin-medusajs",
+  "version": "0.0.0",
+  "description": "This is the description of the plugin.",
+  "strapi": {
+    "name": "strapi-plugin-medusajs",
+    "description": "Description of strapi-plugin-medusajs plugin",
+    "kind": "plugin"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@aws-sdk/credential-provider-node": "^3.100.0",
+    "@aws-sdk/hash-node": "^3.78.0",
+    "@aws-sdk/protocol-http": "^3.78.0",
+    "@aws-sdk/signature-v4": "^3.78.0",
+    "@aws-sdk/util-format-url": "^3.78.0",
+    "@strapi/logger": "^4.3.6",
+    "@strapi/plugin-i18n": "4.4.1",
+    "@strapi/plugin-seo": "^1.7.5",
+    "@strapi/plugin-users-permissions": "4.4.1",
+    "@strapi/provider-upload-aws-s3": "^4.5.0",
+    "@strapi/strapi": "^4.5.0",
+    "@strapi/typescript-utils": "^4.5.0",
+    "@types/jest": "^29.2.2",
+    "@types/koa": "^2.13.5",
+    "@types/koa-bodyparser": "^4.3.10",
+    "@types/koa-json": "^2.0.20",
+    "@types/koa-logger": "^3.1.2",
+    "@types/koa-router": "^7.4.4",
+    "@types/node": "^18.11.9",
+    "download-file-sync": "^1.0.4",
+    "eslint": "^8.27.0",
+    "jest": "^29.3.0",
+    "node-notifier": "^10.0.1",
+    "pg": "^8.8.0",
+    "supertest": "^6.3.1",
+    "ts-jest": "^29.0.3",
+    "typescript": "4.6.3"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "maintainers": [
+    {
+      "name": "A Strapi developer"
+    }
+  ],
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "scripts": {
+    "develop": "tsc -w",
+    "build": "rm -rf ./dist && tsc",
+    "test": "jest --forceExit --detectOpenHandles"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "bcryptjs": "^2.4.3"
+  }
+}
