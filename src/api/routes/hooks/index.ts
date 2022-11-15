@@ -10,13 +10,19 @@ export default (app) => {
   route.post(
       "/update-medusa",
       bodyParser.json(),
-      middleware.wrap(require("./update-medusa").default),
+      middleware.wrap(require("./controllers/update-medusa").default),
   );
 
   route.post(
       "/seed",
       bodyParser.json(),
-      middleware.wrap(require("./seed").default),
+      middleware.wrap(require("./controllers/seed").default),
+  );
+
+  route.post(
+      "/strapi-ready",
+      bodyParser.json(),
+      middleware.wrap(require("./controllers/strapi-ready").default),
   );
 
   return app;
