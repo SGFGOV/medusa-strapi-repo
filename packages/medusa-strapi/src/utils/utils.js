@@ -1,26 +1,14 @@
-'use strict';
-const chalk = require('chalk');
-
-module.exports = {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
-  register(/*{ strapi }*/) {},
-
-  /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
-   */
-  async bootstrap({ strapi }) {
-
+async function hasSuperUser(strapi) {
+    strapi.log.debug(`Checking if Superuser exists`)
+    const superAdminRole = await strapi.service('admin::user').exists();
+    return superAdminRole?true:false
+  }
+  
+  async function createSuperUser(strapi) {
+    strapi.log.warn("No SuperUser found. Creating Superuser now....")
+   
     try {
- 
+   
       const params = {
         username: process.env.SUPERUSER_USERNAME || "SuperUser",
         password: process.env.SUPERUSER_PASSWORD || "MedusaStrapi1",
@@ -34,14 +22,13 @@ module.exports = {
           const hasAdmin = await strapi.service('admin::user').exists();
   
           if (hasAdmin) {
-            console.log(chalk.bold("Found super admin user"))
+            return;
           }
-          else{
-          
-            const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
+  
+          const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
   
           if (!superAdminRole) {
-            strapi.log.info("Superuser role exists")
+            strapi.log.info("Superuser account exists")
             return;
           }
   
@@ -57,18 +44,13 @@ module.exports = {
           });
       
           strapi.log.info("Superuser account created")
-        }}
-        catch(err)
-        {
-          console.log(err)
-        }
       
-        try {
-          console.log(chalk.bold("bootstrap completed"))
-        } catch (error) {
-          console.log(error);
-        }
-  },
-
+    } catch (error) {
+      console.error(error)
+    }
+  }
   
-};
+module.exports={
+  hasSuperUser,
+  createSuperUser
+}

@@ -3,8 +3,7 @@ const { HttpRequest } = require('@aws-sdk/protocol-http')
   ; const { defaultProvider } = require("@aws-sdk/credential-provider-node")
   ; const { Hash } = require('@aws-sdk/hash-node')
   ; const { formatUrl } = require('@aws-sdk/util-format-url');
-const { connection } = require('mongoose');
-const { env } = require('process');
+
 
 
 
@@ -101,9 +100,7 @@ function DatabaseConfiguration({ env }) {
     }
     return undefined
   };
-  let token = undefined
-  if(process.env.AWS_ENABLED)
-    {token =getToken()}
+
   
 
   const awsConnection = {
