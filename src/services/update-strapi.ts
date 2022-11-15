@@ -69,6 +69,7 @@ class UpdateStrapiService extends BaseService {
   logger: Logger;
   isHealthy: boolean;
   strapiDefaultUserId: any;
+  isStarted: boolean;
   constructor(
       {
         regionService,
@@ -99,10 +100,20 @@ class UpdateStrapiService extends BaseService {
     this.options_.strapi_public_key;
     this.strapiDefaultMedusaUserAuthToken = "";
     this.isHealthy = false;
-    this.checkStrapiHealth().then((res) => {
+    this.checkStrapiHealth().then(async (res) => {
       if (res) {
-        this.logger.info("Strapi Health Check Ok");
         this.isHealthy = res;
+        let startupStatus;
+        try {
+          const startUpResult = (await this.startInterface());
+          startupStatus = startUpResult.status<300;
+        } catch (error) {
+          this.logger.error(error.message);
+        }
+
+        if (!startupStatus) {
+          throw new Error("strapi startup error");
+        }
       }
     });
 
@@ -110,7 +121,7 @@ class UpdateStrapiService extends BaseService {
     this.redis_ = redisClient;
   }
 
-  async startInterface():Promise<AxiosResponse|Error> {
+  async startInterface():Promise<AxiosResponse> {
     try {
       const result = await this.intializeServer();
       this.logger.info("Successfully Bootstrapped the strapi server");
@@ -118,7 +129,7 @@ class UpdateStrapiService extends BaseService {
     } catch (e) {
       this.logger.error(`Unable to  bootstrap the strapi server, 
         please check configuration , ${e}`);
-      return e;
+      throw e;
     }
   }
 
