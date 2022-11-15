@@ -114,3 +114,4 @@ build
 .strapi-updater.json
 .vscode
 dist
+*.tgz

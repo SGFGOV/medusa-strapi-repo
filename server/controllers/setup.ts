@@ -15,6 +15,6 @@ export default {
     ctx.body = strapi
       .plugin('strapi-plugin-medusajs')
       .service('setup')
-      .synchroniseWithMedusa(ctx)
+      .synchroniseWithMedusa({strapi})
   },
 };
