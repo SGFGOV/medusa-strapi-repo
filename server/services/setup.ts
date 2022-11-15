@@ -187,7 +187,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     //await strapi.services["api::store.store"].bootstrap(stores)
 
     strapi.log.info("SYNC FINISHED")
-    const result = await (await axios.post(strapiReadyHook,{},{})).status == 200
+    const result = (await axios.post(strapiReadyHook,{},{})).status == 200
     return result
   } catch (e) {
     // console.log(e);
