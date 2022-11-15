@@ -150,6 +150,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     // return;
     const medusaServer = `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}`
     const medusaSeedHookUrl =  `${medusaServer}/hooks/seed`
+    const strapiReadyHook =  `${medusaServer}/hooks/strapi-ready`
 
     let medusaReady = false;
     while(!medusaReady)
@@ -186,8 +187,8 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     //await strapi.services["api::store.store"].bootstrap(stores)
 
     strapi.log.info("SYNC FINISHED")
-
-    return true
+    const result = await (await axios.post(strapiReadyHook,{},{})).status == 200
+    return result
   } catch (e) {
     // console.log(e);
      
