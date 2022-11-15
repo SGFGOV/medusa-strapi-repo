@@ -113,3 +113,5 @@ exports
 build
 .strapi-updater.json
 .vscode
+dist
+./src/plugins/**/*
