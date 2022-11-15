@@ -12,4 +12,4 @@ This plugin decouples bootstrapping and configuration, allowing you greate flexi
 On medusa you need to install the medusa-plugin-strapi @ sgftech/medusa-plugin-strapi, and follow the setup instructions here[https://docs.medusajs.com/add-plugins/strapi/]
 
 On strap in you need to install the strapi-plugin-medusajs
-You don't need to create an admin user, the plugin will create a default admin user for you. You can configure the admin like any other plugin, via environment variables. 
+You don't need to create an admin user, the plugin will create a default admin user for you if you don't have one already. You can configure the admin like any other plugin, via environment variables. 
