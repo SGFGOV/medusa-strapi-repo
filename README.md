@@ -13,11 +13,15 @@
 
 # Getting started
 
+you need to install the strap-plugin-medusajs and enable it in strapi. 
+
 Installation
 
 ```bash
-git clone git@github.com:adrien2p/medusa-plugin-starter-ts.git
+yarn add medusa-plugin-strapi-ts
 ```
+
+
 
 # Usage
 

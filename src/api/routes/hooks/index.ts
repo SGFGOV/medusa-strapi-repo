@@ -1,23 +1,23 @@
-import { Router } from "express"
-import bodyParser from "body-parser"
-import middlewares from "../../middlewares"
+import { Router } from "express";
+import bodyParser from "body-parser";
+import middleware from "../../middleware";
 
-const route = Router()
+const route = Router();
 
 export default (app) => {
-  app.use("/hooks", route)
+  app.use("/hooks", route);
 
   route.post(
-    "/update-medusa",
-    bodyParser.json(),
-    middlewares.wrap(require("./update-medusa").default)
-  )
+      "/update-medusa",
+      bodyParser.json(),
+      middleware.wrap(require("./update-medusa").default),
+  );
 
   route.post(
-    "/seed",
-    bodyParser.json(),
-    middlewares.wrap(require("./seed").default)
-  )
+      "/seed",
+      bodyParser.json(),
+      middleware.wrap(require("./seed").default),
+  );
 
-  return app
-}
+  return app;
+};

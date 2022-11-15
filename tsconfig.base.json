@@ -3,6 +3,7 @@
     "lib": ["es5", "es6"],
     "target": "esnext",
     "esModuleInterop": true,
+    "allowJs":true,
     "module": "commonjs",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,

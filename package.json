@@ -1,12 +1,12 @@
 {
-  "name": "medusa-plugin-starter-ts",
-  "version": "1.0.0",
-  "description": "A plugin starter for medusa using typescript and pre-configured",
+  "name": "medusa-plugin-strapi-ts",
+  "version": "1.0.10",
+  "description": "A plugin for medusa to use strapi in the backend as the cms in typescript",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adrien2p/medusa-plugin-starter-ts"
+    "url": "https://github.com/SGFGOV/medusa-plugin-strapi-ts"
   },
   "keywords": [
     "medusa",
@@ -17,10 +17,10 @@
     "ecommerce",
     "e-commerce"
   ],
-  "author": "Adrien de Peretti <adrien.deperetti@gmail.com>",
+  "author": "Govind Diwakar <govind.diwakar@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "clean": "./node_modules/.bin/rimraf services/ models/ migrations/ api/ subscribers/ index.js index.map.js",
+    "clean": "./node_modules/.bin/rimraf services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
     "test": "jest"
@@ -30,9 +30,18 @@
     "@types/express": "^4.17.14",
     "@types/jest": "^27.4.0",
     "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
     "axios-mock-adapter": "^1.21.2",
+    "babel-preset-medusa-package": "^1.1.13",
+    "commitizen": "^4.2.4",
     "cross-env": "^7.0.3",
+    "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.8.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-file-progress": "^1.3.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "jest": "^27.5.0",
     "medusa-interfaces": "1.x",
     "mongoose": "^6.2.0",
@@ -47,6 +56,9 @@
     "medusa-interfaces": "latest"
   },
   "dependencies": {
+    "@strapi/plugin-users-permissions": "^4.5.0",
+    "@types/bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",

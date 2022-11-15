@@ -1,31 +1,31 @@
 export default async (req, res) => {
   try {
-    const manager = req.scope.resolve("manager")
-    const productService = req.scope.resolve("productService")
-      const regionService = req.scope.resolve("regionService")
-    const paymentProviderService = req.scope.resolve("paymentProviderService")
+    const manager = req.scope.resolve("manager");
+    const productService = req.scope.resolve("productService");
+    const regionService = req.scope.resolve("regionService");
+    const paymentProviderService = req.scope.resolve("paymentProviderService");
     const fulfillmentProviderService = req.scope.resolve(
-      "fulfillmentProviderService"
-    )
-    const shippingProfileService = req.scope.resolve("shippingProfileService")
-    const shippingOptionService = req.scope.resolve("shippingOptionService")
-    const regionRepository = req.scope.resolve("regionRepository")
+        "fulfillmentProviderService",
+    );
+    const shippingProfileService = req.scope.resolve("shippingProfileService");
+    const shippingOptionService = req.scope.resolve("shippingOptionService");
+    const regionRepository = req.scope.resolve("regionRepository");
     const shippingProfileRepository = req.scope.resolve(
-      "shippingProfileRepository"
-    )
+        "shippingProfileRepository",
+    );
     const shippingOptionRepository = req.scope.resolve(
-      "shippingOptionRepository"
-    )
-    const allProductsCount = await productService.count()
-    const allRegionCount = await getCount(manager, regionRepository)
+        "shippingOptionRepository",
+    );
+    const allProductsCount = await productService.count();
+    const allRegionCount = await getCount(manager, regionRepository);
     const allShippingProfileCount = await getCount(
-      manager,
-      shippingProfileRepository
-    )
+        manager,
+        shippingProfileRepository,
+    );
     const allShippingOptionCount = await getCount(
-      manager,
-      shippingOptionRepository
-    )
+        manager,
+        shippingOptionRepository,
+    );
 
     const productFields = [
       "id",
@@ -45,9 +45,9 @@ export default async (req, res) => {
       "mid_code",
       "material",
       "metadata",
-    ]
-    const regionFields = ["id", "name", "tax_rate", "tax_code", "metadata"]
-    const shippingProfileFields = ["id", "name", "type", "metadata"]
+    ];
+    const regionFields = ["id", "name", "tax_rate", "tax_code", "metadata"];
+    const shippingProfileFields = ["id", "name", "type", "metadata"];
     const shippingOptionFields = [
       "id",
       "name",
@@ -57,7 +57,7 @@ export default async (req, res) => {
       "admin_only",
       "data",
       "metadata",
-    ]
+    ];
 
     const productRelations = [
       "variants",
@@ -69,13 +69,13 @@ export default async (req, res) => {
       "type",
       "collection",
       "profile",
-    ]
+    ];
     const regionRelations = [
       "countries",
       "payment_providers",
       "fulfillment_providers",
       "currency",
-    ]
+    ];
     const shippingProfileRelations = [
       "products",
       "shipping_options",
@@ -87,7 +87,7 @@ export default async (req, res) => {
       "shipping_options.region.payment_providers",
       "shipping_options.region.fulfillment_providers",
       "shipping_options.region.currency",
-    ]
+    ];
     const shippingOptionRelations = [
       "region",
       "region.countries",
@@ -99,7 +99,7 @@ export default async (req, res) => {
       "profile.shipping_options",
       "requirements",
       "provider",
-    ]
+    ];
 
     // Fetching all entries at once. Can be optimized
     const productListConfig = {
@@ -107,38 +107,38 @@ export default async (req, res) => {
       take: allProductsCount,
       select: productFields,
       relations: productRelations,
-    }
+    };
     const regionListConfig = {
       skip: 0,
       take: allRegionCount,
       select: regionFields,
       relations: regionRelations,
-    }
+    };
     const shippingOptionsConfig = {
       skip: 0,
       take: allShippingOptionCount,
       select: shippingOptionFields,
       relations: shippingOptionRelations,
-    }
+    };
     const shippingProfileConfig = {
       skip: 0,
       take: allShippingProfileCount,
       select: shippingProfileFields,
       relations: shippingProfileRelations,
-    }
+    };
 
-    const allRegions = await regionService.list({}, regionListConfig)
-    const allProducts = await productService.list({}, productListConfig)
-    const allPaymentProviders = await paymentProviderService.list()
-    const allFulfillmentProviders = await fulfillmentProviderService.list()
+    const allRegions = await regionService.list({}, regionListConfig);
+    const allProducts = await productService.list({}, productListConfig);
+    const allPaymentProviders = await paymentProviderService.list();
+    const allFulfillmentProviders = await fulfillmentProviderService.list();
     const allShippingOptions = await shippingOptionService.list(
-      {},
-      shippingOptionsConfig
-    )
+        {},
+        shippingOptionsConfig,
+    );
     const allShippingProfiles = await shippingProfileService.list(
-      {},
-      shippingProfileConfig
-    )
+        {},
+        shippingProfileConfig,
+    );
 
     const response = {
       products: allProducts,
@@ -147,13 +147,13 @@ export default async (req, res) => {
       fulfillmentProviders: allFulfillmentProviders,
       shippingOptions: allShippingOptions,
       shippingProfiles: allShippingProfiles,
-    }
+    };
 
-    res.status(200).send(response)
+    res.status(200).send(response);
   } catch (error) {
-    res.status(400).send(`Webhook error: ${error.message}`)
+    res.status(400).send(`Webhook error: ${error.message}`);
   }
-}
+};
 
 // eslint-disable-next-line valid-jsdoc
 /**
@@ -161,6 +161,6 @@ export default async (req, res) => {
  * @return {*}
  */
 function getCount(manager, repository) {
-  const customRepository = manager.getCustomRepository(repository)
-  return customRepository.count()
+  const customRepository = manager.getCustomRepository(repository);
+  return customRepository.count();
 }

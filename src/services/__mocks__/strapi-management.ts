@@ -1,9 +1,9 @@
-import {jest} from '@jest/globals'
+import { jest } from "@jest/globals";
 
-export const createClient = jest.fn()
+export const createClient = jest.fn();
 
 const mock = jest.fn().mockImplementation(() => {
-  return { createClient }
-})
+  return { createClient };
+});
 
-export default mock
+export default mock;

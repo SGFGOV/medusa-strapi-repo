@@ -15,6 +15,7 @@ models/
 subscribers/
 migrations/
 loaders/
+utils/
 index.*
 
 !src/**
@@ -128,3 +129,4 @@ dist
 
 # TernJS port file
 .tern-port
+*.tgz
