@@ -70,7 +70,6 @@ describe("StrapiService", () => {
   beforeEach(() => {
     disableMocks();
     jest.clearAllMocks();
-    service.strapiDefaultMedusaUserAuthToken="";
   });
 
   describe("health check", ()=>{
@@ -81,7 +80,7 @@ describe("StrapiService", () => {
   });
 
   describe("create or register admin", ()=>{
-    it("register or login admin", async ()=>{
+  it("register or login admin", async ()=>{
       await service.registerOrLoginAdmin();
       expect(service.strapiAdminAuthToken).toBeDefined();
       expect(service.strapiAdminAuthToken.length).toBeGreaterThan(0);
@@ -94,10 +93,8 @@ describe("StrapiService", () => {
     it("register or login default medusa user", async () => {
       const response = await service.registerOrLoginDefaultMedusaUser();
       console.log(service.strapiDefaultUserId);
-      expect(service.strapiDefaultMedusaUserAuthToken).toBeDefined();
-      expect(service.strapiDefaultMedusaUserAuthToken.length).
-          toBeGreaterThan(0);
       expect(response.data.user.id).toBeDefined();
+      expect(response.data.user.id).toBeGreaterThan(0);
     }, 30000);
     it("delete medusa user", async () => {
       await service.deleteDefaultMedusaUser();
@@ -105,6 +102,7 @@ describe("StrapiService", () => {
     }, 30000);
     it("medusa sync check", async () =>{
       const result = await service.startInterface() as AxiosResponse;
+      console.log(result);
       expect(result.status).toBeGreaterThanOrEqual(200);
       expect(result.status).toBeLessThan(300);
     });
