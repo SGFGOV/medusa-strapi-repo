@@ -154,11 +154,13 @@ export default async({ strapi }: { strapi: Strapi }):Promise<void> => {
       
     }
     medusaRoleId = await createMedusaRole(permissions)
-    console.info(chalk.green("Medusa plugin successfully started"))
+    
   } catch (e) {
     console.info(chalk.yellowBright("Medusa plugin error "+(e as Error).message))
   }
-}}
+}
+console.info(chalk.green("Medusa plugin successfully started"))
+}
 catch(e)
 {
   console.info(chalk.redBright("Medusa plugin error "+(e as Error).message))

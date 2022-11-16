@@ -1,7 +1,8 @@
 {
   "name": "strapi-plugin-medusajs",
-  "version": "1.2.1",
+  "version": "1.2.9-alpha-4",
   "description": "This is the description of the plugin.",
+  "main": "dist/server/index.js",
   "strapi": {
     "name": "strapi-plugin-medusajs",
     "description": "Description of strapi-plugin-medusajs plugin",
@@ -10,7 +11,8 @@
   "repository": "https://github.com/SGFGOV/strapi-plugin-medusajs.git",
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@aws-sdk/credential-provider-node": "^3.100.0",
@@ -26,6 +28,7 @@
     "@strapi/strapi": "^4.5.0",
     "@strapi/typescript-utils": "^4.5.0",
     "@types/jest": "^29.2.2",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/koa": "^2.13.5",
     "@types/koa-bodyparser": "^4.3.10",
     "@types/koa-json": "^2.0.20",
@@ -61,5 +64,6 @@
   "license": "MIT",
   "peerDependencies": {
     "bcryptjs": "^2.4.3"
-  }
+  },
+  "files": [ "dist", "*.js","package.json","tsconfig.json","admin" ]
 }

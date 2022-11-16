@@ -1,6 +1,7 @@
 import { Strapi } from "@strapi/strapi";
 import {default as axios} from "axios"
 import _ from "lodash";
+import * as jwt from "jsonwebtoken"
 
 let strapi;
 
@@ -133,7 +134,7 @@ if (user && user.id) {
   strapi.log.info(
     `User ${params.username} ${params.email} created successfully with id ${user.id}`
   )
-  return user.id
+  return user
 } else {
   strapi.log.error(`Failed to create user  ${params.username} ${params.email} `)
   return false
@@ -141,8 +142,42 @@ if (user && user.id) {
 }catch (error)
 {
   strapi.log.error((error as Error).message);
-  throw error
+  return false
 }
+}
+
+export interface strapiSignal {
+
+  message:string;
+  code:number;
+  data:any;
+
+}
+
+export async function sendSignalToMedusa(message:string="Ok",code:number=200,data?:any)
+{
+  const medusaServer = `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}`
+  const strapiSignalHook =  `${medusaServer}/hooks/strapi-signal`
+  let medusaReady = false;
+  const messageData = {
+    message,
+    code,
+    data
+  }
+  while(!medusaReady)
+    {
+        const response = await axios.head(`${medusaServer}/health`)
+        medusaReady =  response.status< 300 ? true:false;
+    }
+  try{
+    const signedMessage = jwt.sign(messageData,process.env.MEDUSA_STRAPI_SECRET||"no-secret")
+    return await axios.post(strapiSignalHook,{signedMessage:signedMessage})
+  }
+  catch(error)
+  {
+    strapi.log.error("unable to send message to medusa server")
+  }
+
 }
 
 export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
@@ -150,7 +185,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     // return;
     const medusaServer = `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}`
     const medusaSeedHookUrl =  `${medusaServer}/hooks/seed`
-    const strapiReadyHook =  `${medusaServer}/hooks/strapi-ready`
+    
 
     let medusaReady = false;
     while(!medusaReady)
@@ -187,7 +222,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     //await strapi.services["api::store.store"].bootstrap(stores)
 
     strapi.log.info("SYNC FINISHED")
-    const result = (await axios.post(strapiReadyHook,{},{})).status == 200
+    const result  =  (await sendSignalToMedusa("SYNC COMPLETED")).status == 200
     return result
   } catch (e) {
     // console.log(e);
