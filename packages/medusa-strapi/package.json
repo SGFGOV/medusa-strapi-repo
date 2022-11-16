@@ -32,6 +32,7 @@
     "pg": "8.6.0",
     "sentry": "^0.1.2",
     "strapi-middleware-cache": "^2.1.8",
+    "strapi-plugin-medusajs": "^1.2.9-alpha-3",
     "style-loader": "^3.3.1",
     "yarn": "^1.22.19"
   },
