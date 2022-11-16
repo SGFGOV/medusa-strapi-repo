@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "money_amounts",
+  "info": {
+    "singularName": "money-amount",
+    "pluralName": "money-amounts",
+    "displayName": "Money Amount",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "amount": {
+      "type": "biginteger",
+      "required": true
+    },
+    "sale_amount": {
+      "type": "biginteger"
+    },
+    "product_variant": {
+      "via": "money_amounts",
+      "model": "product-variant"
+    }
+  }
+}

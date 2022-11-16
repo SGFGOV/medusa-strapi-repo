@@ -1,13 +1,21 @@
-module.exports = 
+
 
 module.exports = ({ env }) => ({
   settings: {
+    parser: {
+      enabled:"true",
+      formLimit: '50mb',
+      jsonLimit: '50mb',
+      formidable: {
+          maxFileSize: 50 * 1024 * 1024, // 50MB
+      },
+  },
     cache: {
       enabled: true,
       type: 'redis',
       maxAge: 2600000,
       models: ['product','product-collection','product-type','country'],
-      redisConfig: process.env.AWS_ENABLED?{
+      redisConfig: process.env.AWS_ENABLED=="true"?{
         host: process.env.AWS_REDIS_HOST,
         port: process.env.AWS_REDIS_PORT,
        
@@ -25,7 +33,12 @@ module.exports = ({ env }) => ({
   'strapi::errors',
   'strapi::security',
   'strapi::cors',
-  'strapi::poweredBy',
+  {
+    name: 'strapi::poweredBy',
+    config: {
+      poweredBy: 'SGF Tech'
+    },
+  },
   'strapi::logger',
   'strapi::query',
   'strapi::body',

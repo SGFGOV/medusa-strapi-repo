@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "images",
+  "info": {
+    "singularName": "image",
+    "pluralName": "images",
+    "displayName": "Image",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "products": {
+      "via": "images",
+      "collection": "product"
+    }
+  }
+}

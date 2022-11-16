@@ -1,4 +1,5 @@
 'use strict';
+const chalk = require('chalk');
 
 module.exports = {
   /**
@@ -33,14 +34,14 @@ module.exports = {
           const hasAdmin = await strapi.service('admin::user').exists();
   
           if (hasAdmin) {
-            console.log("found admin")
+            console.log(chalk.bold("Found super admin user"))
           }
           else{
           
             const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
   
           if (!superAdminRole) {
-            strapi.log.info("Superuser account exists")
+            strapi.log.info("Superuser role exists")
             return;
           }
   
@@ -63,10 +64,7 @@ module.exports = {
         }
       
         try {
-          console.log("attempting to bootstrap")
-          const bootstrap = (await import('./bootstrap.js')).default(strapi)
-          
-
+          console.log(chalk.bold("bootstrap completed"))
         } catch (error) {
           console.log(error);
         }

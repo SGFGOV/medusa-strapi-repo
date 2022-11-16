@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "payment_providers",
+  "info": {
+    "singularName": "payment-provider",
+    "pluralName": "payment-providers",
+    "displayName": "Payment Provider",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "is_installed": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "regions": {
+      "via": "payment_providers",
+      "collection": "region"
+    }
+  }
+}

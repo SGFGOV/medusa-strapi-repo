@@ -112,3 +112,6 @@ exports
 *.cache
 build
 .strapi-updater.json
+.vscode
+dist
+./src/plugins/**/*

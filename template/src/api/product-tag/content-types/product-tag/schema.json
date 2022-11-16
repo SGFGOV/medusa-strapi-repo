@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_tags",
+  "info": {
+    "singularName": "product-tag",
+    "pluralName": "product-tags",
+    "displayName": "Product Tag",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "value": {
+      "type": "string",
+      "required": true
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "products": {
+      "via": "product_tags",
+      "collection": "product"
+    }
+  }
+}
