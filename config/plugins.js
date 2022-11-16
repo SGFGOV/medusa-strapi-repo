@@ -8,7 +8,6 @@ module.exports = ({ env }) => ({
       // ...
       'strapi-plugin-medusajs': {
         enabled: true,
-        resolve: './src/plugins/strapi-plugin-medusajs'
       },
       'users-permissions': {
         config: {
