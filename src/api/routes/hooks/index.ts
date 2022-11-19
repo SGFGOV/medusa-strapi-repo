@@ -1,29 +1,43 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import bodyParser from "body-parser";
 import middleware from "../../middleware";
+import { Logger } from "@medusajs/medusa/dist/types/global";
+import { EventBusService } from "@medusajs/medusa";
 
-const route = Router();
+const hooksRouter = Router();
+const updateMedusa = require("../controllers/update-medusa").default;
+const seed = require("../controllers/seed").default;
+const strapiSignal = require("../controllers/strapi-signal").default;
 
-export default (app) => {
-  app.use("/hooks", route);
 
-  route.post(
-      "/update-medusa",
-      bodyParser.json(),
-      middleware.wrap(require("./controllers/update-medusa").default),
-  );
+hooksRouter.use(async (req:Request, res:Response, next) => {
+  const logger = req.scope.resolve("logger") as Logger;
+  const eventBus = req.scope.resolve("eventBusService") as EventBusService;
+  if (logger) {
+    logger.info(`Received ${req.method} ${req.url} from ${req.ip}`);
+  }
+  await eventBus.emit("strapi.hook.fired", req.body);
+  next();
+});
 
-  route.post(
-      "/seed",
-      bodyParser.json(),
-      middleware.wrap(require("./controllers/seed").default),
-  );
 
-  route.post(
-      "/strapi-ready",
-      bodyParser.json(),
-      middleware.wrap(require("./controllers/strapi-ready").default),
-  );
+hooksRouter.post(
+    "/update-medusa",
+    bodyParser.json(),
+    middleware.wrap(updateMedusa),
+);
 
-  return app;
-};
+hooksRouter.post(
+    "/seed",
+    bodyParser.json(),
+    middleware.wrap(seed),
+);
+
+hooksRouter.post(
+    "/strapi-signal",
+    bodyParser.json(),
+    middleware.wrap(strapiSignal),
+);
+
+
+export default hooksRouter;

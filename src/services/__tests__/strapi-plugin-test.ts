@@ -80,7 +80,7 @@ describe("StrapiService", () => {
   });
 
   describe("create or register admin", ()=>{
-  it("register or login admin", async ()=>{
+    /* it("register or login admin", async ()=>{
       await service.registerOrLoginAdmin();
       expect(service.strapiAdminAuthToken).toBeDefined();
       expect(service.strapiAdminAuthToken.length).toBeGreaterThan(0);
@@ -88,17 +88,21 @@ describe("StrapiService", () => {
     it("check if default role exists", async ()=>{
       const roleId = await service.getAuthorRoleId();
       expect(roleId).toBeGreaterThan(0);
-    });
+    });*/
 
-    it("register or login default medusa user", async () => {
+    /* it("register or login default medusa user", async () => {
+
       const response = await service.registerOrLoginDefaultMedusaUser();
       console.log(service.strapiDefaultUserId);
       expect(response.data.user.id).toBeDefined();
       expect(response.data.user.id).toBeGreaterThan(0);
-    }, 30000);
+    }, 30000);*/
     it("delete medusa user", async () => {
+      const response = await service.registerOrLoginDefaultMedusaUser();
+
       await service.deleteDefaultMedusaUser();
-      expect(service.loginAsDefaultMedusaUser()).toThrow();
+      const result = await service.loginAsDefaultMedusaUser();
+      expect(result).toBeUndefined();
     }, 30000);
     it("medusa sync check", async () =>{
       const result = await service.startInterface() as AxiosResponse;
@@ -109,16 +113,16 @@ describe("StrapiService", () => {
   });
 
 
-  /* describe("create product in strapi", () => {
-  const spy = jest.spyOn(service, "getType");
-  it("Calls entry.unpublish and entry.archive", async () => {
-    const result = await service.createProductInStrapi( "exists" );
-    expect(result).toBeDefined();
+  describe("create product in strapi", () => {
+    const spy = jest.spyOn(service, "getType");
+    it("Calls entry.unpublish and entry.archive", async () => {
+      const result = await service.createProductInStrapi( "exists" );
+      expect(result).toBeDefined();
 
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
 
-  /* it("Doesn't call entry.unpublish and entry.archive
+    /* it("Doesn't call entry.unpublish and entry.archive
     if the product still exists in medusa", async () => {
         await service.createProductInStrapi("exists")
 
@@ -135,7 +139,7 @@ describe("StrapiService", () => {
         expect(entry.archive).toHaveBeenCalledTimes(0)
       })*/
 
-/*
+    /*
     describe("archiveProductVariantInStrapi", () => {
       it("Calls entry.unpublish and entry.archive", async () => {
         await service.archiveProductVariantInStrapi({ id: "test" })
@@ -201,6 +205,6 @@ describe("StrapiService", () => {
         expect(entry.unpublish).toHaveBeenCalledTimes(0)
         expect(entry.archive).toHaveBeenCalledTimes(0)
       })
-    })
-  })*/
+    })*/
+  });
 });
