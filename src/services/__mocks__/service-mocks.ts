@@ -25,7 +25,7 @@ export const storeService = {
 export const productService = {
   retrieve: jest.fn((id) => {
     if (id === "exists") {
-      return Promise.resolve({ id: "exists", type:"dummy" });
+      return Promise.resolve({ id: "exists", type: "dummy" });
     }
     return Promise.resolve(undefined);
   }),

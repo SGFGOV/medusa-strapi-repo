@@ -235,10 +235,9 @@ class UpdateStrapiService extends BaseService {
       });
 
       if (product) {
-
-        const result =  await this.createEntryInStrapi("products", productId, product);
+        const result = await this.
+            createEntryInStrapi("products", productId, product);
         return result;
-
       }
     } catch (error) {
       throw error;
