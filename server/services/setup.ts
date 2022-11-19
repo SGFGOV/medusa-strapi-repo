@@ -15,9 +15,12 @@ export async function hasMedusaRole():Promise<number|boolean> {
   strapi.log.debug('Checking if "Medusa" role exists')
   try{
   const result =  await strapi
-    .query("plugin::users-permissions.role").findOne({ type: "Medusa" }) /** all users created via medusa will be medusas */
-     strapi.log.info('Found role named Medusa')
+    .query("plugin::users-permissions.role").findOne({where:{ name: "Medusa" }}) /** all users created via medusa will be medusas */
+    if(result) {
+    strapi.log.info('Found role named Medusa')
         return result.id
+    }
+    return false;
   }
   catch(e)
   {
@@ -29,7 +32,7 @@ export async function hasMedusaRole():Promise<number|boolean> {
 export function enabledCrudOnModels(controllers): void {
   
   Object.keys(controllers).forEach((key) => {
-    strapi.logger.info(`Enabling CRUD permission on model "${key}" for role "Medusa"`)
+    strapi.log.info(`Enabling CRUD permission on model "${key}" for role "Medusa"`)
     Object.keys(controllers[key]).forEach((action) => {
       controllers[key][action].enabled = true
     })

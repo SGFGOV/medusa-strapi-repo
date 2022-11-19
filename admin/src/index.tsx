@@ -1,5 +1,5 @@
 import React from 'react';
-import { prefixPluginTranslations } from '@strapi/helper-plugin';
+import  {prefixPluginTranslations}  from '@strapi/helper-plugin/build/index';
 import pluginPkg from '../../package.json';
 import pluginId from './pluginId';
 import Initializer from './components/Initializer';

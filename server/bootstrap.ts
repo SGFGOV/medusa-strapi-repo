@@ -1,6 +1,7 @@
 import { Strapi } from '@strapi/strapi';
 import { config, createMedusaRole, deleteAllEntries, enabledCrudOnModels, hasMedusaRole } from './services/setup';
 import chalk from 'chalk'
+import { Service } from '@strapi/strapi/lib/core-api/service';
 
 /**
  * An asynchronous bootstrap function that runs before
@@ -41,11 +42,19 @@ async function createSuperUser():Promise<void> {
           return;
         }
 
-        const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
+        let superAdminRoleService = strapi.service('admin::role');
+        let superAdminRole = await superAdminRoleService.getSuperAdmin();
 
         if (!superAdminRole) {
-          strapi.log.info("Superuser account exists")
-          return;
+          strapi.log.warn("Superuser role doesn't exist on the server.. Creating super user");
+          superAdminRole = await strapi.db.query("admin::role").create({
+              data: {
+                name: "Super Admin",
+                code: "strapi-super-admin",
+                description:
+                  "Super Admins can access and manage all features and settings.",
+              }
+            });
         }
 
         await strapi.service('admin::user').create({
@@ -63,7 +72,7 @@ async function createSuperUser():Promise<void> {
     
     
   } catch (error) {
-    console.error(error)
+    strapi.log.error(error)
   }
 }
 
@@ -86,43 +95,11 @@ async function isFirstRun(strapi):Promise<boolean> {
   return !initHasRun
 }
 
-// function giveMedusaRoleToMedusaUser(medusaUserId, medusaRoleId) {
-//   await strapi.query('user', 'users-permissions').update({ id: medusaUserId }, { role: medusaRoleId })
-// }
-/*
-async function setupSync(strapi){
-try{
-  const firstRun = await isFirstRun(strapi)
-  console.log("setting up sync with medusa")
 
-
-if (firstRun) {
-  strapi.log.debug(
-    "First run detected! Synchronizing database with Medusa. Please Wait..."
-  )
- const syncMedusa = (await import("./plugins/strapi-plugin-medusajs/server/services/setup.js")).default
-    
-  const isSynced  = await syncMedusa({strapi})
-  if (isSynced) {
-    const pluginStore = strapi.store({
-      environment: strapi.config.environment,
-      type: "type",
-      name: "setup",
-    })
-    await pluginStore.set({ key: "syncHasRun", value: true })
-  }
-}
-}
-catch (e)
-{
-  console.log(e,error)
-}
-
-}*/
-
-export default async({ strapi }: { strapi: Strapi }):Promise<void> => {
+export default async({ strapi }):Promise<void> => {
   
-  console.info(chalk.yellow("Attempting to start medusa plugin"))
+  const userServicePlugin =  strapi.plugins["users-permissions"]
+  strapi.log.info("Attempting to start medusa plugin")
   config(strapi); 
   try {
 
@@ -136,34 +113,33 @@ export default async({ strapi }: { strapi: Strapi }):Promise<void> => {
     let medusaRoleId = await hasMedusaRole()
 
     if (!medusaRoleId) {
-         const userServicePlugin =  strapi.plugins[
-        "users-permissions"
-      ]
+      const userPermissionsService = await userServicePlugin.services["users-permissions"];  
       try{
-      await userServicePlugin.services["users-permissions"].initialize();
+      await  userPermissionsService.initialize();
+      const defaultRole = await userPermissionsService.syncPermissions();
       
-      const permissions = await strapi.plugins[
-        "users-permissions"
-      ].services["users-permissions"].getActions(userServicePlugin)
+      const permissions = await userServicePlugin.services["users-permissions"].getActions(userServicePlugin)
 
       // eslint-disable-next-line guard-for-in
       for (const permission in permissions)
     {
       if(permissions[permission].controllers){
       enabledCrudOnModels(permissions[permission].controllers)}
-      
+  
     }
-    medusaRoleId = await createMedusaRole(permissions)
-    
+    await createMedusaRole(permissions)
+    medusaRoleId = await hasMedusaRole()
   } catch (e) {
-    console.info(chalk.yellowBright("Medusa plugin error "+(e as Error).message))
+    strapi.log.error(chalk.yellowBright("Medusa plugin error "+(e as Error).message))
   }
+    
 }
-console.info(chalk.green("Medusa plugin successfully started"))
+
+strapi.log.info(("Medusa plugin successfully started"))
 }
 catch(e)
 {
-  console.info(chalk.redBright("Medusa plugin error "+(e as Error).message))
+  strapi.log.error(("Medusa plugin error "+(e as Error).message))
 }
   
 };
