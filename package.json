@@ -32,7 +32,7 @@
     "pg": "8.6.0",
     "sentry": "^0.1.2",
     "strapi-middleware-cache": "^2.1.8",
-    "strapi-plugin-medusajs": "^1.2.9-alpha-3",
+    "strapi-plugin-medusajs": "/home/ec2-user/environment/testing/test-store-enhanced/temp/strapi-plugin-medusajs/strapi-plugin-medusajs-1.2.9-alpha-17.tgz",
     "style-loader": "^3.3.1",
     "yarn": "^1.22.19"
   },
@@ -49,9 +49,13 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
+    "babel-loader": "^9.1.0",
     "eslint": "^8.25.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
