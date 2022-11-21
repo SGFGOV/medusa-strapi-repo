@@ -80,7 +80,7 @@ describe("StrapiService", () => {
   });
 
   describe("create or register admin", ()=>{
-    /* it("register or login admin", async ()=>{
+    it("register or login admin", async ()=>{
       await service.registerOrLoginAdmin();
       expect(service.strapiAdminAuthToken).toBeDefined();
       expect(service.strapiAdminAuthToken.length).toBeGreaterThan(0);
@@ -88,15 +88,14 @@ describe("StrapiService", () => {
     it("check if default role exists", async ()=>{
       const roleId = await service.getAuthorRoleId();
       expect(roleId).toBeGreaterThan(0);
-    });*/
+    });
 
-    /* it("register or login default medusa user", async () => {
-
+    it("register or login default medusa user", async () => {
       const response = await service.registerOrLoginDefaultMedusaUser();
       console.log(service.strapiDefaultUserId);
       expect(response.data.user.id).toBeDefined();
       expect(response.data.user.id).toBeGreaterThan(0);
-    }, 30000);*/
+    }, 30000);
     it("delete medusa user", async () => {
       const response = await service.registerOrLoginDefaultMedusaUser();
 

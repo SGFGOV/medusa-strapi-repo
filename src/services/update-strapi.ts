@@ -3,7 +3,9 @@ import axios, { AxiosResponse, Method } from "axios";
 import crypto = require("crypto");
 import { ConfigModule, Logger } from "@medusajs/medusa/dist/types/global";
 import { EventBusService, ProductService,
+
   ProductVariantService, RegionService } from "@medusajs/medusa";
+import { Service } from "medusa-extender";
 import role from
   "@strapi/plugin-users-permissions/server/content-types/role/index";
 
@@ -48,7 +50,7 @@ export type MedusaUserType = {
     blocked: boolean,
     provider?: string,
 };
-
+@Service({ scope: "SINGLETON" })
 class UpdateStrapiService extends BaseService {
   static lastHealthCheckTime = 0;
   productService_: ProductService;
@@ -590,7 +592,7 @@ class UpdateStrapiService extends BaseService {
     const config = {
       url: `${this.strapi_url}/_health`,
     };
-    return (currentTime - UpdateStrapiService.lastHealthCheckTime) > 60000?
+    return (currentTime - UpdateStrapiService.lastHealthCheckTime) > 1800000?
      await this.strapiHealthCheck(config):UpdateStrapiService.isHealthy;
   }
 
@@ -704,9 +706,6 @@ class UpdateStrapiService extends BaseService {
 
   async loginAsStrapiUser(email:string,
       password:string):Promise<AxiosResponse> {
-    if (!await this.checkStrapiHealth()) {
-      return;
-    }
     const authData = {
       identifier: email?? this.options_.strapi_default_user.email,
       password: password??
