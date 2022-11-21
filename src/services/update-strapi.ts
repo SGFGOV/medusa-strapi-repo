@@ -69,7 +69,7 @@ class UpdateStrapiService extends BaseService {
 
   userAdminProfile: any;
   logger: Logger;
-  isHealthy: boolean;
+  static isHealthy: boolean;
   strapiDefaultUserId: any;
   isStarted: boolean;
 
@@ -101,11 +101,11 @@ class UpdateStrapiService extends BaseService {
     this.strapi_url=`${this.protocol??"https"}://${this.options_.strapi_host??"localhost"}:${this.options_.strapi_port??1337}`;
     this.encryption_key = this.options_.strapi_secret||
     this.options_.strapi_public_key;
-    this.isHealthy = false;
+    UpdateStrapiService.isHealthy = false;
     this.userTokens={};
     this.checkStrapiHealth().then(async (res) => {
       if (res) {
-        this.isHealthy = res;
+        UpdateStrapiService.isHealthy = res;
         let startupStatus;
         try {
           const startUpResult = (await this.startInterface());
@@ -570,17 +570,17 @@ class UpdateStrapiService extends BaseService {
     try {
       const response = await axios.head(config.url);
       UpdateStrapiService.lastHealthCheckTime = Date.now();
-      this.isHealthy = response.status == 204 ? true:false;
-      if (this.isHealthy) {
+      UpdateStrapiService.isHealthy = response.status == 204 ? true:false;
+      if (UpdateStrapiService.isHealthy) {
         this.logger.info("Strapi is healthy");
       } else {
         this.logger.info("Strapi is unhealth");
       }
 
-      return this.isHealthy;
+      return UpdateStrapiService.isHealthy;
     } catch (error) {
       this.logger.error("Strapi health check failed");
-      this.isHealthy = false;
+      UpdateStrapiService.isHealthy = false;
       return false;
     }
   }
@@ -591,7 +591,7 @@ class UpdateStrapiService extends BaseService {
       url: `${this.strapi_url}/_health`,
     };
     return (currentTime - UpdateStrapiService.lastHealthCheckTime) > 60000?
-     await this.strapiHealthCheck(config):this.isHealthy;
+     await this.strapiHealthCheck(config):UpdateStrapiService.isHealthy;
   }
 
   encrypt(text:string):any {
