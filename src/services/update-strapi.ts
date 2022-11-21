@@ -86,7 +86,7 @@ class UpdateStrapiService extends BaseService {
   ) {
     super();
 
-    this.logger = logger;
+    this.logger = logger??console;
     this.productService_ = productService;
     this.productVariantService_ = productVariantService;
     this.regionService_ = regionService;
