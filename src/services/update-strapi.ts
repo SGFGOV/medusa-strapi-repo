@@ -1,7 +1,7 @@
 import { BaseService } from "medusa-interfaces";
 import axios, { AxiosResponse, Method } from "axios";
 import crypto = require("crypto");
-import { Logger } from "@medusajs/medusa/dist/types/global";
+import { ConfigModule, Logger } from "@medusajs/medusa/dist/types/global";
 import { EventBusService, ProductService,
   ProductVariantService, RegionService } from "@medusajs/medusa";
 import role from
@@ -50,6 +50,7 @@ export type MedusaUserType = {
 };
 
 class UpdateStrapiService extends BaseService {
+  static lastHealthCheckTime = 0;
   productService_: ProductService;
   productVariantService_: ProductVariantService;
   regionService_: RegionService;
@@ -98,7 +99,6 @@ class UpdateStrapiService extends BaseService {
     this.protocol = this.options_.strapi_protocol;
 
     this.strapi_url=`${this.protocol??"https"}://${this.options_.strapi_host??"localhost"}:${this.options_.strapi_port??1337}`;
-
     this.encryption_key = this.options_.strapi_secret||
     this.options_.strapi_public_key;
     this.isHealthy = false;
@@ -565,25 +565,33 @@ class UpdateStrapiService extends BaseService {
     return result;
   }
 
-  async checkStrapiHealth():Promise<boolean> {
-    const config = {
-      url: `${this.strapi_url}/_health`,
-    };
+  private async strapiHealthCheck(config):Promise<boolean> {
     this.logger.info("Checking strapi Health");
     try {
       const response = await axios.head(config.url);
+      UpdateStrapiService.lastHealthCheckTime = Date.now();
       this.isHealthy = response.status == 204 ? true:false;
       if (this.isHealthy) {
         this.logger.info("Strapi is healthy");
       } else {
         this.logger.info("Strapi is unhealth");
       }
+
       return this.isHealthy;
     } catch (error) {
-      this.logger.error("strapi health check failed");
+      this.logger.error("Strapi health check failed");
       this.isHealthy = false;
       return false;
     }
+  }
+
+  async checkStrapiHealth():Promise<boolean> {
+    const currentTime = Date.now();
+    const config = {
+      url: `${this.strapi_url}/_health`,
+    };
+    return (currentTime - UpdateStrapiService.lastHealthCheckTime) > 60000?
+     await this.strapiHealthCheck(config):this.isHealthy;
   }
 
   encrypt(text:string):any {
