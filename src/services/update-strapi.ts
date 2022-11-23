@@ -717,8 +717,8 @@ class UpdateStrapiService extends BaseService {
       // console.log("login result"+res);
       if (res.data.jwt) {
         this.userTokens[email]=res.data.jwt; /** caching the jwt token */
-        this.logger.info(`\n  ${authData.
-            identifier} successfully logged in to Strapi \n`);
+        this.logger.info(`${authData.identifier} `+
+        "successfully logged in to Strapi");
         return res;
       }
     } catch (error) {
