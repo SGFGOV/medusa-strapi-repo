@@ -7,3 +7,4 @@ coverage
 index.ts
 *.tgz
 tsconfig.tsbuildinfo
+*.log
