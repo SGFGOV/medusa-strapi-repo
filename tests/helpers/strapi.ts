@@ -1,7 +1,5 @@
-import { setPriority } from "os";
-
 const fs = require('fs')
-let instance;
+let instance:any;
 
 const strapi = require('@strapi/strapi')()
 

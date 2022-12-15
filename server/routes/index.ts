@@ -1,5 +1,3 @@
-import sync from "../policies/sync"
-
 const routes =  [
   {
   method: 'POST',

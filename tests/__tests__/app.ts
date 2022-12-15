@@ -7,8 +7,8 @@ const expect = require('@jest/globals').expect;
 */
 
 import  { setupStrapi, cleanupStrapi } from "../helpers/strapi"
-import {config, createMedusaRole, hasMedusaRole} from "../../server/services/setup"
-let strapi;
+import {config, hasMedusaRole} from "../../server/services/setup"
+let strapi:any;
 beforeAll(async () => {
   strapi = await setupStrapi()
   config(strapi);

@@ -1,32 +1,38 @@
 {
-  "extends": "@strapi/typescript-utils/tsconfigs/server",
-
   "compilerOptions": {
+    "rootDir": "./",
     "outDir": "dist",
-    "rootDir": ".",
-    "inlineSourceMap": true,
-    "esModuleInterop": true,
+    "target": "esnext",
+    "module": "commonjs",
+    "jsx": "react",
     "moduleResolution": "node",
-"paths": {
-  "src/*": ["./*"]
-}
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "downlevelIteration": true,
+    "incremental": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-
   "include": [
-    // Include the root directory
-    "server",
-    // Force the JSON files in the src folder to be included
-    "server/**/*.json"
+    "./server/**/*",
+    "./admin/**/*",
+    "./types/**/*",
+    "./strapi-server.*",
+    "./strapi-admin.*",
+    "./setup-package.ts",
+    "./permissions.*"
   ],
-
   "exclude": [
-    "node_modules/",
-    "dist/",
-
-    // Do not include admin files in the server compilation
-    "admin/",
-    // Do not include test files
-    "**/*.test.ts"
-  ],
-
+    "**/node_modules/**/*",
+    "**/dist/**/*",
+    "**/*.test.ts",
+  ]
 }

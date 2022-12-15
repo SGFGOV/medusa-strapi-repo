@@ -2,7 +2,6 @@
 node_modules
 .DS_store
 .env*
-src
 coverage
 index.ts
 tests

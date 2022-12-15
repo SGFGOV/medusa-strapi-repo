@@ -3,14 +3,14 @@ import {default as axios} from "axios"
 import _ from "lodash";
 import * as jwt from "jsonwebtoken"
 
-let strapi;
+let strapi:any;
 
 export function config(myStrapi:Strapi):void
 {
   strapi = myStrapi
 }
 
-export async function hasMedusaRole():Promise<number|boolean> {
+export async function hasMedusaRole():Promise<number|undefined> {
   
   strapi.log.debug('Checking if "Medusa" role exists')
   try{
@@ -20,16 +20,16 @@ export async function hasMedusaRole():Promise<number|boolean> {
     strapi.log.info('Found role named Medusa')
         return result.id
     }
-    return false;
+    return;
   }
   catch(e)
   {
     strapi.log.error('Not Found role named Medusa')
-    return false;
+    return;
   }
 }
 
-export function enabledCrudOnModels(controllers): void {
+export function enabledCrudOnModels(controllers:any): void {
   
   Object.keys(controllers).forEach((key) => {
     strapi.log.info(`Enabling CRUD permission on model "${key}" for role "Medusa"`)
@@ -39,7 +39,7 @@ export function enabledCrudOnModels(controllers): void {
   })
 }
 
-export async function createMedusaRole(permissions):Promise<number> {
+export async function createMedusaRole(permissions:any):Promise<number|undefined> {
   strapi.log.debug('Creating "Medusa" role')
   const role= {
     name: "Medusa",
@@ -57,7 +57,7 @@ const roleCreation = await strapi.plugins[
   }
 }
 
-export async function hasMedusaUser(strapi):Promise<number|boolean>  {
+export async function hasMedusaUser(strapi:Strapi):Promise<number|boolean>  {
   strapi.log.debug('Checking if "medusa_user" exists')
   const user = await strapi.query("plugin::users-permissions.user").findOne({
     username: "medusa_user",
@@ -111,6 +111,7 @@ export interface medusaUserId{
   confirmed: boolean,
   blocked: boolean,
   provider: string,
+  role?:number,
 }
 
 
@@ -183,7 +184,7 @@ export async function sendSignalToMedusa(message:string="Ok",code:number=200,dat
 
 }
 
-export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
+export  async function synchroniseWithMedusa(): Promise<any> {
   try {
     // return;
     const medusaServer = `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"}`
@@ -225,7 +226,7 @@ export  async function synchroniseWithMedusa({ strapi }): Promise<any> {
     //await strapi.services["api::store.store"].bootstrap(stores)
 
     strapi.log.info("SYNC FINISHED")
-    const result  =  (await sendSignalToMedusa("SYNC COMPLETED")).status == 200
+    const result  =  ((await sendSignalToMedusa("SYNC COMPLETED"))?.status) == 200
     return result
   } catch (e) {
     // console.log(e);

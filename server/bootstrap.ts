@@ -1,7 +1,5 @@
-import { Strapi } from '@strapi/strapi';
 import { config, createMedusaRole, deleteAllEntries, enabledCrudOnModels, hasMedusaRole } from './services/setup';
 import chalk from 'chalk'
-import { Service } from '@strapi/strapi/lib/core-api/service';
 
 /**
  * An asynchronous bootstrap function that runs before
@@ -17,7 +15,7 @@ import { Service } from '@strapi/strapi/lib/core-api/service';
 
 async function hasSuperUser():Promise<boolean> {
   strapi.log.debug(`Checking if Superuser exists`)
-  const superAdminRole = await strapi.service('admin::user').exists();
+  const superAdminRole = await strapi.service('admin::user')?.exists();
   return superAdminRole?true:false
 }
 
@@ -36,14 +34,14 @@ async function createSuperUser():Promise<void> {
       isActive: true,
     }
   
-        const hasAdmin = await strapi.service('admin::user').exists();
+        const hasAdmin = await strapi.service('admin::user')?.exists();
 
         if (hasAdmin) {
           return;
         }
 
         let superAdminRoleService = strapi.service('admin::role');
-        let superAdminRole = await superAdminRoleService.getSuperAdmin();
+        let superAdminRole = await superAdminRoleService?.getSuperAdmin();
 
         if (!superAdminRole) {
           strapi.log.warn("Superuser role doesn't exist on the server.. Creating super user");
@@ -56,8 +54,11 @@ async function createSuperUser():Promise<void> {
               }
             });
         }
-
-        await strapi.service('admin::user').create({
+        if(strapi.service('admin::user'))
+      {
+        if( strapi.service('admin::user')?.create){
+        const create = strapi.service('admin::user')?.create!;
+        await create({
           email: params.email,
           firstname: params.firstname,
           username:params.username,
@@ -69,6 +70,8 @@ async function createSuperUser():Promise<void> {
         });
     
         strapi.log.info("Superuser account created")
+      }
+      }
     
     
   } catch (error) {
@@ -81,23 +84,9 @@ async function createSuperUser():Promise<void> {
 
 
 
-async function isFirstRun(strapi):Promise<boolean> {
-  strapi.log.debug("Checking if first run...")
-  const pluginStore = strapi.store({
-    environment: strapi.config.environment,
-    type: "type", 
-    name: "setup",
-  })
-  const initHasRun = await pluginStore.get({ key: "syncHasRun" })
-  if (initHasRun) {
-    strapi.log.info("Not a first run. Skipping Synchronization.")
-  }
-  return !initHasRun
-}
-
-
-export default async({ strapi }):Promise<void> => {
+export default async(StrapiObject:any):Promise<void> => {
   
+  const {strapi} = StrapiObject;
   const userServicePlugin =  strapi.plugins["users-permissions"]
   strapi.log.info("Attempting to start medusa plugin")
   config(strapi); 
@@ -116,7 +105,6 @@ export default async({ strapi }):Promise<void> => {
       const userPermissionsService = await userServicePlugin.services["users-permissions"];  
       try{
       await  userPermissionsService.initialize();
-      const defaultRole = await userPermissionsService.syncPermissions();
       
       const permissions = await userServicePlugin.services["users-permissions"].getActions(userServicePlugin)
 
