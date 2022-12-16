@@ -19,18 +19,18 @@
       "required": true
     },
     "title": {
-      "type": "string",
+      "type": "text",
       "required": true,
       "unique": false
     },
     "subtitle": {
-      "type": "string"
+      "type": "text"
     },
     "description": {
-      "type": "string"
+      "type": "text"
     },
     "handle": {
-      "type": "string"
+      "type": "text"
     },
     "is_giftcard": {
       "type": "boolean",
@@ -81,6 +81,9 @@
       "type": "string"
     },
     "metadata": {
+      "type": "json"
+    },
+    "metafields": {
       "type": "json"
     },
     "product_variants": {
