@@ -58,12 +58,13 @@ module.exports = createCoreService('api::product.product', ({ strapi }) => ({
     strapi.log.debug('Syncing Products...');
     try {
       if (data && data.length) {
-        for (let product of data) {
+        for (let i = 0;i<data.length;i++) {
+          const product = data[i]
           if (!product.medusa_id) {
             product.medusa_id = product.id.toString();
             delete product.id
           }
-
+          strapi.log.debug(`Syncing Products ${i} of ${data.length}...${product.title} `);
           const found = await strapi.db.query('api::product.product').findOne({ 
             where: { medusa_id: product.medusa_id }
            });

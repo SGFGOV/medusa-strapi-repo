@@ -26,7 +26,7 @@ module.exports = createCoreService('api::product-type.product-type', ({ strapi }
       return create.id;
 
     } catch (e) {
-      console.log(e);
+      strapi.log.error(e);
       throw new Error('Delegated creation failed');
     }
   }

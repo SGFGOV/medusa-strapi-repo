@@ -32,7 +32,7 @@
     "pg": "8.6.0",
     "sentry": "^0.1.2",
     "strapi-middleware-cache": "^2.1.8",
-    "strapi-plugin-medusajs": "^1.2.9-alpha-17",
+    "strapi-plugin-medusajs": "/home/ec2-user/environment/testing/test-store-enhanced/temp/strapi-plugin-medusajs/strapi-plugin-medusajs-1.2.9-alpha-19.tgz",
     "style-loader": "^3.3.1",
     "yarn": "^1.22.19"
   },
