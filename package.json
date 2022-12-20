@@ -11,11 +11,12 @@
   "keywords": [
     "medusa",
     "medusajs",
-    "starter",
+    "strapi",
     "typescript",
     "plugin",
     "ecommerce",
-    "e-commerce"
+    "e-commerce",
+    "content management"
   ],
   "author": "Govind Diwakar <govind.diwakar@gmail.com>",
   "license": "MIT",

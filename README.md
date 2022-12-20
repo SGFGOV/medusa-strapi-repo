@@ -1,70 +1,76 @@
-<!--lint disable awesome-list-item-->
-<div align="center">
-  <p align="center">
-    <img alt="Medusa" src="https://uploads-ssl.webflow.com/61fba9f6deac297b7b22017d/62000006ce573a706c92546c_logo.svg" width="200" />
-  </p>
-  <h1>Plugin starter (Typescript)</h1>
-  <p>Start to write your own plugin as quick as possible</p>
-    
-  <a href="https://github.com/adrien2p/awesome-medusajs">
-      <img src="https://awesome.re/badge.svg" alt="Awesome">
-  </a>
-</div>
 
-# Getting started
+# Medusa Plugin Strapi Writtent in TypeScript
 
-you need to install the strap-plugin-medusajs and enable it in strapi. 
+## Getting started
 
-Installation
+Strapi is an amazing headless cms, this plugin helps bridge the medusajsa and strapi. This is based on the medusa-plugin-strapi developed by DeathWish, and additionally implements handshaking between strapi and medusa. 
+
+This plugin hands over control of strapi to Medusa. And medusa is purely used as a content engine. 
+
+## Pre-requisities
+
+You need to install the strapi-plugin-medusajs and enable it in strapi and follow the instructions in its readme file. 
+
+## Installation
 
 ```bash
 yarn add medusa-plugin-strapi-ts
 ```
+## configuration
 
 
-
-# Usage
-
-## Api
-
-### Admin routes
-
-Those routes will automatically be attached by medusa to the `admin` path.
-
-### Store routes
-
-Those routes will automatically be attached by medusa to the `store` path.
-
-### Custom routes
-
-All those routes are added in the main router and you have to manage them.
-
-## Models/Migrations
-
-Those models will be attach to the manager and included into the medusa container.
-The migrations will be applied automatically.
-
-## Subscribers
-
-It acts like a service but its main purpose is to extends core flow depending on the
-events you want to listen to.
-
-## Services
-
-Those services will be automatically added to the medusa container and will be available
-in any other service through the constructor injection.
-
-## Loaders
-
-Those will be applied during the loading and allow you to register custom components
-to the container to be accessible later on.
-
-# Deployment
-
-Once your plugin is done. 
-
-```bash
-npm run build && npm version && npm publish
+You can register the plugin like so
 ```
 
-You can now install it into your project file `medusa-config`.
+{
+            resolve: "medusa-plugin-strapi-ts",
+            options: {
+                ...strapiOptions
+            }
+},
+
+
+```
+
+where the strapiOptions will be like 
+
+```
+const strapiOptions = 
+    {
+        encryption_algorithm: "aes-256-cbc",
+        strapi_protocol: process?.env?.STRAPI_PROTOCOL,
+        strapi_default_user: {
+            username: process?.env?.STRAPI_MEDUSA_USER,
+            password: process?.env?.STRAPI_MEDUSA_PASSWORD,
+            email: process?.env?.STRAPI_MEDUSA_EMAIL,
+            confirmed: true,
+            blocked: false,
+            provider: "local"
+        },
+        strapi_host: process?.env?.STRAPI_SERVER_HOSTNAME,
+        strapi_admin: {
+            username:
+                process?.env?.STRAPI_SUPER_USERNAME ||
+                "SuperUser",
+            password:
+                process?.env?.STRAPI_SUPER_PASSWORD ||
+                "MedusaStrapi1",
+            email:
+                process?.env?.STRAPI_SUPER_USER_EMAIL ||
+                "support@medusa-commerce.com"
+        },
+        strapi_port: process?.env?.STRAPI_PORT,
+        strapi_secret: process?.env?.STRAPI_SECRET,
+        strapi_public_key: process?.env?.STRAPI_PUBLIC_KEY,
+        strapi_ignore_threshold: 3
+    }
+
+```
+
+
+## Usage
+
+
+## Support us 
+
+As much as we love FOSS software, nothing in this world is truely free. We'll be grateful if you can buy our team a coffee (https://www.buymeacoffee.com/uMRqW9NmS9). 
