@@ -34,3 +34,7 @@ then in your strapi project, enable like so
 
 ## Troubleshooting
 You may encounter an error saying maximum length is 255 in which case change the schema type from string to text.
+
+## Support us 
+
+As much as we love FOSS software, nothing in this world is truely free. We'll be grateful if you can buy our team a coffee (https://www.buymeacoffee.com/uMRqW9NmS9). 
