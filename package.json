@@ -1,11 +1,11 @@
 {
   "name": "strapi-plugin-medusajs",
-  "version": "1.2.9-alpha-19",
-  "description": "This is the description of the plugin.",
+  "version": "1.3.7",
+  "description": "This plugin enables handshaking and sync between strapi and medusajs",
   "main": "dist/server/index.js",
   "strapi": {
     "name": "strapi-plugin-medusajs",
-    "description": "Description of strapi-plugin-medusajs plugin",
+    "description": "This plugin enables handshaking and sync between strapi and medusajs",
     "kind": "plugin"
   },
   "repository": "https://github.com/SGFGOV/strapi-plugin-medusajs.git",
@@ -50,11 +50,11 @@
     "webpack": "^5.75.0"
   },
   "author": {
-    "name": "A Strapi developer"
+    "name": "Govind Diwakar<govind.diwakar@gmail.com>"
   },
   "maintainers": [
     {
-      "name": "A Strapi developer"
+      "name": "Govind Diwakar"
     }
   ],
   "engines": {
