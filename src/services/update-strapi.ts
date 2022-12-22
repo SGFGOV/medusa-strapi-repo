@@ -733,10 +733,12 @@ class UpdateStrapiService extends BaseService {
     const response = await this.
         strapiAdminSend("get", "roles");
     // console.log("role:", response);
-    const availableRoles = (response.data.data) as role[];
-    for (const role of availableRoles) {
-      if (role.name == "Author") {
-        return role.id;
+    if (response) {
+      const availableRoles = (response.data.data) as role[];
+      for (const role of availableRoles) {
+        if (role.name == "Author") {
+          return role.id;
+        }
       }
     }
     return -1;
@@ -829,9 +831,9 @@ class UpdateStrapiService extends BaseService {
       this.logger.error("No user Bearer token, check axios request");
       return;
     }
-    if (!await this.checkStrapiHealth()) {
+    /* if (!await this.checkStrapiHealth()) {
       return;
-    }
+    }*/
     let headers = undefined;
     if (this.strapiAdminAuthToken) {
       headers={
