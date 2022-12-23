@@ -173,7 +173,7 @@ export async function createMedusaUser(
                     );
                     if (result) {
                         strapi.log.info(
-                            `Attaching admin author role to ${params.username} ${params.email}`
+                            `Attached admin author role to ${params.username} ${params.email}`
                         );
                     }
                 } catch (e) {
