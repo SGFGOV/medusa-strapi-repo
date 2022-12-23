@@ -138,11 +138,11 @@ export async function createMedusaUser(
     medusaUser: MedusaUserParams
 ): Promise<any> {
     let medusaRole;
-    strapi.logger.info("creating medusa user");
+    strapi.log.info("creating medusa user");
     try {
         medusaRole = await hasMedusaRole();
     } catch (error) {
-        strapi.logger.error(
+        strapi.log.error(
             "medusa role doesn't exist",
             (error as Error).message
         );
