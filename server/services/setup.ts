@@ -134,6 +134,23 @@ export async function deleteAllEntries(): Promise<void> {
     strapi.log.info("All existing entries deleted");
 }
 
+export async function verifyOrCreateMedusaUser(
+    medusaUser: MedusaUserParams
+): Promise<any> {
+    const users = await strapi.plugins[
+        "users-permissions"
+    ].services.user.fetchAll({
+        filter: {
+            email: medusaUser.email /** email address is unique */
+        }
+    });
+    if (users.length) {
+        return users[0];
+    } else {
+        return await createMedusaUser(medusaUser);
+    }
+}
+
 export async function createMedusaUser(
     medusaUser: MedusaUserParams
 ): Promise<any> {

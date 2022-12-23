@@ -2,18 +2,20 @@
 import { Context } from "koa";
 
 export default {
-    createMedusaUser(ctx: Context) {
+    async createMedusaUser(ctx: Context) {
         console.log("attempting to create medusa user");
-        ctx.body = strapi
+        ctx.body = await strapi
             .plugin("strapi-plugin-medusajs")
             .service("setup")
-            .createMedusaUser(ctx.request.body);
+            .verifyOrCreateMedusaUser(ctx.request.body);
+        return ctx.body;
     },
 
-    synchroniseWithMedusa(ctx: Context) {
-        ctx.body = strapi
+    async synchroniseWithMedusa(ctx: Context) {
+        ctx.body = await strapi
             .plugin("strapi-plugin-medusajs")
             .service("setup")
             .synchroniseWithMedusa({ strapi });
+        return ctx.body;
     }
 };
