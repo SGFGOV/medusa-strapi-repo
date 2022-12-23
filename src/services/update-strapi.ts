@@ -657,10 +657,11 @@ class UpdateStrapiService extends BaseService {
             const registerResponse = await this.registerMedusaUser(authParams);
             const loginResponse = await this.loginAsStrapiUser(
                 registerResponse.data.email,
-                registerResponse.data.password
+                authParams.password
             );
             // console.log(response);
-            this.userTokens[authParams.email] = loginResponse.data.jwt;
+            this.userTokens[registerResponse.data.email] =
+                loginResponse.data.jwt;
             this.strapiDefaultUserId = loginResponse.data.user?.id;
             return loginResponse;
         } catch (error) {
