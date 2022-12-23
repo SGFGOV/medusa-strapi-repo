@@ -4,7 +4,7 @@ node_modules
 .DS_store
 **/.DS_Store
 .env*
-/*.js
+index.js
 
 dist
 coverage
