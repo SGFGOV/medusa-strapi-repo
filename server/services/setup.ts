@@ -142,10 +142,7 @@ export async function createMedusaUser(
     try {
         medusaRole = await hasMedusaRole();
     } catch (error) {
-        strapi.log.error(
-            "medusa role doesn't exist",
-            (error as Error).message
-        );
+        strapi.log.error("medusa role doesn't exist", (error as Error).message);
     }
 
     const params = _.cloneDeep(medusaUser);

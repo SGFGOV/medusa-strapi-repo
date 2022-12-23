@@ -100,7 +100,7 @@ async function createDefaultAdminRoles(): Promise<void> {
             strapi.log.warn(
                 "Superuser role doesn't exist on the server.. Creating super user"
             );
-            const result = await adminRolesService?.createRolesIfNoneExist();
+            await adminRolesService?.createRolesIfNoneExist();
 
             strapi.log.warn(
                 "Successfully created super user admin role, author admin role and editor admin roles"
