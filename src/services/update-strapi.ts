@@ -805,7 +805,7 @@ class UpdateStrapiService extends BaseService {
     };
     try {
       const result = await axios({ ...config });
-      this.logger.info("User Endpoint fired:", endPoint);
+      this.logger.info(`User Endpoint fired: ${endPoint}`);
       // console.log("attempting action:"+result);
       if (result.status >= 200 && result.status<300) {
         this.logger.info(
@@ -852,7 +852,7 @@ class UpdateStrapiService extends BaseService {
       url: `${this.strapi_url}/admin/${path.join("/")}`,
       headers,
     };
-    this.logger.info("Admin Endpoint fired:", basicConfig.url);
+    this.logger.info(`Admin Endpoint fired: ${basicConfig.url}`);
     const config = data?{
       ...basicConfig,
       data,
