@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-medusajs",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "This plugin enables handshaking and sync between strapi and medusajs",
   "main": "dist/server/index.js",
   "strapi": {
