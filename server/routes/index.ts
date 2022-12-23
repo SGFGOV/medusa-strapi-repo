@@ -1,21 +1,20 @@
-const routes =  [
-  {
-  method: 'POST',
-    path: '/create-medusa-user',
-    handler: 'setup.createMedusaUser',
-    config: {
-      auth: false,
-    },
-  },
+const routes = [
     {
-      method: 'POST',
-        path: '/synchronise-medusa-tables',
-        handler: 'setup.synchroniseWithMedusa',
+        method: "POST",
+        path: "/create-medusa-user",
+        handler: "setup.createMedusaUser",
         config: {
-         auth:false,
-        },
-      },
-    
+            auth: false
+        }
+    },
+    {
+        method: "POST",
+        path: "/synchronise-medusa-tables",
+        handler: "setup.synchroniseWithMedusa",
+        config: {
+            auth: false
+        }
+    }
 ];
 
-export default routes
+export default routes;

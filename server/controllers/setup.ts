@@ -1,19 +1,19 @@
-import {Context} from 'koa'
-
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { Context } from "koa";
 
 export default {
-  createMedusaUser(ctx:Context) {
-    console.log("attempting to create medusa user")
-    ctx.body = strapi
-      .plugin('strapi-plugin-medusajs')
-      .service('setup')
-      .createMedusaUser(ctx.request.body)
-  },
+    createMedusaUser(ctx: Context) {
+        console.log("attempting to create medusa user");
+        ctx.body = strapi
+            .plugin("strapi-plugin-medusajs")
+            .service("setup")
+            .createMedusaUser(ctx.request.body);
+    },
 
-  synchroniseWithMedusa(ctx:Context) {
-    ctx.body = strapi
-      .plugin('strapi-plugin-medusajs')
-      .service('setup')
-      .synchroniseWithMedusa({strapi})
-  },
+    synchroniseWithMedusa(ctx: Context) {
+        ctx.body = strapi
+            .plugin("strapi-plugin-medusajs")
+            .service("setup")
+            .synchroniseWithMedusa({ strapi });
+    }
 };
