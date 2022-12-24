@@ -12,21 +12,18 @@ class StrapiSubscriber {
     productService_: ProductService;
     strapiService_: UpdateStrapiService;
     eventBus_: EventBusService;
-    loggedInUser: User;
     loggedInUserAuth: AuthInterface;
 
     constructor({
         updateStrapiService,
         productVariantService,
         productService,
-        eventBusService,
-        loggedInUser
+        eventBusService
     }) {
         this.productVariantService_ = productVariantService;
         this.productService_ = productService;
         this.strapiService_ = updateStrapiService;
         this.eventBus_ = eventBusService;
-        this.loggedInUser = loggedInUser;
         console.warn("\n Strapi Subscriber Initialized");
 
         this.eventBus_.subscribe(
