@@ -11,7 +11,7 @@ module.exports = createCoreService('api::product-option.product-option', ({ stra
   async handleOneToManyRelation(product_options, forceUpdate = false) {
     const productOptionsStrapiIds = [];
     if (product_options && product_options.length) {
-      for (let product_option of product_options) {
+      for (const product_option of product_options) {
         try {
           if (!product_option.medusa_id) {
             product_option.medusa_id = product_option.id;
@@ -44,12 +44,22 @@ module.exports = createCoreService('api::product-option.product-option', ({ stra
           const create = await strapi.entityService.create('api::product-option.product-option', { data: product_option });
           productOptionsStrapiIds.push({ id: create.id });
         } catch (e) {
-          console.log(e);
+          strapi.log.error(JSON.stringify(e));
           throw new Error('Delegated creation failed');
         }
       }
     }
 
     return productOptionsStrapiIds;
+  }
+  ,
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::product-option.product-option', {
+      fields,filters
+    }))[0];
   }
 }));

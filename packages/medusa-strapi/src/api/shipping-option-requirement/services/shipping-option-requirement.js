@@ -32,7 +32,7 @@ module.exports = createCoreService('api::shipping-option-requirement.shipping-op
       }
       return shippingOptionRequirementStrapiIds;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
   }

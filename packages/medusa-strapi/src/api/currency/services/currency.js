@@ -20,9 +20,20 @@ module.exports = createCoreService('api::currency.currency', ({ strapi }) => ({
       const create = await strapi.entityService.create('api::currency.currency', { data: currency });
       return create.id;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
 
+  },
+
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::currency.currency', {
+      fields,filters
+    }))[0];
   }
+  
 }));

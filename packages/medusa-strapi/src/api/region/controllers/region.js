@@ -9,7 +9,7 @@ const { createCoreController } = require('@strapi/strapi').factories;
 module.exports = createCoreController('api::region.region', {
   async findOne(ctx) {
     try {
-      const { medusaId } = ctx.params
+      const { id:medusaId } = ctx.params
       const region = await strapi
         .query("region", "")
         .findOne({ region_id: medusaId })
@@ -41,7 +41,7 @@ module.exports = createCoreController('api::region.region', {
   },
   async update(ctx) {
     try {
-      const { medusaId } = ctx.params
+      const { id:medusaId } = ctx.params
       const regionBody = ctx.request.body
       Object.keys(regionBody).forEach(
         (key) => regionBody[key] === undefined && delete regionBody[key]

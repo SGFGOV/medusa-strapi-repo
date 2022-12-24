@@ -12,7 +12,7 @@ module.exports = createCoreService('api::product-tag.product-tag', ({ strapi }) 
     const strapiProductTagsIds = [];
 
     try {
-      for (let product_tag of product_tags) {
+      for (const product_tag of product_tags) {
         product_tag.medusa_id = product_tag.id.toString();
         delete product_tag.id;
 
@@ -29,9 +29,18 @@ module.exports = createCoreService('api::product-tag.product-tag', ({ strapi }) 
         strapiProductTagsIds.push({ id: create.id });
       }
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
     return strapiProductTagsIds;
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::product-tag.product-tag', {
+      fields,filters
+    }))[0];
   }
 }));
