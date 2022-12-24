@@ -140,7 +140,7 @@ export async function verifyOrCreateMedusaUser(
     const users = await strapi.plugins[
         "users-permissions"
     ].services.user.fetchAll({
-        filter: {
+        filters: {
             email: medusaUser.email /** email address is unique */
         }
     });
@@ -180,7 +180,7 @@ export async function createMedusaUser(
             const authorRole = await hasAuthorRole();
             if (authorRole) {
                 const adminRolesService = strapi.service("admin::role");
-                const authorRole = adminRolesService.findOne({
+                const authorRole = await adminRolesService.findOne({
                     name: "Author"
                 });
                 try {
