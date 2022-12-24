@@ -12,7 +12,7 @@ module.exports = createCoreService('api::image.image', ({ strapi }) => ({
     const strapiImagesIds = [];
 
     try {
-      for (let image of images) {
+      for (const image of images) {
         image.medusa_id = image.id.toString();
         delete image.id;
 
@@ -29,9 +29,18 @@ module.exports = createCoreService('api::image.image', ({ strapi }) => ({
         strapiImagesIds.push({ id: create.id });
       }
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
     return strapiImagesIds;
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::image.image', {
+      fields,filters
+    }))[0];
   }
 }));

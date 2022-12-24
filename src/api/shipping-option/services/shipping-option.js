@@ -5,7 +5,7 @@
  * to customize this service
  */
 
-async function createShippingOptionAfterDelegation(shippingOption) {
+async function createShippingOptionAfterDelegation(shippingOption,strapi) {
   const { region, 'profile': shipping_profile, 'requirements': shipping_option_requirements, 'provider': fulfillment_provider, ...createPayload } = shippingOption;
 
   if (region) {
@@ -36,7 +36,7 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
 
     try {
       if (data && data.length) {
-        for (let shipping_option of data) {
+        for (const shipping_option of data) {
           if (!shipping_option.medusa_id) {
             shipping_option.medusa_id = shipping_option.id.toString();
             delete shipping_option.id
@@ -47,13 +47,13 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
             continue;
           }
 
-          const shippingOptionStrapiId = await createShippingOptionAfterDelegation(shipping_option);
+          await createShippingOptionAfterDelegation(shipping_option,strapi);
         }
       }
       strapi.log.info('Shipping Options Synced');
       return true;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       return false
     }
   },
@@ -63,7 +63,7 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
 
     try {
       if (shippingOptions && shippingOptions.length) {
-        for (let shippingOption of shippingOptions) {
+        for (const shippingOption of shippingOptions) {
           if (shippingOption.id) {
             shippingOption.medusa_id = shippingOption.id;
             delete shippingOption.id;
@@ -81,17 +81,26 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
             continue;
           }
 
-          const create = await createShippingOptionAfterDelegation(shippingOption);
+          const create = await createShippingOptionAfterDelegation(shippingOption,strapi);
           shippingOptionsStrapiIds.push({ id: create });
         }
       }
       return shippingOptionsStrapiIds;
 
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
 
 
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::shipping-option.shipping-option', {
+      fields,filters
+    }))[0];
   }
 }));

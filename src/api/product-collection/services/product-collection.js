@@ -26,8 +26,18 @@ module.exports = createCoreService('api::product-collection.product-collection',
       return create.id;
 
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
+  }
+  ,
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::product-collection.product-collection', {
+      fields,filters
+    }))[0];
   }
 }));

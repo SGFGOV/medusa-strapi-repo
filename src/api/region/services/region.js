@@ -1,10 +1,10 @@
 'use strict';
 
-/**
+/*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-async function createOrUpdateRegionAfterDelegation(region, action = 'create') {
+async function createOrUpdateRegionAfterDelegation(region,strapi, action = 'create') {
   const { currency, countries, payment_providers, fulfillment_providers, ...payload } = region
 
   if (currency) {
@@ -40,7 +40,7 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
     strapi.log.debug('Syncing Region....');
     try {
       if (data && data.length) {
-        for (let region of data) {
+        for (const region of data) {
           region.medusa_id = region.id.toString();
           delete region.id;
 
@@ -49,18 +49,22 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
             continue;
           }
 
-          const regionStrapiId = await createOrUpdateRegionAfterDelegation(region);
+          const regionStrapiId = await createOrUpdateRegionAfterDelegation(region,strapi);
+          if(regionStrapiId)
+            {
+              strapi.log.info("Region created");
+            }
         }
       }
       strapi.log.info('Regions synced');
       return true;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       return false
     }
   },
 
-  //Many "X" to One "region"
+  // Many "X" to One "region"
   async handleManyToOneRelation(region, caller) {
     try {
       region.medusa_id = region.id.toString();
@@ -71,9 +75,9 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
         return found.id;
       }
 
-      return await createOrUpdateRegionAfterDelegation(region);
+      return await createOrUpdateRegionAfterDelegation(region,strapi);
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
   },
@@ -83,7 +87,7 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
       region.medusa_id = region.id.toString();
       delete region.id;
 
-      return await createOrUpdateRegionAfterDelegation(region, 'update');
+      return await createOrUpdateRegionAfterDelegation(region,strapi, 'update');
     } catch (e) {
       console.log('Some error occurred while updating region \n', e);
       return false;
@@ -95,10 +99,19 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
       region.medusa_id = region.id.toString();
       delete region.id;
 
-      return await createOrUpdateRegionAfterDelegation(region);
+      return await createOrUpdateRegionAfterDelegation(region,strapi);
     } catch (e) {
       console.log('Some error occurred while creating region \n', e);
       return false;
     }
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::region.region', {
+      fields,filters
+    }))[0];
   }
 }));

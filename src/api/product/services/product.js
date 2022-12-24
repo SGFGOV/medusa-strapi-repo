@@ -1,10 +1,10 @@
 'use strict';
 
-/**
+/*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-async function createOrUpdateProductAfterDelegation(product, action = "create", forceUpdateRelation = false) {
+async function createOrUpdateProductAfterDelegation(product,strapi=strapi, action = "create", forceUpdateRelation = false) {
   const { 'options': product_options, 'variants': product_variants, 'tags': product_tags, 'profile': shipping_profile, 'type': product_type, 'collection': product_collection, images, ...payload } = product;
   if (product_options) {
     payload.product_options = await strapi.service('api::product-option.product-option').handleOneToManyRelation(product_options, forceUpdateRelation);
@@ -66,19 +66,23 @@ module.exports = createCoreService('api::product.product', ({ strapi }) => ({
           }
           strapi.log.debug(`Syncing Products ${i} of ${data.length}...${product.title} `);
           const found = await strapi.db.query('api::product.product').findOne({ 
-            where: { medusa_id: product.medusa_id }
+            medusa_id: product.medusa_id 
            });
           if (found) {
             continue;
           }
 
-          const productStrapiId = await createOrUpdateProductAfterDelegation(product);
+          const productStrapiId = await createOrUpdateProductAfterDelegation(product,strapi);
+          if(productStrapiId)
+          {
+            strapi.log.debug(`Syncing Products after delegation ${i} of ${data.length}...${product.title} `);
+          }
         }
       }
       strapi.log.info('Products Synced');
       return true;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       return false
     }
   },
@@ -87,7 +91,7 @@ module.exports = createCoreService('api::product.product', ({ strapi }) => ({
       product.medusa_id = product.id.toString();
       delete product.id;
 
-      return await createOrUpdateProductAfterDelegation(product);
+      return await createOrUpdateProductAfterDelegation(product,strapi);
     } catch (e) {
       console.log('Some error occurred while creating product \n', e);
       return false;
@@ -99,10 +103,20 @@ module.exports = createCoreService('api::product.product', ({ strapi }) => ({
       product.medusa_id = product.id.toString();
       delete product.id;
 
-      return await createOrUpdateProductAfterDelegation(product, 'update', true);
+      return await createOrUpdateProductAfterDelegation(product,strapi, 'update', true);
     } catch (e) {
       console.log('Some error occurred while updating product \n', e);
       return false;
     }
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::product.product', {
+      fields,filters
+    }))[0];
   }
+  
 }));

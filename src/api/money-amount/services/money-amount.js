@@ -11,7 +11,7 @@ module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }
   async handleOneToManyRelation(money_amounts, forceUpdate) {
     const moneyAmountsStrapiIds = [];
     if (money_amounts && money_amounts.length) {
-      for (let money_amount of money_amounts) {
+      for (const money_amount of money_amounts) {
         try {
           if (!money_amount.medusa_id) {
             money_amount.medusa_id = money_amount.id;
@@ -19,7 +19,7 @@ module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }
           }
 
           const found = await strapi.db.query('api::money-amount.money-amount').findOne({
-            where: {medusa_id: money_amount.medusa_id}
+            medusa_id: money_amount.medusa_id
           })
           if (found) {
 
@@ -45,12 +45,22 @@ module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }
           });
           moneyAmountsStrapiIds.push({ id: create.id });
         } catch (e) {
-          console.log(e);
+          strapi.log.error(JSON.stringify(e));
           throw new Error('Delegated creation failed');
         }
       }
     }
 
     return moneyAmountsStrapiIds;
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::money-amount.money-amount', {
+      fields,filters
+    }))[0];
   }
+  
 }));

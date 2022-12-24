@@ -14,7 +14,7 @@ module.exports = createCoreService('api::country.country', ({ strapi }) => ({
 
     try {
       if (countries && countries.length) {
-        for (let country of countries) {
+        for (const country of countries) {
           country.medusa_id = country.id.toString();
           delete country.id;
 
@@ -36,9 +36,18 @@ module.exports = createCoreService('api::country.country', ({ strapi }) => ({
       }
       return countriesStrapiIds;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
 
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::country.country', {
+      fields,filters
+    }))[0];
   }
 }));

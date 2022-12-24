@@ -12,7 +12,7 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
     strapi.log.debug('Syncing Payment Providers....');
     try {
       if (data && data.length) {
-        for (let paymentProvider of data) {
+        for (const paymentProvider of data) {
           if (!paymentProvider.medusa_id) {
             paymentProvider.medusa_id = paymentProvider.id.toString();
             delete paymentProvider.id
@@ -23,7 +23,11 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
             continue
           }
 
-          const create = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
+          const createSuccesful = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
+          if(createSuccesful)
+          {
+            strapi.log.info("payment provider created");
+          }
         }
       }
       strapi.log.info('Payment Providers synced');
@@ -38,7 +42,7 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
     const strapiPaymentProvidersIds = [];
 
     try {
-      for (let paymentProvider of paymentProviders) {
+      for (const paymentProvider of paymentProviders) {
         paymentProvider.medusa_id = paymentProvider.id.toString();
         delete paymentProvider.id;
 
@@ -55,9 +59,19 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
         strapiPaymentProvidersIds.push({ id: create.id });
       }
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
     return strapiPaymentProvidersIds;
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::product-collection.product-collection', {
+      fields,filters
+    }))[0];
   }
+  
 }));

@@ -1,15 +1,13 @@
 'use strict';
 
-/**
+/*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-async function createShippingProfileAfterDelegation(shippingProfile) {
+async function createShippingProfileAfterDelegation(shippingProfile,strapi) {
   const { products, shipping_options, ...createPayload } = shippingProfile;
 
-  if (products) {
-
-  }
+  if (products) { /* empty */ }
 
   if (shipping_options) {
     createPayload.shipping_options = await strapi.service('api::shipping-option.shipping-option').handleOneToManyRelation(shipping_options, 'shipping-profile')
@@ -26,7 +24,7 @@ module.exports = createCoreService('api::shipping-profile.shipping-profile', ({ 
     strapi.log.debug('Syncing Shipping Profile....');
     try {
       if (data && data.length) {
-        for (let shipping_profile of data) {
+        for (const shipping_profile of data) {
           if (!shipping_profile.medusa_id) {
             shipping_profile.medusa_id = shipping_profile.id.toString();
             delete shipping_profile.id
@@ -37,13 +35,17 @@ module.exports = createCoreService('api::shipping-profile.shipping-profile', ({ 
             continue;
           }
 
-          const shippingOptionStrapiId = await createShippingProfileAfterDelegation(shipping_profile);
+          const shippingOptionStrapiId = await createShippingProfileAfterDelegation(shipping_profile,strapi);
+          if(shippingOptionStrapiId)
+          {
+            strapi.log.info("Shipping Option created")
+          }
         }
       }
       strapi.log.info('Shipping Profile Synced');
       return true;
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       return false
     }
   },
@@ -64,7 +66,16 @@ module.exports = createCoreService('api::shipping-profile.shipping-profile', ({ 
       return found.id;
     }
 
-    const shippingProfileStrapiId = await createShippingProfileAfterDelegation(shippingProfile);
+    const shippingProfileStrapiId = await createShippingProfileAfterDelegation(shippingProfile,strapi);
     return shippingProfileStrapiId;
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::shipping-profile.shipping-profile', {
+      fields,filters
+    }))[0];
   }
 }));

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 'use strict';
 
 /**
@@ -11,7 +12,7 @@ module.exports = createCoreController('api::product.product', {
     try {
       const { productId } = ctx.params
       const product = await strapi
-        .query("product", "")
+        strapi.service('api::product.product')
         .findOne({ product_id: productId })
       if (product && product.id) {
         return ctx.body = {
@@ -40,7 +41,7 @@ module.exports = createCoreController('api::product.product', {
   },
   async update(ctx) {
     try {
-      const { medusaId } = ctx.params
+      const { id:medusaId } = ctx.params
       const productBody = ctx.request.body
 
       productBody.product_length = productBody.length
@@ -75,19 +76,14 @@ module.exports = createCoreController('api::product.product', {
   },
   async delete(ctx) {
     try {
-      const { medusaId } = ctx.params
-      const product = await strapi
-        .query("product", "")
-        .findOne({ medusa_id: medusaId })
+      const { id:medusaId } = ctx.params
+      const product = await strapi.services["api::product.product"].findOne({ medusa_id: medusaId })
       if (product) {
         if (product.product_variants && product.product_variants.length) {
-          await strapi
-            .query("product-variant", "")
-            .delete({ product: product.id })
+          await strapi.services["api::product-variant.product-variant"]
+            .delete({ product: product.id  })
         }
-        await strapi.query("product", "").delete({
-          medusa_id: medusaId,
-        })
+        await strapi.services["api::product.product"].delete(product.id)
         return ctx.body = {
           id: product.id
         }

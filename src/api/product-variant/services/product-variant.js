@@ -5,7 +5,7 @@
  * to customize this service
  */
 
-async function createOrUpdateProductVariantAfterDelegation(productVariant, action = 'create', forceUpdateRelation = false) {
+async function createOrUpdateProductVariantAfterDelegation(productVariant, strapi, action = 'create', forceUpdateRelation = false) {
   const { 'prices': money_amounts, 'options': product_option_values, ...payload } = productVariant;
   if (money_amounts) {
     payload.money_amounts = await strapi.service('api::money-amount.money-amount').handleOneToManyRelation(money_amounts, forceUpdateRelation);
@@ -40,7 +40,7 @@ module.exports = createCoreService('api::product-variant.product-variant', ({ st
 
     try {
       if (productVariants && productVariants.length) {
-        for (let productVariant of productVariants) {
+        for (const productVariant of productVariants) {
           if (productVariant.id) {
             productVariant.medusa_id = productVariant.id;
             delete productVariant.id;
@@ -62,14 +62,14 @@ module.exports = createCoreService('api::product-variant.product-variant', ({ st
             continue;
           }
 
-          const create = await createOrUpdateProductVariantAfterDelegation(productVariant);
+          const create = await createOrUpdateProductVariantAfterDelegation(productVariant,strapi);
           productVariantsIds.push({ id: create });
         }
       }
 
       return productVariantsIds
     } catch (e) {
-      console.log(e);
+      strapi.log.error(JSON.stringify(e));
       throw new Error('Delegated creation failed');
     }
   },
@@ -81,7 +81,7 @@ module.exports = createCoreService('api::product-variant.product-variant', ({ st
         delete variant.id;
       }
 
-      return await createOrUpdateProductVariantAfterDelegation(variant);
+      return await createOrUpdateProductVariantAfterDelegation(variant,strapi);
     } catch (e) {
       console.log('Some error occurred while creating product variant \n', e);
       return false;
@@ -95,10 +95,19 @@ module.exports = createCoreService('api::product-variant.product-variant', ({ st
         delete variant.id;
       }
 
-      return await createOrUpdateProductVariantAfterDelegation(variant, 'update', true);
+      return await createOrUpdateProductVariantAfterDelegation(variant,strapi, 'update', true);
     } catch (e) {
       console.log('Some error occurred while updating product variant \n', e);
       return false;
     }
+  },
+  async findOne(params = {}) {
+    const fields = ["id"]
+    const filters = {
+      ...params
+    }
+    return (await strapi.entityService.findMany('api::product-variant.product-variant', {
+      fields,filters
+    }))[0];
   }
 }));
