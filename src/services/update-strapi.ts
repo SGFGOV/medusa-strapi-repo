@@ -679,7 +679,7 @@ class UpdateStrapiService extends BaseService {
     }
 
     // Blocker - Delete Region API
-    async deleteRegionInStrapi(data): Promise<any> {
+    async deleteRegionInStrapi(data, authInterace): Promise<any> {
         return;
     }
 

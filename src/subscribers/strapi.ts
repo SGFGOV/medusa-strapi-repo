@@ -1,8 +1,10 @@
 import {
     EventBusService,
     ProductService,
-    ProductVariantService
+    ProductVariantService,
+    User
 } from "@medusajs/medusa";
+import { AuthInterface } from "types/globals";
 import UpdateStrapiService from "../services/update-strapi";
 
 class StrapiSubscriber {
@@ -10,23 +12,33 @@ class StrapiSubscriber {
     productService_: ProductService;
     strapiService_: UpdateStrapiService;
     eventBus_: EventBusService;
+    loggedInUser: User;
+    loggedInUserAuth: AuthInterface;
 
     constructor({
         updateStrapiService,
         productVariantService,
         productService,
-        eventBusService
+        eventBusService,
+        loggedInUser
     }) {
         this.productVariantService_ = productVariantService;
         this.productService_ = productService;
         this.strapiService_ = updateStrapiService;
         this.eventBus_ = eventBusService;
+        this.loggedInUser = loggedInUser;
         console.warn("\n Strapi Subscriber Initialized");
 
         this.eventBus_.subscribe(
             "region.created",
             async (data: { id: string }) => {
-                await this.strapiService_.createRegionInStrapi(data.id);
+                const authInterace: AuthInterface =
+                    (await this.getLoggedInUserStrapiCreds()) ??
+                    this.strapiService_.defaultAuthInterface;
+                await this.strapiService_.createRegionInStrapi(
+                    data.id,
+                    authInterace
+                );
             }
         );
 
@@ -37,37 +49,80 @@ class StrapiSubscriber {
         this.eventBus_.subscribe(
             "product-variant.created",
             async (data: { id: string }) => {
-                await this.strapiService_.createProductVariantInStrapi(data.id);
+                const authInterace: AuthInterface =
+                    (await this.getLoggedInUserStrapiCreds()) ??
+                    this.strapiService_.defaultAuthInterface;
+                await this.strapiService_.createProductVariantInStrapi(
+                    data.id,
+                    authInterace
+                );
             }
         );
 
         this.eventBus_.subscribe("product-variant.updated", async (data) => {
-            await this.strapiService_.updateProductVariantInStrapi(data);
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
+            await this.strapiService_.updateProductVariantInStrapi(
+                data,
+                authInterace
+            );
         });
 
         this.eventBus_.subscribe("product.updated", async (data) => {
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
             await this.strapiService_.updateProductInStrapi(data);
         });
 
         this.eventBus_.subscribe(
             "product.created",
             async (data: { id: string }) => {
-                await this.strapiService_.createProductInStrapi(data.id);
+                const authInterace: AuthInterface =
+                    (await this.getLoggedInUserStrapiCreds()) ??
+                    this.strapiService_.defaultAuthInterface;
+                await this.strapiService_.createProductInStrapi(
+                    data.id,
+                    authInterace
+                );
             }
         );
 
         this.eventBus_.subscribe("product.deleted", async (data) => {
-            await this.strapiService_.deleteProductInStrapi(data);
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
+            await this.strapiService_.deleteProductInStrapi(data, authInterace);
         });
 
         this.eventBus_.subscribe("product-variant.deleted", async (data) => {
-            await this.strapiService_.deleteProductVariantInStrapi(data);
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
+            await this.strapiService_.deleteProductVariantInStrapi(
+                data,
+                authInterace
+            );
         });
 
         // Blocker - Delete Region API
         this.eventBus_.subscribe("region.deleted", async (data) => {
-            await this.strapiService_.deleteRegionInStrapi(data);
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
+            await this.strapiService_.deleteRegionInStrapi(data, authInterace);
         });
+    }
+    async getLoggedInUserStrapiCreds(): Promise<AuthInterface> {
+        return this.loggedInUserAuth;
+    }
+
+    setLoggedInUserCreds(email, password): void {
+        this.loggedInUserAuth = {
+            email,
+            password
+        };
     }
 }
 
