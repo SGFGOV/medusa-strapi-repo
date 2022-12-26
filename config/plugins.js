@@ -32,11 +32,19 @@ module.exports = ({ env }) => ({
             params: {
               Bucket: env('S3_BUCKET'),
             },
+            sizeLimit: 250 * 1024 * 1024,
           },
           actionOptions: {
             upload: {},
             uploadStream: {},
             delete: {},
+          },
+          breakpoints: {
+            xlarge: 1920,
+            large: 1000,
+            medium: 750,
+            small: 500,
+            xsmall: 64
           },
         },
       },

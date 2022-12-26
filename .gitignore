@@ -115,3 +115,4 @@ build
 .vscode
 dist
 ./src/plugins/**/*
+.env

@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_metafields",
+  "info": {
+    "singularName": "product-metafield",
+    "pluralName": "product-metafields",
+    "displayName": "Product Metfield",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "value": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "products": {
+      "via": "product_metafields",
+      "collection": "product"
+    }
+  }
+}

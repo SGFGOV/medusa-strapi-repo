@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_documents",
+  "info": {
+    "singularName": "product-document",
+    "pluralName": "product-documents",
+    "displayName": "Product Document",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
+    "value": {
+      "type": "media",
+      "multiple":true
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "products": {
+      "via": "product_documents",
+      "collection": "product"
+    }
+  }
+}

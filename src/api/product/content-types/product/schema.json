@@ -115,6 +115,16 @@
       "via": "products",
       "collection": "product-tag",
       "dominant": true
+    },
+    "product_metafields": {
+      "via": "products",
+      "collection": "product-metafields",
+      "model":"product-metafield"
+    },
+    "product_documents": {
+      "via": "products",
+      "collection": "product-documents",
+      "model":"product-document"
     }
   }
 }
