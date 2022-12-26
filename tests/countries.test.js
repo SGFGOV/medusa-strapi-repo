@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const request = require('supertest');
 const { setupStrapi, cleanupStrapi } = require("./helpers/strapi");
 jest.setTimeout(3e6)

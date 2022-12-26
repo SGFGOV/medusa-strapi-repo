@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+
+  postgres:
+    image: postgres:12-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres_strapi
+    volumes:
+      - ./docker-volumes/postgres-data:/var/lib/postgresql/data
+  redis:
+    image: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      -  "6379:6379"
+  strapi:
+      build: .
+      restart: always
+      environment:
+        DATABASE_CLIENT: postgres
+        DATABASE_NAME: postgres_strapi
+        DATABASE_HOST: postgres
+        DATABASE_PORT: 5432
+        DATABASE_USERNAME: postgres
+        DATABASE_PASSWORD: postgres
+      working_dir: /srv/app
+      volumes:
+        - ./docker-volumes/strapi-medusa/:/srv/app
+      ports:
+        - '1337:1337'
+      depends_on:
+        - postgres
+        - redis
+volumes:
+  node_modules:
+  

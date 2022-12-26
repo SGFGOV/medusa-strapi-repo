@@ -9,7 +9,7 @@
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit --detectOpenHandles --silent"
   },
   "dependencies": {
     "@aws-sdk/client-sts": "^3.183.0",
