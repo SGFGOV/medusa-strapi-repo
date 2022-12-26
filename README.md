@@ -1,6 +1,7 @@
-# strapi-medusa-template
+# strapi-medusa-template for Strapi v4
 
-for Strapi v4
+Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa. 
+
 
 npx create-strapi-app strapi-medusa --template https://github.com/Kyle772/strapi-medusa-template.git
 # 🚀 Getting started with Strapi
@@ -40,6 +41,40 @@ yarn build
 ## ⚙️ Deployment
 
 Strapi gives you many possible deployment options for your project. Find the one that suits you on the [deployment section of the documentation](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/deployment.html).
+
+## Configuration 
+
+### Environment Settings
+
+These values will need to be sent in your .env file or equivalent evni
+
+HOST=<your hostname>
+PORT=<yous strapi port>
+APP_KEYS=<key1>,<key2>,<key3>,<key4>
+
+## Admin Settings
+
+API_TOKEN_SALT=<api salt>
+ADMIN_JWT_SECRET=<admin jwt secret> 
+
+## Users-Permissions Plugin Settings
+
+JWT_SECRET=<STRAPI JWT Secret>
+
+# Strapi_Medusa_Plugin
+
+MEDUSA_STRAPI_SECRET=<MEDUSA JWT SECRET, needs to be the same as that used in medusa project config jwt_secret>
+## Database Settings
+
+DATABASE_HOST=<database host>
+DATABASE_PORT=<database port>
+DATABASE_NAME=<database name>
+DATABASE_USERNAME=<database username>
+DATABASE_PASSWORD=<database password if you are using const string password and not AWS IAM>
+DATABASE_SSL=<data base ssl name>
+DATABASE_SCHEMA=<postgres database schema name>
+
+
 
 ## 📚 Learn more
 
