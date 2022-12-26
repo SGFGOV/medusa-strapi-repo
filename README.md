@@ -116,6 +116,16 @@ Search is the most critical part of any content system. This comes preconfigured
 MELISEARCH_HOST= <MELISEARCH HOSTNAME>
 MELISEARCH_MASTER_KEY=<MELISEARCH KEY>
 
+### Redis Cache
+
+This implementation comes preconfigured with redis caching, As medusa already uses redis,
+ it was a reasonable assumption that the same redis service can be used for strapi as well
+
+REDIS_HOST=<redis host name>
+REDIS_PORT=<redis port>
+REDIS_PASSWORD=<redis password>
+
+
 ### Messaging
 
 Sometimes you've got to just send a message, we've preconfigured this with SENDGRID
