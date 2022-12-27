@@ -10,35 +10,37 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
-  "attributes": {
-    },
-    "id": {
-      "type": "integer",
-      "required": true
-    },
-    "name": {
-      "type": "string",
-      "required": true
-    },
-    "display_name": {
-      "type": "string",
-      "required": true
-    },
-    "region": {
-      "via": "countries",
-      "model": "region"
-    },
-    "medusa_id": {
-      "type": "uid",
-      "required": true
-    },
-    "logo":{
-      "type":"string",
-      "requred":true
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
     }
-    
+  },
+  "attributes": {},
+  "id": {
+    "type": "integer",
+    "required": true
+  },
+  "name": {
+    "type": "string",
+    "required": true
+  },
+  "display_name": {
+    "type": "string",
+    "required": true
+  },
+  "region": {
+    "via": "countries",
+    "model": "region"
+  },
+  "medusa_id": {
+    "type": "uid",
+    "required": true
+  },
+  "logo": {
+    "type": "string",
+    "requred": true
+  }
 }
-

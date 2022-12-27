@@ -10,9 +10,14 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
       "type": "uid",
@@ -20,7 +25,7 @@
     },
     "value": {
       "type": "media",
-      "multiple":true
+      "multiple": true
     },
     "metadata": {
       "type": "json"

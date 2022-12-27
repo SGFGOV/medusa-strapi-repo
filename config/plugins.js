@@ -70,11 +70,28 @@ module.exports = ({ env }) => ({
       meilisearch: {
         config: {
           // Your meili host
-          host: env('MELISEARCH_HOST'),
+          host: env('MEILISEARCH_HOST'),
           // Your master key or private key
-          apiKey: env('MELISEARCH_MASTER_KEY'),
+          apiKey: env('MEILISEARCH_MASTER_KEY'),
         }
+      },
+      "content-versioning": {
+        enabled:  true,
+      },
+      "generate-data": {
+        enabled: true,
+    },
+    "strapi-google-translator": {
+      enabled: true,
+      config: {
+        backendUrl: env("STRAPI_BACKEND_URL"),
+        apiToken: env("STRAPI_GOOGLE_TRANSLATE_API_TOKEN"),
+        googleJson: env("GOOGLE_TRANSLATE_JSON"),
+      },
+      "strapi-plugin-sitemap":{
+        enabled:true
       }
+    },
       // ...
     
     // ...

@@ -10,9 +10,14 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
       "type": "uid",
@@ -119,12 +124,12 @@
     "product_metafields": {
       "via": "products",
       "collection": "product-metafields",
-      "model":"product-metafield"
+      "model": "product-metafield"
     },
     "product_documents": {
       "via": "products",
       "collection": "product-documents",
-      "model":"product-document"
+      "model": "product-document"
     }
   }
 }
