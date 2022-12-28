@@ -418,7 +418,7 @@ class UpdateStrapiService extends BaseService {
         ];
 
         // check if update contains any fields in Strapi to minimize runs
-        const found = data.fields.find((f) => updateFields.includes(f));
+        const found = this.verifyDataContainsFields(data, updateFields);
         if (!found) {
             return;
         }
@@ -491,7 +491,7 @@ class UpdateStrapiService extends BaseService {
         ];
 
         // check if update contains any fields in Strapi to minimize runs
-        const found = data.fields.find((f) => updateFields.includes(f));
+        const found = this.verifyDataContainsFields(data, updateFields);
         if (!found) {
             return Promise.resolve();
         }
@@ -588,7 +588,9 @@ class UpdateStrapiService extends BaseService {
         // of fields. When the update comes from the product we want to ensure
         // references are set up correctly so we run through everything.
         if (data.fields) {
-            const found = data.fields.find((f) => updateFields.includes(f));
+            const found =
+                data.fields.find((f) => updateFields.includes(f)) ||
+                this.verifyDataContainsFields(data, updateFields);
             if (!found) {
                 return Promise.resolve();
             }
@@ -606,7 +608,7 @@ class UpdateStrapiService extends BaseService {
                     relations: ["prices", "options"]
                 }
             );
-            this.logger.info(variant);
+            this.logger.info(JSON.stringify(variant));
 
             if (variant) {
                 // Update entry in Strapi
@@ -698,7 +700,7 @@ class UpdateStrapiService extends BaseService {
             const response = await axios.head(config.url);
             UpdateStrapiService.lastHealthCheckTime = Date.now();
             UpdateStrapiService.isHealthy =
-                response.status == 204 ? true : false;
+                response.status < 300 ? true : false;
             if (UpdateStrapiService.isHealthy) {
                 this.logger.info("Strapi is healthy");
             } else {
@@ -718,9 +720,12 @@ class UpdateStrapiService extends BaseService {
         const config = {
             url: `${this.strapi_url}/_health`
         };
-        return currentTime - UpdateStrapiService.lastHealthCheckTime > 1800000
-            ? await this.strapiHealthCheck(config)
-            : UpdateStrapiService.isHealthy;
+        const result =
+            currentTime - (UpdateStrapiService.lastHealthCheckTime ?? 0) > 30000
+                ? await this.strapiHealthCheck(config)
+                : UpdateStrapiService.isHealthy;
+        UpdateStrapiService.isHealthy = result;
+        return result;
     }
 
     encrypt(text: string): any {
@@ -1293,6 +1298,22 @@ class UpdateStrapiService extends BaseService {
             );
         }
         return await this.loginAsDefaultMedusaUser();
+    }
+    verifyDataContainsFields(data: any, updateFields: any[]): boolean {
+        let found = data.fields?.find((f) => updateFields.includes(f));
+        if (!found) {
+            try {
+                const fieldsOfdata = Object.keys(data);
+                found = fieldsOfdata.some((field) => {
+                    return updateFields.some((uf) => {
+                        return uf == field;
+                    });
+                });
+            } catch (e) {
+                this.logger.error(JSON.stringify(e));
+            }
+        }
+        return found;
     }
 }
 export default UpdateStrapiService;
