@@ -130,6 +130,11 @@
       "via": "products",
       "collection": "product-documents",
       "model": "product-document"
+    },
+    "product_legals": {
+      "via": "products",
+      "collection": "product-legals",
+      "model": "product-legal"
     }
   }
 }

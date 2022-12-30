@@ -10,30 +10,30 @@ const { createCoreService } = require('@strapi/strapi').factories;
 module.exports = createCoreService('api::currency.currency', ({ strapi }) => ({
   async handleManyToOneRelation(currency) {
     try {
-      const found = await strapi.db.query('api::currency.currency').findOne({
-        where: {code: currency.code}
+      const found = await strapi.services['api::currency.currency'].findOne({
+        code: currency.code 
       });
-      if (found) {
-        return found.id;
-      }
+if (found) {
+  return found.id;
+}
 
-      const create = await strapi.entityService.create('api::currency.currency', { data: currency });
-      return create.id;
+const create = await strapi.entityService.create('api::currency.currency', { data: currency });
+return create.id;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
-    }
+  strapi.log.error(JSON.stringify(e));
+  throw new Error('Delegated creation failed');
+}
 
   },
 
   async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::currency.currency', {
-      fields,filters
-    }))[0];
+  const fields = ["id"]
+  const filters = {
+    ...params
   }
+  return (await strapi.entityService.findMany('api::currency.currency', {
+    fields, filters
+  }))[0];
+}
   
 }));

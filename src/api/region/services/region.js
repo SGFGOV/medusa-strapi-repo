@@ -24,7 +24,7 @@ async function createOrUpdateRegionAfterDelegation(region,strapi, action = 'crea
   }
 
   if (action === 'update') {
-    const update = await strapi.db.query('api::region.region').update({ medusa_id: region.medusa_id }, payload);
+    const update = await strapi.services['api::region.region'].update({ medusa_id: region.medusa_id }, payload);
     console.log(update);
     return update.id;
   }
@@ -44,7 +44,7 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
           region.medusa_id = region.id.toString();
           delete region.id;
 
-          const found = await strapi.db.query('api::region.region').findOne({ medusa_id: region.medusa_id });
+          const found = await strapi.services['api::region.region'].findOne({ medusa_id: region.medusa_id });
           if (found) {
             continue;
           }
@@ -70,7 +70,7 @@ module.exports = createCoreService('api::region.region', ({ strapi }) => ({
       region.medusa_id = region.id.toString();
       delete region.id;
 
-      const found = await strapi.db.query('api::region.region').findOne({ medusa_id: region.medusa_id });
+      const found = await strapi.services['api::region.region'].findOne({ medusa_id: region.medusa_id });
       if (found) {
         return found.id;
       }

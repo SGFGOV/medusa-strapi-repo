@@ -18,13 +18,13 @@ module.exports = createCoreService('api::money-amount.money-amount', ({ strapi }
             delete money_amount.id;
           }
 
-          const found = await strapi.db.query('api::money-amount.money-amount').findOne({
+          const found = await strapi.services['api::money-amount.money-amount'].findOne({
             medusa_id: money_amount.medusa_id
           })
           if (found) {
 
             if (forceUpdate) {
-              const update = await strapi.db.query('api::money-amount.money-amount').update({
+              const update = await strapi.services['api::money-amount.money-amount'].update(found.id,{
                 medusa_id: money_amount.medusa_id
               }, {
                 amount: money_amount.amount,

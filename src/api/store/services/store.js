@@ -22,32 +22,32 @@ module.exports = createCoreService('api::store.store', ({ strapi }) => ({
             delete store.region_id
           }
 
-          const found = await strapi.db.query('api::store.store').findOne({
+          const found = await strapi.services['api::store.store'].findOne({
             medusa_id: store.medusa_id
           });
-          if (found) {
-            storesStrapiIds.push({ id: found.id });
-            continue;
-          }
+if (found) {
+  storesStrapiIds.push({ id: found.id });
+  continue;
+}
 
-          const create = await strapi.entityService.create('api::store.store', { data: store });
-          storesStrapiIds.push({ id: create.id });
+const create = await strapi.entityService.create('api::store.store', { data: store });
+storesStrapiIds.push({ id: create.id });
         }
       }
-      return storesStrapiIds;
+return storesStrapiIds;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
-    }
+  strapi.log.error(JSON.stringify(e));
+  throw new Error('Delegated creation failed');
+}
 
   },
   async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::store.store', {
-      fields,filters
-    }))[0];
+  const fields = ["id"]
+  const filters = {
+    ...params
   }
+  return (await strapi.entityService.findMany('api::store.store', {
+    fields, filters
+  }))[0];
+}
 }));

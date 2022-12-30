@@ -5,7 +5,7 @@
  * to customize this service
  */
 
-async function createShippingOptionAfterDelegation(shippingOption,strapi) {
+async function createShippingOptionAfterDelegation(shippingOption, strapi) {
   const { region, 'profile': shipping_profile, 'requirements': shipping_option_requirements, 'provider': fulfillment_provider, ...createPayload } = shippingOption;
 
   if (region) {
@@ -42,65 +42,65 @@ module.exports = createCoreService('api::shipping-option.shipping-option', ({ st
             delete shipping_option.id
           }
 
-          const found = await strapi.db.query('api::shipping-option.shipping-option').findOne({ medusa_id: shipping_option.medusa_id });
-          if (found) {
-            continue;
-          }
+          const found = await strapi.services['api::shipping-option.shipping-option'].findOne({ medusa_id: shipping_option.medusa_id });
+if (found) {
+  continue;
+}
 
-          await createShippingOptionAfterDelegation(shipping_option,strapi);
+await createShippingOptionAfterDelegation(shipping_option, strapi);
         }
       }
-      strapi.log.info('Shipping Options Synced');
-      return true;
+strapi.log.info('Shipping Options Synced');
+return true;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      return false
-    }
+  strapi.log.error(JSON.stringify(e));
+  return false
+}
   },
 
   async handleOneToManyRelation(shippingOptions, caller) {
-    const shippingOptionsStrapiIds = [];
+  const shippingOptionsStrapiIds = [];
 
-    try {
-      if (shippingOptions && shippingOptions.length) {
-        for (const shippingOption of shippingOptions) {
-          if (shippingOption.id) {
-            shippingOption.medusa_id = shippingOption.id;
-            delete shippingOption.id;
-          }
-
-          // This prevents an infinite loop. Since a cycle exists:  shipping_option -> shipping_profile -> shipping_option
-          if (caller === 'shipping-profile') {
-            delete shippingOption.shipping_profile;
-            delete shippingOption.profile;
-          }
-
-          const found = await strapi.db.query('api::shipping-option.shipping-option').findOne({ medusa_id: shippingOption.medusa_id });
-          if (found) {
-            shippingOptionsStrapiIds.push({ id: found.id });
-            continue;
-          }
-
-          const create = await createShippingOptionAfterDelegation(shippingOption,strapi);
-          shippingOptionsStrapiIds.push({ id: create });
+  try {
+    if (shippingOptions && shippingOptions.length) {
+      for (const shippingOption of shippingOptions) {
+        if (shippingOption.id) {
+          shippingOption.medusa_id = shippingOption.id;
+          delete shippingOption.id;
         }
+
+        // This prevents an infinite loop. Since a cycle exists:  shipping_option -> shipping_profile -> shipping_option
+        if (caller === 'shipping-profile') {
+          delete shippingOption.shipping_profile;
+          delete shippingOption.profile;
+        }
+
+        const found = await strapi.services['api::shipping-option.shipping-option'].findOne({ medusa_id: shippingOption.medusa_id });
+        if (found) {
+          shippingOptionsStrapiIds.push({ id: found.id });
+          continue;
+        }
+
+        const create = await createShippingOptionAfterDelegation(shippingOption, strapi);
+        shippingOptionsStrapiIds.push({ id: create });
       }
-      return shippingOptionsStrapiIds;
-
-    } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
     }
+    return shippingOptionsStrapiIds;
 
-
-  },
-  async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::shipping-option.shipping-option', {
-      fields,filters
-    }))[0];
+  } catch (e) {
+    strapi.log.error(JSON.stringify(e));
+    throw new Error('Delegated creation failed');
   }
+
+
+},
+  async findOne(params = {}) {
+  const fields = ["id"]
+  const filters = {
+    ...params
+  }
+  return (await strapi.entityService.findMany('api::shipping-option.shipping-option', {
+    fields, filters
+  }))[0];
+}
 }));

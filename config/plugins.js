@@ -81,6 +81,7 @@ module.exports = ({ env }) => ({
       "generate-data": {
         enabled: true,
     },
+    
     "strapi-google-translator": {
       enabled: true,
       config: {
@@ -91,6 +92,42 @@ module.exports = ({ env }) => ({
       "strapi-plugin-sitemap":{
         enabled:true
       }
+    },
+    comments: {
+      enabled: true,
+      config: {
+        badWords: true,
+        moderatorRoles: ["Authenticated"],
+        approvalFlow: ["api::page.page"],
+        entryLabel: {
+          "*": ["Title", "title", "Name", "name", "Subject", "subject"],
+          "api::product.product": ["name"],
+        },
+        reportReasons: {
+          MY_CUSTOM_REASON: "MY_CUSTOM_REASON",
+        },
+        gql: {
+          auth:true
+        },
+      },
+      
+    },
+    "io": {
+      "enabled": true,
+      "config": {
+        "IOServerOptions" :{
+          "cors": { "origin": env("STORE_CORS"), "methods": ["GET"] },
+        },
+        "contentTypes": "*",
+        "events":[
+          {
+            "name": "connection",
+            "handler": ({ strapi }, socket) => {
+              strapi.log.info(`[io] new connection with id ${socket.id}`);
+            },
+          },
+        ]
+      },
     },
       // ...
     

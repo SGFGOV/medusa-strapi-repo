@@ -16,31 +16,31 @@ module.exports = createCoreService('api::image.image', ({ strapi }) => ({
         image.medusa_id = image.id.toString();
         delete image.id;
 
-        const found = await strapi.db.query('api::image.image').findOne({
+        const found = await strapi.services['api::image.image'].findOne({
           medusa_id: image.medusa_id
         })
 
         if (found) {
-          strapiImagesIds.push({ id: found.id });
-          continue;
-        }
+  strapiImagesIds.push({ id: found.id });
+  continue;
+}
 
-        const create = await strapi.entityService.create('api::image.image', { data: image });
-        strapiImagesIds.push({ id: create.id });
+const create = await strapi.entityService.create('api::image.image', { data: image });
+strapiImagesIds.push({ id: create.id });
       }
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
-    }
-    return strapiImagesIds;
+  strapi.log.error(JSON.stringify(e));
+  throw new Error('Delegated creation failed');
+}
+return strapiImagesIds;
   },
   async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::image.image', {
-      fields,filters
-    }))[0];
+  const fields = ["id"]
+  const filters = {
+    ...params
   }
+  return (await strapi.entityService.findMany('api::image.image', {
+    fields, filters
+  }))[0];
+}
 }));

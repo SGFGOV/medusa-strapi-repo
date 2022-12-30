@@ -18,13 +18,13 @@ module.exports = createCoreService('api::product-option-value.product-option-val
             delete product_option_value.id;
           }
 
-          const found = await strapi.db.query('api::product-option-value.product-option-value').findOne({
+          const found = await strapi.services['api::product-option-value.product-option-value'].findOne({
             medusa_id: product_option_value.medusa_id
           })
           if (found) {
 
             if (forceUpdate) {
-              const update = await strapi.db.query('api::product-option-value.product-option-value').update({
+              const update = await strapi.services['api::product-option-value.product-option-value'].update(found.id,{
                 medusa_id: product_option_value.medusa_id
               }, {
                 value: product_option_value.value,

@@ -22,32 +22,32 @@ module.exports = createCoreService('api::country.country', ({ strapi }) => ({
             delete country.region_id
           }
 
-          const found = await strapi.db.query('api::country.country').findOne({
+          const found = await strapi.services['api::country.country'].findOne({
             medusa_id: country.medusa_id
           });
-          if (found) {
-            countriesStrapiIds.push({ id: found.id });
-            continue;
-          }
+if (found) {
+  countriesStrapiIds.push({ id: found.id });
+  continue;
+}
 
-          const create = await strapi.entityService.create('api::country.country', { data: country });
-          countriesStrapiIds.push({ id: create.id });
+const create = await strapi.entityService.create('api::country.country', { data: country });
+countriesStrapiIds.push({ id: create.id });
         }
       }
-      return countriesStrapiIds;
+return countriesStrapiIds;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
-    }
+  strapi.log.error(JSON.stringify(e));
+  throw new Error('Delegated creation failed');
+}
 
   },
   async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::country.country', {
-      fields,filters
-    }))[0];
+  const fields = ["id"]
+  const filters = {
+    ...params
   }
+  return (await strapi.entityService.findMany('api::country.country', {
+    fields, filters
+  }))[0];
+}
 }));

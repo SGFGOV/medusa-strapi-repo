@@ -12,28 +12,28 @@ module.exports = createCoreService('api::shipping-option-requirement.shipping-op
     const shippingOptionRequirementStrapiIds = [];
     try {
       if (shippingOptionRequirements && shippingOptionRequirements.length) {
-        for (let shippingOptionRequirement of shippingOptionRequirements) {
+        for (const shippingOptionRequirement of shippingOptionRequirements) {
           if (shippingOptionRequirement.id) {
             shippingOptionRequirement.medusa_id = shippingOptionRequirement.id;
             delete shippingOptionRequirement.id;
           }
 
-          const found = await strapi.db.query('api::shipping-option-requirement.shipping-option-requirement').findOne({
+          const found = await strapi.services['api::shipping-option-requirement.shipping-option-requirement'].findOne({
             medusa_id: shippingOptionRequirement.medusa_id
           });
-          if (found) {
-            shippingOptionRequirementStrapiIds.push({ id: found.id });
-            continue;
-          }
+if (found) {
+  shippingOptionRequirementStrapiIds.push({ id: found.id });
+  continue;
+}
 
-          const create = await strapi.entityService.create('api::shipping-option-requirement.shipping-option-requirement', { data: shippingOptionRequirement });
-          shippingOptionRequirementStrapiIds.push({ id: create.id });
+const create = await strapi.entityService.create('api::shipping-option-requirement.shipping-option-requirement', { data: shippingOptionRequirement });
+shippingOptionRequirementStrapiIds.push({ id: create.id });
         }
       }
-      return shippingOptionRequirementStrapiIds;
+return shippingOptionRequirementStrapiIds;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
-    }
+  strapi.log.error(JSON.stringify(e));
+  throw new Error('Delegated creation failed');
+}
   }
 }));

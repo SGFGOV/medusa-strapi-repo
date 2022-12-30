@@ -15,12 +15,12 @@ async function createOrUpdateProductVariantAfterDelegation(productVariant, strap
     payload.product_option_values = await strapi.service('api::product-option-value.product-option-value').handleOneToManyRelation(product_option_values, forceUpdateRelation);
   }
 
-  const exists = await strapi.db.query('api::product-variant.product-variant').findOne({
+  const exists = await strapi.services['api::product-variant.product-variant'].findOne({
     medusa_id: productVariant.medusa_id
   });
 
   if (action === 'update' || exists) {
-    const update = await strapi.db.query('api::product-variant.product-variant').update({
+    const update = await strapi.services['api::product-variant.product-variant'].update({
       where: { id: exists.id },
       data: payload
     });
@@ -51,7 +51,7 @@ module.exports = createCoreService('api::product-variant.product-variant', ({ st
             delete productVariant.product;
           }
 
-          const found = await strapi.db.query('api::product-variant.product-variant').findOne({ medusa_id: productVariant.medusa_id });
+          const found = await strapi.services['api::product-variant.product-variant'].findOne({ medusa_id: productVariant.medusa_id });
           if (found) {
             if (forceUpdate) {
               const update = await this.updateWithRelations(productVariant);

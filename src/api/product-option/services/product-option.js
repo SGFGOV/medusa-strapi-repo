@@ -18,48 +18,48 @@ module.exports = createCoreService('api::product-option.product-option', ({ stra
             delete product_option.id;
           }
 
-          const found = await strapi.db.query('api::product-option.product-option').findOne({
-            where: {medusa_id: product_option.medusa_id}
+          const found = await strapi.services['api::product-option.product-option'].findOne({
+            medusa_id: product_option.medusa_id 
           })
           if (found) {
 
-            if (forceUpdate) {
-              const update = await strapi.db.query('api::product-option.product-option').update({
-                where: {medusa_id: product_option.medusa_id},
-                data: {
-                  title: product_option.title,
-                  metadata: product_option.metadata
-                }
-              });
-              if (update) {
-                productOptionsStrapiIds.push({ id: update.id });
-                continue;
-              }
-            }
+  if (forceUpdate) {
+    const update = await strapi.services['api::product-option.product-option'].update(found.id,{
+      medusa_id: product_option.medusa_id,
+      
+        title: product_option.title,
+        metadata: product_option.metadata
+    
+    });
+    if (update) {
+      productOptionsStrapiIds.push({ id: update.id });
+      continue;
+    }
+  }
 
-            productOptionsStrapiIds.push({ id: found.id });
-            continue
-          }
+  productOptionsStrapiIds.push({ id: found.id });
+  continue
+}
 
-          const create = await strapi.entityService.create('api::product-option.product-option', { data: product_option });
-          productOptionsStrapiIds.push({ id: create.id });
+const create = await strapi.entityService.create('api::product-option.product-option', { data: product_option });
+productOptionsStrapiIds.push({ id: create.id });
         } catch (e) {
-          strapi.log.error(JSON.stringify(e));
-          throw new Error('Delegated creation failed');
-        }
+  strapi.log.error(JSON.stringify(e));
+  throw new Error('Delegated creation failed');
+}
       }
     }
 
-    return productOptionsStrapiIds;
+return productOptionsStrapiIds;
   }
   ,
   async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::product-option.product-option', {
-      fields,filters
-    }))[0];
+  const fields = ["id"]
+  const filters = {
+    ...params
   }
+  return (await strapi.entityService.findMany('api::product-option.product-option', {
+    fields, filters
+  }))[0];
+}
 }));

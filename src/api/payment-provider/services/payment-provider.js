@@ -18,60 +18,59 @@ module.exports = createCoreService('api::payment-provider.payment-provider', ({ 
             delete paymentProvider.id
           }
 
-          const found = await strapi.db.query('api::payment-provider.payment-provider').findOne({ medusa_id: paymentProvider.medusa_id });
-          if (found) {
-            continue
-          }
+          const found = await strapi.services['api::payment-provider.payment-provider'].findOne({ medusa_id: paymentProvider.medusa_id });
+if (found) {
+  continue
+}
 
-          const createSuccesful = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
-          if(createSuccesful)
-          {
-            strapi.log.info("payment provider created");
-          }
+const createSuccesful = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
+if (createSuccesful) {
+  strapi.log.info("payment provider created");
+}
         }
       }
-      strapi.log.info('Payment Providers synced');
+strapi.log.info('Payment Providers synced');
 
-      return true;
+return true;
     } catch (e) {
-      return false
-    }
+  return false
+}
   },
 
   async handleManyToManyRelation(paymentProviders) {
-    const strapiPaymentProvidersIds = [];
+  const strapiPaymentProvidersIds = [];
 
-    try {
-      for (const paymentProvider of paymentProviders) {
-        paymentProvider.medusa_id = paymentProvider.id.toString();
-        delete paymentProvider.id;
+  try {
+    for (const paymentProvider of paymentProviders) {
+      paymentProvider.medusa_id = paymentProvider.id.toString();
+      delete paymentProvider.id;
 
-        const found = await strapi.db.query('api::payment-provider.payment-provider').findOne({
-          medusa_id: paymentProvider.medusa_id
-        })
+      const found = await strapi.services['api::payment-provider.payment-provider'].findOne({
+        medusa_id: paymentProvider.medusa_id
+      })
 
-        if (found) {
-          strapiPaymentProvidersIds.push({ id: found.id });
-          continue;
-        }
-
-        const create = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
-        strapiPaymentProvidersIds.push({ id: create.id });
+      if (found) {
+        strapiPaymentProvidersIds.push({ id: found.id });
+        continue;
       }
-    } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
+
+      const create = await strapi.entityService.create('api::payment-provider.payment-provider', { data: paymentProvider });
+      strapiPaymentProvidersIds.push({ id: create.id });
     }
-    return strapiPaymentProvidersIds;
-  },
-  async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
-    }
-    return (await strapi.entityService.findMany('api::product-collection.product-collection', {
-      fields,filters
-    }))[0];
+  } catch (e) {
+    strapi.log.error(JSON.stringify(e));
+    throw new Error('Delegated creation failed');
   }
+  return strapiPaymentProvidersIds;
+},
+  async findOne(params = {}) {
+  const fields = ["id"]
+  const filters = {
+    ...params
+  }
+  return (await strapi.entityService.findMany('api::product-collection.product-collection', {
+    fields, filters
+  }))[0];
+}
   
 }));
