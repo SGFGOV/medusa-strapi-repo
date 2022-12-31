@@ -251,49 +251,79 @@ export async function sendSignalToMedusa(
     }
 }
 
-export async function synchroniseWithMedusa(): Promise<any> {
+export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
+    const medusaServer = `${
+        process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+    }`;
+    const medusaSeedHookUrl = `${medusaServer}/hooks/seed`;
     try {
         // return;
-        const medusaServer = `${
-            process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-        }`;
-        const medusaSeedHookUrl = `${medusaServer}/hooks/seed`;
+
         let medusaReady = false;
         while (!medusaReady) {
             const response = await axios.head(`${medusaServer}/health`);
             medusaReady = response.status < 300 ? true : false;
         }
+    } catch (e) {
+        // console.log(e);
 
+        strapi.log.info(
+            "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
+            JSON.stringify(e)
+        );
+        return false;
+        // process.exit(1)
+    }
+    let seedData: AxiosResponse;
+    try {
         strapi.log.info(
             "attempting to sync connect with medusa server on ",
             medusaSeedHookUrl
         );
-        const seedData = await axios.post(medusaSeedHookUrl, {}, {});
-        // IMPORTANT: Order of seed must be maintained. Please don't change the order
-        const products = seedData.data.products;
-        const regions = seedData.data.regions;
-        const shippingOptions = seedData.data.shippingOptions;
-        const paymentProviders = seedData.data.paymentProviders;
-        const fulfillmentProviders = seedData.data.fulfillmentProviders;
-        const shippingProfiles = seedData.data.shippingProfiles;
-        // const stores = seedData.data.stores
+        seedData = await axios.post(medusaSeedHookUrl, {}, {});
+    } catch (e) {
+        // console.log(e);
 
-        await strapi.services[
-            "api::fulfillment-provider.fulfillment-provider"
-        ].bootstrap(fulfillmentProviders);
-        await strapi.services[
-            "api::payment-provider.payment-provider"
-        ].bootstrap(paymentProviders);
-        await strapi.services["api::region.region"].bootstrap(regions);
-        await strapi.services["api::shipping-option.shipping-option"].bootstrap(
-            shippingOptions
+        strapi.log.info(
+            "Unable to Sync with to Medusa server. Check data recieved",
+            JSON.stringify(e)
         );
-        await strapi.services[
-            "api::shipping-profile.shipping-profile"
-        ].bootstrap(shippingProfiles);
-        await strapi.services["api::product.product"].bootstrap(products);
-        // await strapi.services["api::store.store"].bootstrap(stores)
-
+        return false;
+    }
+    // IMPORTANT: Order of seed must be maintained. Please don't change the order
+    const products = seedData?.data?.products;
+    const regions = seedData?.data?.regions;
+    const shippingOptions = seedData?.data?.shippingOptions;
+    const paymentProviders = seedData?.data?.paymentProviders;
+    const fulfillmentProviders = seedData?.data?.fulfillmentProviders;
+    const shippingProfiles = seedData?.data?.shippingProfiles;
+    const stores = seedData?.data?.stores;
+    try {
+        const servicesToSync = {
+            "api::fulfillment-provider.fulfillment-provider":
+                fulfillmentProviders,
+            "api::payment-provider.payment-provider": paymentProviders,
+            "api::region.region": regions,
+            "api::shipping-option.shipping-option": shippingOptions,
+            "api::shipping-profile.shipping-profile": shippingProfiles,
+            "api::product.product": products,
+            "api::store.store": stores
+        };
+        const strapiApiServicedDataRecievedFromMedusa =
+            Object.values(servicesToSync);
+        const strapiApiServicesNames = Object.keys(servicesToSync);
+        for (let i = 0; i < strapiApiServicesNames.length; i++) {
+            if (strapiApiServicedDataRecievedFromMedusa[i]) {
+                await strapi.services[strapiApiServicesNames[i]].bootstrap(
+                    strapiApiServicedDataRecievedFromMedusa[i]
+                );
+            }
+            {
+                strapi.log.info(
+                    `Nothing to sync ${strapiApiServicesNames[i]}  no data recieved`
+                );
+            }
+        }
         strapi.log.info("SYNC FINISHED");
         const result =
             (await sendSignalToMedusa("SYNC COMPLETED"))?.status == 200;
@@ -302,9 +332,10 @@ export async function synchroniseWithMedusa(): Promise<any> {
         // console.log(e);
 
         strapi.log.info(
-            "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
+            "Unable to Sync with to Medusa server. Please check data recieved",
             JSON.stringify(e)
         );
+        return false;
         // process.exit(1)
     }
 }
