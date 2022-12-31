@@ -48,7 +48,7 @@
     "strapi-plugin-generate-data": "^1.0.21",
     "strapi-plugin-io": "^1.1.2",
     "strapi-plugin-local-image-sharp": "^1.2.1",
-    "strapi-plugin-medusajs": "^1.4.6",
+    "strapi-plugin-medusajs": "/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz",
     "strapi-plugin-meilisearch": "^0.8.2",
     "strapi-plugin-sitemap": "^2.0.8",
     "style-loader": "^3.3.1",

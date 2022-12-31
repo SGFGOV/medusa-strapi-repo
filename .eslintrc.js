@@ -1,4 +1,3 @@
-
 module.exports = {
   // parser: `@babel/eslint-parser`,
   parserOptions: {
@@ -9,25 +8,34 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
- // plugins: [`eslint-plugin-prettier`],
+  plugins: [`eslint-plugin-prettier`, `prettier`],
   extends: [`eslint:recommended`, `google`, `eslint-config-prettier`],
   rules: {
- //   "prettier/prettier": `error`,
+    //   "prettier/prettier": `error`,
     curly: [2, `all`],
     "new-cap": `off`,
-    "require-jsdoc": `off`, 
+    "require-jsdoc": `off`,
     semi: `off`,
     "no-unused-expressions": `off`,
     camelcase: `off`,
     "no-invalid-this": `off`,
+    "prettier/prettier": [
+      "error",
+      {
+        endOfLine: "auto",
+      },
+      {
+        usePrettierrc: true,
+      },
+    ],
   },
-  env: { 
+  env: {
     es6: true,
     node: true,
     jest: true,
   },
   ignorePatterns: [`**/models`, `**/repositories`],
- /* overrides: [
+  /* overrides: [
     {
       files: [`*.ts`], 
       parser: `@typescript-eslint/parser`,
@@ -52,7 +60,4 @@ module.exports = {
         "@typescript-eslint/no-non-null-assertion": ["off"],
       },
     },*/
-    
-  
 };
- 

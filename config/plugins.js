@@ -17,6 +17,10 @@ module.exports = ({ env }) => ({
           jwt: {
             expiresIn: '1h',
           },
+          ratelimit: {
+            interval: 60000,
+            max: 100000
+          }
         },
       },
       upload: {

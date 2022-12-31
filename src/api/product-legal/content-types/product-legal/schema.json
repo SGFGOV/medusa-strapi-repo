@@ -1,0 +1,47 @@
+{
+  "kind": "collectionLegal",
+  "collectionName": "product_legals",
+  "info": {
+    "singularName": "product-legal",
+    "pluralName": "product-legals",
+    "displayName": "Product Legal",
+    "description": "Legal Pages to Attached to the Product"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
+  "attributes": {
+    "terms-and-conditions": {
+      "type": "richtext"
+    },
+    "privacy-policy": {
+      "type": "richtext"
+    },
+    "return-policy": {
+      "type": "richtext"
+    },
+    "fssai-license":{
+      "type":"string",
+      "maxLength":14,
+      "minLength":0
+    },
+    "last-updated":
+    {
+      "type":"datetime",
+      "required":true
+    },
+   
+    "products": {
+      "via": "product_legal",
+      "collection": "product"
+    }
+  }
+}
