@@ -4,6 +4,8 @@ import {
     ProductVariantService,
     User
 } from "@medusajs/medusa";
+import { Logger } from "@medusajs/medusa/dist/types/global";
+
 import { AuthInterface } from "types/globals";
 import UpdateStrapiService from "../services/update-strapi";
 
@@ -13,18 +15,21 @@ class StrapiSubscriber {
     strapiService_: UpdateStrapiService;
     eventBus_: EventBusService;
     loggedInUserAuth: AuthInterface;
+    logger: Logger;
 
     constructor({
         updateStrapiService,
         productVariantService,
         productService,
-        eventBusService
+        eventBusService,
+        logger
     }) {
         this.productVariantService_ = productVariantService;
         this.productService_ = productService;
         this.strapiService_ = updateStrapiService;
         this.eventBus_ = eventBusService;
-        console.warn("\n Strapi Subscriber Initialized");
+        this.logger = logger;
+        this.logger.info("Strapi Subscriber Initialized");
 
         this.eventBus_.subscribe(
             "region.created",

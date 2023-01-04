@@ -12,6 +12,7 @@ export interface StrapiMedusaPluginOptions {
     strapi_secret?: string;
     strapi_public_key?: string;
     strapi_ignore_threshold: number;
+    enable_marketplace?: boolean;
 }
 
 export type userCreds = {

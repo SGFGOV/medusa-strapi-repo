@@ -39,6 +39,16 @@ export default async (req: Request, res: Response): Promise<any> => {
                     logger.debug("sync failed");
                 }
                 break;
+            case "STATUS UPDATE":
+                try {
+                    await eventBus.emit("strapi.status.update", decodedMessage);
+                    res.status(200);
+                    logger.debug("strapi status message received");
+                } catch (e) {
+                    res.status(400).json(e);
+                    logger.debug("strapi status message receive failed");
+                }
+                break;
 
             default:
                 try {
