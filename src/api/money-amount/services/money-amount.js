@@ -29,16 +29,13 @@ module.exports = createCoreService(
               if (forceUpdate) {
                 const update = await strapi.services[
                   "api::money-amount.money-amount"
-                ].update(
-                  found.id,
-                  {
+                ].update(found.id, {
+                  data: {
                     medusa_id: money_amount.medusa_id,
-                  },
-                  {
                     amount: money_amount.amount,
                     sale_amount: money_amount.sale_amount,
-                  }
-                );
+                  },
+                });
                 if (update) {
                   moneyAmountsStrapiIds.push({ id: update.id });
                   continue;

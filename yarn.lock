@@ -15307,19 +15307,18 @@ strapi-plugin-local-image-sharp@^1.2.1:
     qs "^6.10.3"
     ufo "^0.8.5"
 
-strapi-plugin-medusajs@/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz:
-  version "1.4.8"
-  resolved "/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz#7593617a801d330b10b3b52ccdb64b65fac8c9bb"
+strapi-plugin-medusajs@/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz:
+  version "1.4.11"
+  resolved "/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz#1928a0a4b1d6d42fdbc19aafcefbe969c392c8bb"
   dependencies:
     "@strapi/helper-plugin" "^4.5.4"
     "@types/bcrypt" "^5.0.0"
     fs "^0.0.1-security"
     jsonwebtoken "^8.5.1"
 
-strapi-plugin-medusajs@^1.4.6:
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/strapi-plugin-medusajs/-/strapi-plugin-medusajs-1.4.7.tgz#c50590932dfc6c23f3af078b16d478366faa820a"
-  integrity sha512-Uzy2d670RXE89KOh305U7aIVWsT7vHFEUwHHnQO5PKuJLDlpFrWR1l+v+t70PTXV2Tb6ZVjyCukTlIlmXv+v7Q==
+"strapi-plugin-medusajs@file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz":
+  version "1.4.8"
+  resolved "file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz#7593617a801d330b10b3b52ccdb64b65fac8c9bb"
   dependencies:
     "@strapi/helper-plugin" "^4.5.4"
     "@types/bcrypt" "^5.0.0"

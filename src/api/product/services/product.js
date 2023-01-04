@@ -80,11 +80,21 @@ async function createOrUpdateProductAfterDelegation(
   }
 
   if (action === "update") {
-    const update = await strapi.services["api::product.product"].update({
-      where: { medusa_id: product.medusa_id },
-      data: payload,
+    const found = await strapi.services["api::product.product"].findOne({
+      medusa_id: product.medusa_id,
     });
-    return update.id;
+    if (found) {
+      const update = await strapi.services["api::product.product"].update(
+        found.id,
+        { data: payload }
+      );
+      return update.id;
+    } else {
+      strapi.log.error(
+        `product with medusa_id${product.medusa_id} wasn't found`
+      );
+      return;
+    }
   }
 
   const create = await strapi.entityService.create("api::product.product", {
