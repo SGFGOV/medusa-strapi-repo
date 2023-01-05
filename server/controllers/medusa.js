@@ -39,7 +39,7 @@ async function medusaSingIn(ctx) {
      * 
     */
 
-    const userInfoEndpoint = `config['MEDUSA_SERVER']/auth/login`
+    const userInfoEndpoint = `${config['MEDUSA_SERVER']}/auth/login/saasform`
     let userResponse;
     try {
     userResponse = await httpClient.get(userInfoEndpoint)
