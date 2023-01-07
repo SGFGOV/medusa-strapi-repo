@@ -58,7 +58,7 @@
   "peerDependencies": {
     "@medusajs/medusa": "latest",
     "axios": "^1.1.3",
-    "medusa-interfaces": "latest",
+    "medusa-interfaces": "latest"
   },
   "dependencies": {
     
