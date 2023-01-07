@@ -107,12 +107,12 @@ module.exports = createCoreController("api::product-variant.product-variant", {
     try {
       const { id: medusaId } = ctx.params;
       const productVariant = await strapi
-        .query("product-variant", "")
+        .service("api::product-variant.product-variant")
         .findOne({ medusa_id: medusaId });
       if (productVariant) {
-        await strapi.query("product-variant", "").delete({
-          medusa_id: medusaId,
-        });
+        await strapi
+          .service("api::product-variant.product-variant")
+          .delete(productVariant.id);
         return (ctx.body = {
           id: productVariant.id,
         });

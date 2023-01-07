@@ -75,4 +75,22 @@ module.exports = createCoreController("api::region.region", {
       return ctx.internalServerError(ctx, e);
     }
   },
+  async delete(ctx) {
+    try {
+      const { id: medusaId } = ctx.params;
+      const region = await strapi
+        .service("api::region.region")
+        .findOne({ medusa_id: medusaId });
+      if (region) {
+        await strapi.service("api::region.region").delete(region.id);
+        return (ctx.body = {
+          id: region.id,
+        });
+      }
+      return ctx.notFound(ctx);
+    } catch (e) {
+      handleError(strapi, e);
+      return ctx.internalServerError(ctx, e);
+    }
+  },
 });
