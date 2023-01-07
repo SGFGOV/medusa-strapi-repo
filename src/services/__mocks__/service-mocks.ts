@@ -6,7 +6,11 @@ import { jest } from "@jest/globals";
 export const regionService = {
     retrieve: jest.fn((id) => {
         if (id === "exists") {
-            return Promise.resolve({ id: "exists" });
+            return Promise.resolve({
+                id: "exists",
+                name: "test",
+                tax_rate: 18.0
+            });
         }
         return Promise.resolve(undefined);
     })
@@ -55,7 +59,12 @@ export const redisClient = {
 export const productVariantService = {
     retrieve: jest.fn((id) => {
         if (id === "exists") {
-            return Promise.resolve({ id: "exists" });
+            return Promise.resolve({
+                id: "exists",
+                product: { id: "exists" },
+                title: "test-product-variant",
+                inventory_quantity: 10
+            });
         }
         return Promise.resolve(undefined);
     })

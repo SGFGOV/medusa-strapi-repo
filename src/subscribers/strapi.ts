@@ -44,9 +44,18 @@ class StrapiSubscriber {
             }
         );
 
-        this.eventBus_.subscribe("region.updated", async (data) => {
-            await this.strapiService_.updateRegionInStrapi(data);
-        });
+        this.eventBus_.subscribe(
+            "region.updated",
+            async (data: { id: string }) => {
+                const authInterace: AuthInterface =
+                    (await this.getLoggedInUserStrapiCreds()) ??
+                    this.strapiService_.defaultAuthInterface;
+                await this.strapiService_.updateRegionInStrapi(
+                    data.id,
+                    authInterace
+                );
+            }
+        );
 
         this.eventBus_.subscribe(
             "product-variant.created",
@@ -86,6 +95,32 @@ class StrapiSubscriber {
                     this.strapiService_.defaultAuthInterface;
                 await this.strapiService_.createProductInStrapi(
                     data.id,
+                    authInterace
+                );
+            }
+        );
+
+        this.eventBus_.subscribe(
+            "product.metafields.create",
+            async (data: { id: string }) => {
+                const authInterace: AuthInterface =
+                    (await this.getLoggedInUserStrapiCreds()) ??
+                    this.strapiService_.defaultAuthInterface;
+                await this.strapiService_.createProductMetafieldInStrapi(
+                    data,
+                    authInterace
+                );
+            }
+        );
+
+        this.eventBus_.subscribe(
+            "product.metafields.update",
+            async (data: { id: string }) => {
+                const authInterace: AuthInterface =
+                    (await this.getLoggedInUserStrapiCreds()) ??
+                    this.strapiService_.defaultAuthInterface;
+                await this.strapiService_.updateProductMetafieldInStrapi(
+                    data,
                     authInterace
                 );
             }

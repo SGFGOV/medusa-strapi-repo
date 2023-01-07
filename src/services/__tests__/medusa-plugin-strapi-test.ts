@@ -119,7 +119,8 @@ describe("StrapiService", () => {
 
     describe("create product in strapi", () => {
         const spy = jest.spyOn(service, "getType");
-        it("calls product, product type and checks existence of type in strapi", async () => {
+
+        it("calls product , product type and checks existence of type in strapi", async () => {
             const response = await service.registerOrLoginDefaultMedusaUser();
             const defaultAuthInterface = service.defaultAuthInterface;
             let typeResult = await service.createProductTypeInStrapi(
@@ -141,6 +142,68 @@ describe("StrapiService", () => {
             expect(result).toBeDefined();
             expect(spy).toHaveBeenCalled();
             await service.deleteProductInStrapi(
+                { id: "exists" },
+                defaultAuthInterface
+            );
+            await service.deleteDefaultMedusaUser();
+        }, 600000);
+        it(
+            "calls product, product variant" +
+                " product type and checks existence of type in strapi",
+            async () => {
+                const response =
+                    await service.registerOrLoginDefaultMedusaUser();
+                const defaultAuthInterface = service.defaultAuthInterface;
+                let typeResult = await service.createProductTypeInStrapi(
+                    "dummy",
+                    defaultAuthInterface
+                );
+                expect(response).toBeDefined();
+                if (!typeResult) {
+                    typeResult = await service.getEntitiesFromStrapi({
+                        authInterface: defaultAuthInterface,
+                        strapiEntityType: "product-types"
+                    });
+                }
+                expect(typeResult).toBeDefined();
+                let result = await service.createProductInStrapi(
+                    "exists",
+                    defaultAuthInterface
+                );
+                expect(result).toBeDefined();
+                expect(spy).toHaveBeenCalled();
+
+                result = await service.createProductVariantInStrapi(
+                    "exists",
+                    defaultAuthInterface
+                );
+                expect(result).toBeDefined();
+                expect(spy).toHaveBeenCalled();
+
+                await service.deleteProductVariantInStrapi(
+                    { id: "exists" },
+                    defaultAuthInterface
+                );
+
+                await service.deleteProductInStrapi(
+                    { id: "exists" },
+                    defaultAuthInterface
+                );
+                await service.deleteDefaultMedusaUser();
+            },
+            600000
+        );
+
+        it("calls creates and deletes region in strapi", async () => {
+            const response = await service.registerOrLoginDefaultMedusaUser();
+            const defaultAuthInterface = service.defaultAuthInterface;
+            const result = await service.createRegionInStrapi(
+                "exists",
+                defaultAuthInterface
+            );
+            expect(result).toBeDefined();
+            expect(spy).toHaveBeenCalled();
+            await service.deleteRegionInStrapi(
                 { id: "exists" },
                 defaultAuthInterface
             );
