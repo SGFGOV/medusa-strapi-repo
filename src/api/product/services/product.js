@@ -1,5 +1,5 @@
 "use strict";
-
+const handleError = require("../../../utils/utils").handleError;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -26,7 +26,8 @@ async function createOrUpdateProductAfterDelegation(
         .service("api::product-option.product-option")
         .handleOneToManyRelation(product_options, forceUpdateRelation);
     } catch (e) {
-      strapi.log.error("unable to create/update product options" + e.message);
+      strapi.log.error("unable to create/update product options");
+      handleError(strapi, e);
     }
   }
 
@@ -40,7 +41,8 @@ async function createOrUpdateProductAfterDelegation(
           forceUpdateRelation
         );
     } catch (e) {
-      strapi.log.error("unable to create/update product variants" + e.message);
+      strapi.log.error("unable to create/update product variants");
+      handleError(strapi, e);
     }
   }
 
@@ -146,7 +148,7 @@ module.exports = createCoreService("api::product.product", ({ strapi }) => ({
       strapi.log.info("Products Synced");
       return true;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e.message));
+      handleError(strapi, e);
       return false;
     }
   },
@@ -157,7 +159,7 @@ module.exports = createCoreService("api::product.product", ({ strapi }) => ({
 
       return await createOrUpdateProductAfterDelegation(product, strapi);
     } catch (e) {
-      console.log("Some error occurred while creating product \n", e);
+      handleError(strapi, e);
       return false;
     }
   },
@@ -174,7 +176,7 @@ module.exports = createCoreService("api::product.product", ({ strapi }) => ({
         true
       );
     } catch (e) {
-      console.log("Some error occurred while updating product \n", e);
+      handleError(strapi, e);
       return false;
     }
   },

@@ -1,5 +1,5 @@
 "use strict";
-
+const handleError = require("../../../utils/utils").handleError;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -92,7 +92,7 @@ module.exports = createCoreService(
 
         return productVariantsIds;
       } catch (e) {
-        strapi.log.error(JSON.stringify(e));
+        handleError(strapi, e);
         throw new Error("Delegated creation failed");
       }
     },
@@ -109,7 +109,7 @@ module.exports = createCoreService(
           strapi
         );
       } catch (e) {
-        console.log("Some error occurred while creating product variant \n", e);
+        handleError(strapi, e);
         return false;
       }
     },
@@ -128,7 +128,7 @@ module.exports = createCoreService(
           true
         );
       } catch (e) {
-        console.log("Some error occurred while updating product variant \n", e);
+        handleError(strapi, e);
         return false;
       }
     },

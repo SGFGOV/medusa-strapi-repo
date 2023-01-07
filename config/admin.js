@@ -1,9 +1,8 @@
 const sgftechSaasFormStrategy = require("@sgftech/passport-saasform");
 
-
 module.exports = ({ env }) => ({
   auth: {
-    secret: env('ADMIN_JWT_SECRET'),
+    secret: env("ADMIN_JWT_SECRET"),
     events: {
       onConnectionSuccess(e) {},
       onConnectionError(e) {},
@@ -28,7 +27,9 @@ module.exports = ({ env }) => ({
               saasformUrl: env("REDIRECT_AFTER_LOGIN_URL"),
               appBaseUrl: env("REDIRECT_AFTER_LOGIN_URL"),
               callbackURL:
-                strapi.admin.services.passport.getStrategyCallbackURL("saasform"),
+                strapi.admin.services.passport.getStrategyCallbackURL(
+                  "saasform"
+                ),
             },
             (request, accessToken, refreshToken, profile, done) => {
               done(null, {
@@ -42,6 +43,6 @@ module.exports = ({ env }) => ({
     ],
   },
   apiToken: {
-    salt: env('API_TOKEN_SALT'),
+    salt: env("API_TOKEN_SALT"),
   },
 });

@@ -3747,6 +3747,18 @@
     passport-jwt "^4.0.0"
     passport-strategy "1.x.x"
 
+"@sgftech/strapi-plugin-sso@/home/ec2-user/environment/testing/test-store-enhanced/private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.8.tgz":
+  version "0.1.8"
+  resolved "/home/ec2-user/environment/testing/test-store-enhanced/private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.8.tgz#de2185bba9e6b05d5293408ab9d87863d6a4bc89"
+  dependencies:
+    generate-password "^1.7.0"
+
+"@sgftech/strapi-plugin-sso@file:../private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.7.tgz":
+  version "0.1.7"
+  resolved "file:../private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.7.tgz#7eb255b39d6acaa2fdce05916393239d1c361b18"
+  dependencies:
+    generate-password "^1.7.0"
+
 "@simov/deep-extend@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@simov/deep-extend/-/deep-extend-1.0.0.tgz#dff17d38305614e296eb80bf4898b9d10b061325"
@@ -8788,6 +8800,11 @@ gcp-metadata@^4.2.0:
   dependencies:
     gaxios "^4.0.0"
     json-bigint "^1.0.0"
+
+generate-password@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/generate-password/-/generate-password-1.7.0.tgz#00ba4eb1e71f89a72307b0d6604ee0d4e7f5770c"
+  integrity sha512-WPCtlfy0jexf7W5IbwxGUgpIDvsZIohbI2DAq2Q6TSlKKis+G4GT9sxvPxrZUGL8kP6WUXMWNqYnxY6DDKAdFA==
 
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
@@ -15307,18 +15324,9 @@ strapi-plugin-local-image-sharp@^1.2.1:
     qs "^6.10.3"
     ufo "^0.8.5"
 
-strapi-plugin-medusajs@/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz:
+"strapi-plugin-medusajs@file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz":
   version "1.4.11"
-  resolved "/home/ec2-user/environment/testing/test-store-enhanced/public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz#1928a0a4b1d6d42fdbc19aafcefbe969c392c8bb"
-  dependencies:
-    "@strapi/helper-plugin" "^4.5.4"
-    "@types/bcrypt" "^5.0.0"
-    fs "^0.0.1-security"
-    jsonwebtoken "^8.5.1"
-
-"strapi-plugin-medusajs@file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz":
-  version "1.4.8"
-  resolved "file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.8.tgz#7593617a801d330b10b3b52ccdb64b65fac8c9bb"
+  resolved "file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz#1928a0a4b1d6d42fdbc19aafcefbe969c392c8bb"
   dependencies:
     "@strapi/helper-plugin" "^4.5.4"
     "@types/bcrypt" "^5.0.0"

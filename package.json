@@ -9,7 +9,8 @@
     "start": "strapi start",
     "build": "strapi build",
     "strapi": "strapi",
-    "test": "jest --forceExit --detectOpenHandles --silent"
+    "test": "jest --forceExit --detectOpenHandles --silent",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@aws-sdk/client-sts": "^3.183.0",
@@ -21,6 +22,7 @@
     "@notum-cz/strapi-plugin-content-versioning": "^0.4.7",
     "@offset-dev/strapi-calendar": "^0.0.9",
     "@sgftech/passport-saasform": "^0.0.20",
+    "@sgftech/strapi-plugin-sso": "/home/ec2-user/environment/testing/test-store-enhanced/private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.8.tgz",
     "@strapi/design-system": "^1.4.1",
     "@strapi/icons": "^1.4.1",
     "@strapi/logger": "^4.3.6",

@@ -1,5 +1,5 @@
 "use strict";
-
+const handleError = require("../../../utils/utils").handleError;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -52,7 +52,7 @@ module.exports = createCoreService(
             );
             productOptionsStrapiIds.push({ id: create.id });
           } catch (e) {
-            strapi.log.error(JSON.stringify(e));
+            handleError(strapi, e);
             throw new Error("Delegated creation failed");
           }
         }

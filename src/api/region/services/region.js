@@ -1,5 +1,5 @@
 "use strict";
-
+const handleError = require("../../../utils/utils").handleError;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -89,6 +89,7 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
       strapi.log.info("Regions synced");
       return true;
     } catch (e) {
+      handleError(strapi, e);
       strapi.log.error(JSON.stringify(e));
       return false;
     }
@@ -109,7 +110,7 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
 
       return await createOrUpdateRegionAfterDelegation(region, strapi);
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
+      handleError(strapi, e);
       throw new Error("Delegated creation failed");
     }
   },
@@ -125,7 +126,7 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
         "update"
       );
     } catch (e) {
-      console.log("Some error occurred while updating region \n", e);
+      handleError(strapi, e);
       return false;
     }
   },
@@ -137,7 +138,7 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
 
       return await createOrUpdateRegionAfterDelegation(region, strapi);
     } catch (e) {
-      console.log("Some error occurred while creating region \n", e);
+      handleError(strapi, e);
       return false;
     }
   },
