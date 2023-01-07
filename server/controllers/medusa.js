@@ -1,11 +1,10 @@
 const axios = require("axios");
-const axios = require("axios");
 const {v4} = require('uuid');
 const {getService} = require("@strapi/admin/server/utils");
 
 const configValidation = () => {
   const config = strapi.config.get('plugin.strapi-plugin-sso')
-  if (config['MEDUSA_SERVER'] && ['STRAPI_SUCCESS_URL'] && ['SAASFORM_SERVER_URL']) {
+  if (config['MEDUSA_SERVER'] && config['MEDUSA_ADMIN']) {
     return config
   }
   throw new Error('GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET are required')
@@ -39,14 +38,14 @@ async function medusaSingIn(ctx) {
      * 
     */
 
-    const userInfoEndpoint = `${config['MEDUSA_SERVER']}/auth/login/saasform`
+    const userInfoEndpoint = `${config['MEDUSA_SERVER']}/auth/login`
     let userResponse;
     try {
     userResponse = await httpClient.get(userInfoEndpoint)
     }
     catch (e)
     {
-      ctx.redirect(`${SAASFORM_SERVER_URL}/login`)
+      ctx.redirect(`${config['MEDUSA_ADMIN']}`)
     }
     const email = userResponse.data.email;
        
