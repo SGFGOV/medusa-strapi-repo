@@ -1,9 +1,11 @@
-'use strict';
+"use strict";
 
 /**
  *  fulfillment-provider controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController('api::fulfillment-provider.fulfillment-provider');
+module.exports = createCoreController(
+  "api::fulfillment-provider.fulfillment-provider"
+);

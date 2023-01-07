@@ -26,7 +26,7 @@ module.exports = createCoreController("api::product.product", {
   },
   async create(ctx) {
     try {
-      const productBody = ctx.request.body;
+      const productBody = ctx.request.body.data || ctx.request.body;
 
       const create = await strapi
         .service("api::product.product")

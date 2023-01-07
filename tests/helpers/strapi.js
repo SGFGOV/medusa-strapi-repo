@@ -7,7 +7,7 @@ async function setupStrapi() {
   if (!instance) {
     await Strapi().load();
     instance = strapi;
-    
+
     await instance.server.mount();
   }
   return instance;
@@ -31,4 +31,6 @@ async function cleanupStrapi() {
   }
 }
 
-module.exports = { setupStrapi, cleanupStrapi };
+async function flushDb() {}
+
+module.exports = { setupStrapi, cleanupStrapi, flushDb };

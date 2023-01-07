@@ -27,6 +27,11 @@
       "type": "media",
       "multiple": true
     },
+    "media_url":
+    {
+      "type": "text",
+      "multiple": true
+    },
     "metadata": {
       "type": "json"
     },

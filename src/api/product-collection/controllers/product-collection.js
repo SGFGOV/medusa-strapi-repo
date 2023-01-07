@@ -1,9 +1,11 @@
-'use strict';
+"use strict";
 
 /**
  *  product-collection controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController('api::product-collection.product-collection');
+module.exports = createCoreController(
+  "api::product-collection.product-collection"
+);

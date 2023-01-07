@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
 /**
  * shipping-option router.
  */
 
-const { createCoreRouter } = require('@strapi/strapi').factories;
+const { createCoreRouter } = require("@strapi/strapi").factories;
 
-module.exports = createCoreRouter('api::shipping-option.shipping-option', {
-  prefix: '',
-  only: ['find', 'findOne', 'create', 'update', 'delete'],
+module.exports = createCoreRouter("api::shipping-option.shipping-option", {
+  prefix: "",
+  only: ["find", "findOne", "create", "update", "delete"],
   except: [],
   config: {
     find: {

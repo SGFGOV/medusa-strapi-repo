@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 /**
  *  shipping-profile controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController('api::shipping-profile.shipping-profile');
+module.exports = createCoreController("api::shipping-profile.shipping-profile");

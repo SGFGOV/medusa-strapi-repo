@@ -1,8 +1,6 @@
-"use strict"
+"use strict";
 
-const { hasSuperUser,createSuperUser } = require("./utils/utils")
-
-
+const { hasSuperUser, createSuperUser } = require("./utils/utils");
 
 // const setup = require("./dist/server/services/setup")
 /**
@@ -15,19 +13,17 @@ const { hasSuperUser,createSuperUser } = require("./utils/utils")
  * See more details here: https://strapi.io/documentation/developer-docs/latest/setup-deployment-guides/configurations.html#bootstrap
  */
 
-
-module.exports = async ( strapi ) => {
+module.exports = async (strapi) => {
   try {
-
-  if(process.env.ENABLE_SUPER_USER=="true"){
-    if (!(await hasSuperUser(strapi))) {
-      await createSuperUser(strapi)
-    } else {
-      strapi.log.info("Found a Superuser account.")
+    if (process.env.ENABLE_SUPER_USER == "true") {
+      if (!(await hasSuperUser(strapi))) {
+        await createSuperUser(strapi);
+      } else {
+        strapi.log.info("Found a Superuser account.");
+      }
     }
-  }
-}
-   /* if(await isFirstRun()){
+  } catch (e) {
+    /* if(await isFirstRun()){
     let medusaRoleId = await setup.hasMedusaRole(strapi)
     if (!medusaRoleId) {
       const plugins = await strapi.plugins[
@@ -53,11 +49,6 @@ module.exports = async ( strapi ) => {
       medusaUserId = await createMedusaUser(strapi,medusaRoleId)
     }*/
 
-  
- catch (e) {
-    console.log(e)
+    console.log(e);
   }
-
-
-  
-}
+};

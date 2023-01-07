@@ -11,7 +11,7 @@ module.exports = createCoreController("api::region.region", {
     try {
       const { id: medusaId } = ctx.params;
       const region = await strapi
-        .query("region", "")
+        .service("api::region.region")
         .findOne({ region_id: medusaId });
       if (region && region.id) {
         return (ctx.body = { region });
@@ -24,7 +24,7 @@ module.exports = createCoreController("api::region.region", {
   },
   async create(ctx) {
     try {
-      const regionBody = ctx.request.body;
+      const regionBody = ctx.request.body.data ?? ctx.request.body;
       Object.keys(regionBody).forEach(
         (key) => regionBody[key] === undefined && delete regionBody[key]
       );
@@ -44,7 +44,7 @@ module.exports = createCoreController("api::region.region", {
   async update(ctx) {
     try {
       const { id: medusaId } = ctx.params;
-      const regionBody = ctx.request.body;
+      const regionBody = ctx.request.body.data ?? ctx.request.body;
       Object.keys(regionBody).forEach(
         (key) => regionBody[key] === undefined && delete regionBody[key]
       );

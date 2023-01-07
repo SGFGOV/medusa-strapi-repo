@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 /**
  *  currency controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController('api::currency.currency');
+module.exports = createCoreController("api::currency.currency");

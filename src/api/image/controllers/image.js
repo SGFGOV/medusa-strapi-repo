@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 /**
  *  image controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController('api::image.image');
+module.exports = createCoreController("api::image.image");
