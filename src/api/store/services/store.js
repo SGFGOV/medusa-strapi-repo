@@ -45,11 +45,8 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       })
     )[0];
   },
-  async delete(medusa_id, params = {}) {
-    const exists = await this.findOne(medusa_id);
-    if (exists) {
-      return strapi.entityService.delete(uid, exists.id, params);
-    }
+  async delete(strapi_id, params = {}) {
+   return await strapi.entityService.delete(uid, strapi_id, params);
   },
   /* async create(params = {}) {
     const { data } = params;
