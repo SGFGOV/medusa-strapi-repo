@@ -6,21 +6,18 @@ const handleError = require("../../../utils/utils").handleError;
  */
 
 const { createCoreService } = require("@strapi/strapi").factories;
-
-module.exports = createCoreService("api::currency.currency", ({ strapi }) => ({
+const uid = "api::currency.currency";
+module.exports = createCoreService(uid, ({ strapi }) => ({
   async handleManyToOneRelation(currency) {
     try {
-      const found = await strapi.services["api::currency.currency"].findOne({
+      const found = await strapi.services[uid].findOne({
         code: currency.code,
       });
       if (found) {
         return found.id;
       }
 
-      const create = await strapi.entityService.create(
-        "api::currency.currency",
-        { data: currency }
-      );
+      const create = await strapi.entityService.create(uid, { data: currency });
       return create.id;
     } catch (e) {
       handleError(strapi, e);
@@ -30,14 +27,27 @@ module.exports = createCoreService("api::currency.currency", ({ strapi }) => ({
 
   async findOne(params = {}) {
     const fields = ["id"];
-    const filters = {
-      ...params,
-    };
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
     return (
-      await strapi.entityService.findMany("api::currency.currency", {
+      await strapi.entityService.findMany(uid, {
         fields,
         filters,
       })
     )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
   },
 }));

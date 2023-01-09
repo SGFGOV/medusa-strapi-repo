@@ -8,36 +8,19 @@ const handleError = require("../../../utils/utils").handleError;
  */
 
 const { createCoreService } = require("@strapi/strapi").factories;
-
-module.exports = createCoreService("api::store.store", ({ strapi }) => ({
-  async handleOneToManyRelation(stores, parent) {
-    const storesStrapiIds = [];
-
+const uid = "api::store.store";
+module.exports = createCoreService(uid, ({ strapi }) => ({
+  async handleManyToOneRelation(store) {
     try {
-      if (stores && stores.length) {
-        for (const store of stores) {
-          store.medusa_id = store.id.toString();
-          delete store.id;
-
-          if (parent === "region") {
-            delete store.region_id;
-          }
-
-          const found = await strapi.services["api::store.store"].findOne({
-            medusa_id: store.medusa_id,
-          });
-          if (found) {
-            storesStrapiIds.push({ id: found.id });
-            continue;
-          }
-
-          const create = await strapi.entityService.create("api::store.store", {
-            data: store,
-          });
-          storesStrapiIds.push({ id: create.id });
-        }
+      const found = await strapi.services[uid].findOne({
+        medusa_id: store.id,
+      });
+      if (found) {
+        return found.id;
       }
-      return storesStrapiIds;
+
+      const create = await strapi.entityService.create(uid, { data: store });
+      return create.id;
     } catch (e) {
       handleError(strapi, e);
       throw new Error("Delegated creation failed");
@@ -45,14 +28,39 @@ module.exports = createCoreService("api::store.store", ({ strapi }) => ({
   },
   async findOne(params = {}) {
     const fields = ["id"];
-    const filters = {
-      ...params,
-    };
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
     return (
-      await strapi.entityService.findMany("api::store.store", {
+      await strapi.entityService.findMany(uid, {
         fields,
         filters,
       })
     )[0];
   },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
+  },
+  /* async create(params = {}) {
+    const { data } = params;
+
+    /* if (hasDraftAndPublish(contentType)) {
+      setPublishedAt(data);
+    }
+
+    return await strapi.entityService.create(uid, {
+      ...params,
+      data: { ...data, populate: data },
+    });
+  },*/
 }));

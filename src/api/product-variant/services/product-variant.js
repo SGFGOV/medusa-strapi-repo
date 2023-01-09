@@ -4,7 +4,7 @@ const handleError = require("../../../utils/utils").handleError;
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-
+const uid = "api::product-variant.product-variant";
 async function createOrUpdateProductVariantAfterDelegation(
   productVariant,
   strapi,
@@ -28,124 +28,127 @@ async function createOrUpdateProductVariantAfterDelegation(
       .handleOneToManyRelation(product_option_values, forceUpdateRelation);
   }
 
-  const exists = await strapi.services[
-    "api::product-variant.product-variant"
-  ].findOne({
+  const exists = await strapi.services[uid].findOne({
     medusa_id: productVariant.medusa_id,
   });
 
   if (action === "update" || exists) {
-    const update = await strapi.services[
-      "api::product-variant.product-variant"
-    ].update(exists.id, { data: payload });
+    const update = await strapi.services[uid].update(exists.id, {
+      data: payload,
+    });
     return update.id;
   }
 
-  const create = await strapi.entityService.create(
-    "api::product-variant.product-variant",
-    { data: payload }
-  );
+  const create = await strapi.entityService.create(uid, { data: payload });
   return create.id;
 }
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
-module.exports = createCoreService(
-  "api::product-variant.product-variant",
-  ({ strapi }) => ({
-    async handleOneToManyRelation(productVariants, caller, forceUpdate) {
-      const productVariantsIds = [];
+module.exports = createCoreService(uid, ({ strapi }) => ({
+  async handleOneToManyRelation(productVariants, caller, forceUpdate) {
+    const productVariantsIds = [];
 
-      try {
-        if (productVariants && productVariants.length) {
-          for (const productVariant of productVariants) {
-            if (productVariant.id) {
-              productVariant.medusa_id = productVariant.id;
-              delete productVariant.id;
-            }
+    try {
+      if (productVariants && productVariants.length) {
+        for (const productVariant of productVariants) {
+          if (productVariant.id) {
+            productVariant.medusa_id = productVariant.id;
+            delete productVariant.id;
+          }
 
-            if (caller === "product") {
-              delete productVariant.product_id;
-              delete productVariant.product;
-            }
+          if (caller === "product") {
+            delete productVariant.product_id;
+            delete productVariant.product;
+          }
 
-            const found = await strapi.services[
-              "api::product-variant.product-variant"
-            ].findOne({ medusa_id: productVariant.medusa_id });
-            if (found) {
-              if (forceUpdate) {
-                const update = await this.updateWithRelations(productVariant);
-                productVariantsIds.push({ id: update });
-                continue;
-              }
-              productVariantsIds.push({ id: found.id });
+          const found = await strapi.services[uid].findOne({
+            medusa_id: productVariant.medusa_id,
+          });
+          if (found) {
+            if (forceUpdate) {
+              const update = await this.updateWithRelations(productVariant);
+              productVariantsIds.push({ id: update });
               continue;
             }
-
-            const create = await createOrUpdateProductVariantAfterDelegation(
-              productVariant,
-              strapi
-            );
-            productVariantsIds.push({ id: create });
+            productVariantsIds.push({ id: found.id });
+            continue;
           }
+
+          const create = await createOrUpdateProductVariantAfterDelegation(
+            productVariant,
+            strapi
+          );
+          productVariantsIds.push({ id: create });
         }
-
-        return productVariantsIds;
-      } catch (e) {
-        handleError(strapi, e);
-        throw new Error("Delegated creation failed");
       }
-    },
 
-    async createWithRelations(variant) {
-      try {
-        if (variant.id) {
-          variant.medusa_id = variant.id.toString();
-          delete variant.id;
-        }
+      return productVariantsIds;
+    } catch (e) {
+      handleError(strapi, e);
+      throw new Error("Delegated creation failed");
+    }
+  },
 
-        return await createOrUpdateProductVariantAfterDelegation(
-          variant,
-          strapi
-        );
-      } catch (e) {
-        handleError(strapi, e);
-        return false;
+  async createWithRelations(variant) {
+    try {
+      if (variant.id) {
+        variant.medusa_id = variant.id.toString();
+        delete variant.id;
       }
-    },
 
-    async updateWithRelations(variant) {
-      try {
-        if (variant.id) {
-          variant.medusa_id = variant.id.toString();
-          delete variant.id;
-        }
+      return await createOrUpdateProductVariantAfterDelegation(variant, strapi);
+    } catch (e) {
+      handleError(strapi, e);
+      return false;
+    }
+  },
 
-        return await createOrUpdateProductVariantAfterDelegation(
-          variant,
-          strapi,
-          "update",
-          true
-        );
-      } catch (e) {
-        handleError(strapi, e);
-        return false;
+  async updateWithRelations(variant) {
+    try {
+      if (variant.id) {
+        variant.medusa_id = variant.id.toString();
+        delete variant.id;
       }
-    },
-    async findOne(params = {}) {
-      const fields = ["id"];
-      const filters = {
+
+      return await createOrUpdateProductVariantAfterDelegation(
+        variant,
+        strapi,
+        "update",
+        true
+      );
+    } catch (e) {
+      handleError(strapi, e);
+      return false;
+    }
+  },
+  async findOne(params = {}) {
+    const fields = ["id"];
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
         ...params,
       };
-      return (
-        await strapi.entityService.findMany(
-          "api::product-variant.product-variant",
-          {
-            fields,
-            filters,
-          }
-        )
-      )[0];
-    },
-  })
-);
+    } else if (params.product_variant_id) {
+      filters = {
+        medusa_id: params.product_variant_id,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
+    return (
+      await strapi.entityService.findMany(uid, {
+        fields,
+        filters,
+      })
+    )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
+  },
+}));

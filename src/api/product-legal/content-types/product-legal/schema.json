@@ -22,6 +22,10 @@
     "terms-and-conditions": {
       "type": "richtext"
     },
+    "medusa_id": {
+      "type": "uid",
+      "required": true
+    },
     "privacy-policy": {
       "type": "richtext"
     },

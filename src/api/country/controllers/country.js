@@ -6,8 +6,4 @@
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController("api::country.country", {
-  async create(ctx) {
-    console.log(ctx);
-  },
-});
+module.exports = createCoreController("api::country.country");

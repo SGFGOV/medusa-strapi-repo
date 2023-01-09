@@ -10,9 +10,13 @@ const { createCoreController } = require("@strapi/strapi").factories;
 module.exports = createCoreController("api::product.product", {
   async findOne(ctx) {
     try {
-      const { productId } = ctx.params;
-      const product = await strapi;
-      strapi.service("api::product.product").findOne({ product_id: productId });
+      let { productId } = ctx.params;
+      if (!productId) {
+        productId = ctx.params.id;
+      }
+      const product = await strapi
+        .service("api::product.product")
+        .findOne({ product_id: productId });
       if (product && product.id) {
         return (ctx.body = {
           product,
@@ -43,7 +47,7 @@ module.exports = createCoreController("api::product.product", {
   async update(ctx) {
     try {
       const { id: medusaId } = ctx.params;
-      const productBody = ctx.request.body;
+      const productBody = ctx.request.body.data || ctx.request.body;
 
       productBody.product_length = productBody.length;
       delete productBody.length;
@@ -96,7 +100,7 @@ module.exports = createCoreController("api::product.product", {
       return ctx.notFound(ctx);
     } catch (e) {
       handleError(strapi, e);
-      console.log("Error occurred while trying to delete product variant");
+      strapi.log.info("Error occurred while trying to delete product variant");
       return ctx.internalServerError(ctx, e);
     }
   },

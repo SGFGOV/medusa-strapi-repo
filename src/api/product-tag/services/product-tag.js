@@ -6,52 +6,59 @@ const handleError = require("../../../utils/utils").handleError;
  */
 
 const { createCoreService } = require("@strapi/strapi").factories;
+const uid = "api::product-tag.product-tag";
+module.exports = createCoreService(uid, ({ strapi }) => ({
+  async handleManyToManyRelation(product_tags) {
+    const strapiProductTagsIds = [];
 
-module.exports = createCoreService(
-  "api::product-tag.product-tag",
-  ({ strapi }) => ({
-    async handleManyToManyRelation(product_tags) {
-      const strapiProductTagsIds = [];
+    try {
+      for (const product_tag of product_tags) {
+        product_tag.medusa_id = product_tag.id.toString();
+        delete product_tag.id;
 
-      try {
-        for (const product_tag of product_tags) {
-          product_tag.medusa_id = product_tag.id.toString();
-          delete product_tag.id;
+        const found = await strapi.services[uid].findOne({
+          medusa_id: product_tag.medusa_id,
+        });
 
-          const found = await strapi.services[
-            "api::product-tag.product-tag"
-          ].findOne({
-            medusa_id: product_tag.medusa_id,
-          });
-
-          if (found) {
-            strapiProductTagsIds.push({ id: found.id });
-            continue;
-          }
-
-          const create = await strapi.entityService.create(
-            "api::product-tag.product-tag",
-            { data: product_tag }
-          );
-          strapiProductTagsIds.push({ id: create.id });
+        if (found) {
+          strapiProductTagsIds.push({ id: found.id });
+          continue;
         }
-      } catch (e) {
-        handleError(strapi, e);
-        throw new Error("Delegated creation failed");
+
+        const create = await strapi.entityService.create(uid, {
+          data: product_tag,
+        });
+        strapiProductTagsIds.push({ id: create.id });
       }
-      return strapiProductTagsIds;
-    },
-    async findOne(params = {}) {
-      const fields = ["id"];
-      const filters = {
+    } catch (e) {
+      handleError(strapi, e);
+      throw new Error("Delegated creation failed");
+    }
+    return strapiProductTagsIds;
+  },
+  async findOne(params = {}) {
+    const fields = ["id"];
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
         ...params,
       };
-      return (
-        await strapi.entityService.findMany("api::product-tag.product-tag", {
-          fields,
-          filters,
-        })
-      )[0];
-    },
-  })
-);
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
+    return (
+      await strapi.entityService.findMany(uid, {
+        fields,
+        filters,
+      })
+    )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
+  },
+}));

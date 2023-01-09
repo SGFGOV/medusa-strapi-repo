@@ -25,6 +25,7 @@ module.exports = createCoreController("api::region.region", {
   async create(ctx) {
     try {
       const regionBody = ctx.request.body.data ?? ctx.request.body;
+      //const regionBody = ctx.request.body;
       Object.keys(regionBody).forEach(
         (key) => regionBody[key] === undefined && delete regionBody[key]
       );

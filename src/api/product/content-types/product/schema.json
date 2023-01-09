@@ -135,6 +135,10 @@
       "via": "products",
       "collection": "product-legals",
       "model": "product-legal"
+    },
+    "store": {
+      "model": "store",
+      "via": "products"
     }
   }
 }

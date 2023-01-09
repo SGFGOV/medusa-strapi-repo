@@ -4,6 +4,7 @@ const handleError = require("../../../utils/utils").handleError;
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
+const uid = "api::region.region";
 async function createOrUpdateRegionAfterDelegation(
   region,
   strapi,
@@ -42,18 +43,17 @@ async function createOrUpdateRegionAfterDelegation(
   }
 
   if (action === "update") {
-    const exists = await strapi.services["api::region.region"].findOne({
+    const exists = await strapi.services[uid].findOne({
       medusa_id: region.medusa_id,
     });
-    const update = await strapi.services["api::region.region"].update(
-      exists.id,
-      payload
-    );
-    console.log(update);
+    const update = await strapi.services[uid].update(exists.id, {
+      data: payload,
+    });
+    strapi.log.info(update);
     return update.id;
   }
 
-  const create = await strapi.entityService.create("api::region.region", {
+  const create = await strapi.entityService.create(uid, {
     data: payload,
   });
   return create.id;
@@ -61,7 +61,7 @@ async function createOrUpdateRegionAfterDelegation(
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
-module.exports = createCoreService("api::region.region", ({ strapi }) => ({
+module.exports = createCoreService(uid, ({ strapi }) => ({
   async bootstrap(data) {
     strapi.log.debug("Syncing Region....");
     try {
@@ -70,7 +70,7 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
           region.medusa_id = region.id.toString();
           delete region.id;
 
-          const found = await strapi.services["api::region.region"].findOne({
+          const found = await strapi.services[uid].findOne({
             medusa_id: region.medusa_id,
           });
           if (found) {
@@ -101,7 +101,7 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
       region.medusa_id = region.id.toString();
       delete region.id;
 
-      const found = await strapi.services["api::region.region"].findOne({
+      const found = await strapi.services[uid].findOne({
         medusa_id: region.medusa_id,
       });
       if (found) {
@@ -144,14 +144,31 @@ module.exports = createCoreService("api::region.region", ({ strapi }) => ({
   },
   async findOne(params = {}) {
     const fields = ["id"];
-    const filters = {
-      ...params,
-    };
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else if (params.region_id) {
+      filters = {
+        medusa_id: params.region_id,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
     return (
-      await strapi.entityService.findMany("api::region.region", {
+      await strapi.entityService.findMany(uid, {
         fields,
         filters,
       })
     )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
   },
 }));

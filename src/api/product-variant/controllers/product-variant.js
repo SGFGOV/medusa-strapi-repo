@@ -9,8 +9,8 @@ function performCleanups(productVariantBody) {
     (key) =>
       productVariantBody[key] === undefined && delete productVariantBody[key]
   );
-  delete productVariantBody.product;
-  delete productVariantBody.product_id;
+  //  delete productVariantBody.product;
+  // delete productVariantBody.product_id;
   // Since strapi doesn't allow us to create a model with name "length". We have created it with name "product_variant_length".
   productVariantBody.product_variant_length = productVariantBody.length;
   delete productVariantBody.length;
@@ -22,7 +22,7 @@ module.exports = createCoreController("api::product-variant.product-variant", {
   async findOne(ctx) {
     try {
       const { id: medusaId } = ctx.params;
-      const productVariant = await strapi.strapi.services[
+      const productVariant = await strapi.services[
         "api::product-variant.product-variant"
       ].findOne({
         product_variant_id: medusaId,
@@ -38,7 +38,7 @@ module.exports = createCoreController("api::product-variant.product-variant", {
   },
   async create(ctx) {
     try {
-      const productVariantBody = ctx.request.body;
+      const productVariantBody = ctx.request.body.data || ctx.request.body;
 
       const product = productVariantBody.product;
       // The product for this productVariant must exist. Otherwise we error out.
@@ -63,7 +63,7 @@ module.exports = createCoreController("api::product-variant.product-variant", {
   async update(ctx) {
     try {
       const { id: medusaId } = ctx.params;
-      const productVariantBody = ctx.request.body;
+      const productVariantBody = ctx.request.body.data || ctx.request.body;
 
       const product = productVariantBody.product;
       // The product for this productVariant must exist. Otherwise we error out.

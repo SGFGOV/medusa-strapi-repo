@@ -4,6 +4,7 @@ const handleError = require("../../../utils/utils").handleError;
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
+const uid = "api::product.product";
 async function createOrUpdateProductAfterDelegation(
   product,
   strapi = strapi,
@@ -17,6 +18,7 @@ async function createOrUpdateProductAfterDelegation(
     profile: shipping_profile,
     type: product_type,
     collection: product_collection,
+    store: store,
     images,
     ...payload
   } = product;
@@ -74,6 +76,12 @@ async function createOrUpdateProductAfterDelegation(
       .handleManyToOneRelation(product_collection);
   }
 
+  if (store) {
+    payload.store = await strapi
+      .service("api::store.store")
+      .handleManyToOneRelation(store);
+  }
+
   //
   if (images) {
     payload.images = await strapi
@@ -82,14 +90,13 @@ async function createOrUpdateProductAfterDelegation(
   }
 
   if (action === "update") {
-    const found = await strapi.services["api::product.product"].findOne({
+    const found = await strapi.services[uid].findOne({
       medusa_id: product.medusa_id,
     });
     if (found) {
-      const update = await strapi.services["api::product.product"].update(
-        found.id,
-        { data: payload }
-      );
+      const update = await strapi.services[uid].update(found.id, {
+        data: payload,
+      });
       return update.id;
     } else {
       strapi.log.error(
@@ -99,7 +106,7 @@ async function createOrUpdateProductAfterDelegation(
     }
   }
 
-  const create = await strapi.entityService.create("api::product.product", {
+  const create = await strapi.entityService.create(uid, {
     data: payload,
   });
   return create.id;
@@ -107,13 +114,13 @@ async function createOrUpdateProductAfterDelegation(
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
-module.exports = createCoreService("api::product.product", ({ strapi }) => ({
+module.exports = createCoreService(uid, ({ strapi }) => ({
   async syncProduct(product) {
     if (!product.medusa_id) {
       product.medusa_id = product.id.toString();
       delete product.id;
     }
-    const found = await strapi.services["api::product.product"].findOne({
+    const found = await strapi.services[uid].findOne({
       medusa_id: product.medusa_id,
     });
     if (found) {
@@ -135,9 +142,9 @@ module.exports = createCoreService("api::product.product", ({ strapi }) => ({
           strapi.log.debug(
             `Syncing Products ${i} of ${data.length}...${product.title} `
           );
-          const productStrapiId = await strapi.services[
-            "api::product.product"
-          ].syncProduct(product);
+          const productStrapiId = await strapi.services[uid].syncProduct(
+            product
+          );
           if (productStrapiId) {
             strapi.log.debug(
               `Syncing Products after delegation ${i} of ${data.length}...${product.title} `
@@ -182,14 +189,31 @@ module.exports = createCoreService("api::product.product", ({ strapi }) => ({
   },
   async findOne(params = {}) {
     const fields = ["id"];
-    const filters = {
-      ...params,
-    };
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else if (params.product_id) {
+      filters = {
+        medusa_id: params.product_id,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
     return (
-      await strapi.entityService.findMany("api::product.product", {
+      await strapi.entityService.findMany(uid, {
         fields,
         filters,
       })
     )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
   },
 }));

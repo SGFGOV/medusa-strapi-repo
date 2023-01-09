@@ -6,8 +6,8 @@ const handleError = require("../../../utils/utils").handleError;
  */
 
 const { createCoreService } = require("@strapi/strapi").factories;
-
-module.exports = createCoreService("api::image.image", ({ strapi }) => ({
+const uid = "api::image.image";
+module.exports = createCoreService(uid, ({ strapi }) => ({
   async handleManyToManyRelation(images) {
     const strapiImagesIds = [];
 
@@ -16,7 +16,7 @@ module.exports = createCoreService("api::image.image", ({ strapi }) => ({
         image.medusa_id = image.id.toString();
         delete image.id;
 
-        const found = await strapi.services["api::image.image"].findOne({
+        const found = await strapi.services[uid].findOne({
           medusa_id: image.medusa_id,
         });
 
@@ -25,7 +25,7 @@ module.exports = createCoreService("api::image.image", ({ strapi }) => ({
           continue;
         }
 
-        const create = await strapi.entityService.create("api::image.image", {
+        const create = await strapi.entityService.create(uid, {
           data: image,
         });
         strapiImagesIds.push({ id: create.id });
@@ -38,14 +38,27 @@ module.exports = createCoreService("api::image.image", ({ strapi }) => ({
   },
   async findOne(params = {}) {
     const fields = ["id"];
-    const filters = {
-      ...params,
-    };
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
     return (
-      await strapi.entityService.findMany("api::image.image", {
+      await strapi.entityService.findMany(uid, {
         fields,
         filters,
       })
     )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
   },
 }));

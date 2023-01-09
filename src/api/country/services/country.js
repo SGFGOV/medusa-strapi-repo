@@ -7,8 +7,8 @@ const handleError = require("../../../utils/utils").handleError;
  */
 
 const { createCoreService } = require("@strapi/strapi").factories;
-
-module.exports = createCoreService("api::country.country", ({ strapi }) => ({
+const uid = "api::country.country";
+module.exports = createCoreService(uid, ({ strapi }) => ({
   async handleOneToManyRelation(countries, parent) {
     const countriesStrapiIds = [];
 
@@ -22,7 +22,7 @@ module.exports = createCoreService("api::country.country", ({ strapi }) => ({
             delete country.region_id;
           }
 
-          const found = await strapi.services["api::country.country"].findOne({
+          const found = await strapi.services[uid].findOne({
             medusa_id: country.medusa_id,
           });
           if (found) {
@@ -30,10 +30,9 @@ module.exports = createCoreService("api::country.country", ({ strapi }) => ({
             continue;
           }
 
-          const create = await strapi.entityService.create(
-            "api::country.country",
-            { data: country }
-          );
+          const create = await strapi.entityService.create(uid, {
+            data: country,
+          });
           countriesStrapiIds.push({ id: create.id });
         }
       }
@@ -45,14 +44,28 @@ module.exports = createCoreService("api::country.country", ({ strapi }) => ({
   },
   async findOne(params = {}) {
     const fields = ["id"];
-    const filters = {
-      ...params,
-    };
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
+
     return (
       await strapi.entityService.findMany("api::country.country", {
         fields,
         filters,
       })
     )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
   },
 }));

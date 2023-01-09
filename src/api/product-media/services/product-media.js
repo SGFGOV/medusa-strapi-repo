@@ -6,51 +6,55 @@ const handleError = require("../../../utils/utils").handleError;
  */
 
 const { createCoreService } = require("@strapi/strapi").factories;
-
-module.exports = createCoreService(
-  "api::product-media.product-media",
-  ({ strapi }) => ({
-    async handleManyToOneRelation(product_media) {
-      try {
-        if (!product_media.medusa_id) {
-          product_media.medusa_id = product_media.id;
-          delete product_media.id;
-        }
-
-        const found = await strapi
-          .service("api::product-media.product-media")
-          .findOne({
-            medusa_id: product_media.medusa_id,
-          });
-        if (found) {
-          return found.id;
-        }
-
-        const create = await strapi.entityService.create(
-          "api::product-media.product-media",
-          { data: product_media }
-        );
-        return create.id;
-      } catch (e) {
-        handleError(strapi, e);
-        throw new Error("Delegated creation failed");
+const uid = "api::product-media.product-media";
+module.exports = createCoreService(uid, ({ strapi }) => ({
+  async handleManyToOneRelation(product_media) {
+    try {
+      if (!product_media.medusa_id) {
+        product_media.medusa_id = product_media.id;
+        delete product_media.id;
       }
-    },
 
-    async findOne(params = {}) {
-      const fields = ["id", "value"];
-      const filters = {
+      const found = await strapi.service(uid).findOne({
+        medusa_id: product_media.medusa_id,
+      });
+      if (found) {
+        return found.id;
+      }
+
+      const create = await strapi.entityService.create(uid, {
+        data: product_media,
+      });
+      return create.id;
+    } catch (e) {
+      handleError(strapi, e);
+      throw new Error("Delegated creation failed");
+    }
+  },
+
+  async findOne(params = {}) {
+    const fields = ["id"];
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
         ...params,
       };
-      return (
-        await strapi.entityService.findMany(
-          "api::product-media.product-media",
-          {
-            fields,
-            filters,
-          }
-        )
-      )[0];
-    },
-  })
-);
+    } else {
+      filters = {
+        medusa_id: params,
+      };
+    }
+    return (
+      await strapi.entityService.findMany(uid, {
+        fields,
+        filters,
+      })
+    )[0];
+  },
+  async delete(medusa_id, params = {}) {
+    const exists = await this.findOne(medusa_id);
+    if (exists) {
+      return strapi.entityService.delete(uid, exists.id, params);
+    }
+  },
+}));
