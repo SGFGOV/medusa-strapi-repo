@@ -2,18 +2,12 @@ const routes = [
     {
         method: "POST",
         path: "/create-medusa-user",
-        handler: "setup.createMedusaUser",
-        config: {
-            auth: false
-        }
+        handler: "setup.createMedusaUser"
     },
     {
         method: "POST",
         path: "/synchronise-medusa-tables",
-        handler: "setup.synchroniseWithMedusa",
-        config: {
-            auth: true
-        }
+        handler: "setup.synchroniseWithMedusa"
     }
 ];
 
