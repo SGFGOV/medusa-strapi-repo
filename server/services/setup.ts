@@ -340,7 +340,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     }
 }
 
-async function sendResult(type: string, result: any): Promise<AxiosResponse> {
+export async function sendResult(type: string, result: any): Promise<AxiosResponse> {
     const postRequestResult = await axios.post(
         `${
             process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
