@@ -1,5 +1,4 @@
 const axios = require("axios");
-const axios = require("axios");
 const {v4} = require('uuid');
 const {getService} = require("@strapi/admin/server/utils");
 
