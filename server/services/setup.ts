@@ -227,7 +227,7 @@ export async function sendSignalToMedusa(
     const medusaServer = `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
     }`;
-    const strapiSignalHook = `${medusaServer}/hooks/strapi/strapi-signal`;
+    const strapiSignalHook = `${medusaServer}/strapi/hooks/strapi-signal`;
     let medusaReady = false;
     const messageData = {
         message,
@@ -255,7 +255,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     const medusaServer = `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
     }`;
-    const medusaSeedHookUrl = `${medusaServer}/hooks/strapi/seed`;
+    const medusaSeedHookUrl = `${medusaServer}/strapi/hooks/seed`;
 
     // return;
 
