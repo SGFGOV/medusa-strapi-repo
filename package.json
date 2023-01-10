@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-strapi-ts",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A plugin for medusa to use strapi in the backend as the cms in typescript",
   "main": "index.js",
   "types": "index.d.ts",
