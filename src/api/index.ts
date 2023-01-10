@@ -6,9 +6,6 @@ export default (app) => {
     //  app.use("/strapi", strapiRouter);
     // Authenticated routes
     const strapiRouter = Router();
-    strapiRouter.use("/strapi/", (req, resp) => {
-        resp.sendStatus(404);
-    });
     strapiRouter.use("/strapi/hooks", hooksRouter as any);
     strapiRouter.use("/strapi/content", contentRouter);
     return strapiRouter;
