@@ -15347,9 +15347,10 @@ strapi-plugin-local-image-sharp@*:
     qs "^6.10.3"
     ufo "^0.8.5"
 
-"strapi-plugin-medusajs@file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz":
-  version "1.4.11"
-  resolved "file:../public-plugins/strapi-plugin-medusajs/strapi-plugin-medusajs-1.4.11.tgz#1928a0a4b1d6d42fdbc19aafcefbe969c392c8bb"
+strapi-plugin-medusajs@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/strapi-plugin-medusajs/-/strapi-plugin-medusajs-3.0.3.tgz#7e6870e1d52e008e0c3354db0c1c8a65c5a067ce"
+  integrity sha512-5P40vn8p0P66RQ00ToH8cXjswnyG4/23v/WQjBWraMaLFH3nZ+kPC6Xks8sr6GNxoM4KDqJdnDv5sEs8oy7s3g==
   dependencies:
     "@strapi/helper-plugin" "^4.5.4"
     "@types/bcrypt" "^5.0.0"

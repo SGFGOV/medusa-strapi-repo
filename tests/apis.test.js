@@ -24,6 +24,8 @@ const userTestCreds = {
 };
 const postResult = {};
 const getResult = {};
+const adminEmail = process.env.SUPERUSER_EMAIL;
+const adminPassword = process.env.SUPERUSER_PASSWORD;
 
 const getDirectories = (source) =>
   readdirSync(source, { withFileTypes: true })
@@ -295,6 +297,28 @@ async function testApis() {
   });
 }
 
+async function executeLoginAsStrapiAdmin() {
+  const auth = {
+    email: adminEmail,
+    password: adminPassword,
+  };
+  try {
+    const response = await request(strapi.server.httpServer)
+      .post(`/admin/login`)
+      .send(auth)
+      .set("Content-Type", "application/json");
+
+    return response;
+  } catch (error) {
+    // Handle error.
+    console.log.info(
+      "An error occurred" + "while logging into admin:",
+      error.message
+    );
+    throw error;
+  }
+}
+
 function clearRequireCache() {
   Object.keys(require.cache).forEach(function (key) {
     delete require.cache[key];
@@ -317,10 +341,13 @@ describe("Testing strapi ", () => {
         console.log(`role doesn't exist:${roleId}, ${e.message}`);
       }
     }
-
+    const response = await executeLoginAsStrapiAdmin();
+    expect(response.status).toBe(200);
+    const token = response.body?.data?.token;
     registeredUser = await request(strapi.server.httpServer)
       .post(`/strapi-plugin-medusajs/create-medusa-user`)
-      .send(userTestCreds);
+      .send(userTestCreds)
+      .set("Authorization", `Bearer ${token}`);
     expect(registeredUser.status).toBe(200);
   });
 

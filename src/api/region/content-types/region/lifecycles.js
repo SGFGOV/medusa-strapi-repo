@@ -20,10 +20,15 @@ module.exports = {
         return;
       }
     }
-    await axios.post(
+    const respondViaPlugin =
+      strapi.plugins["plugin::strapi-plugin-medusajs"].service("setup");
+    return await respondViaPlugin.sendResult(
+      "region",
+      result.result
+    ); /* await axios.post(
       `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-      }/hooks/update-medusa`,
+      }/hooks/strapi/update-medusa`,
       {
         type: "region",
         data: result.result,
@@ -33,6 +38,6 @@ module.exports = {
           "Content-Type": "application/json",
         },
       }
-    );
+    );*/
   },
 };

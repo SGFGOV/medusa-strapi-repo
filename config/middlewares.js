@@ -62,11 +62,19 @@ module.exports = ({ env }) => (
         },
       },
     },
-    "strapi::cors",
+
     {
       name: "strapi::poweredBy",
       config: {
         poweredBy: "SGF Tech",
+      },
+    },
+    {
+      name: "strapi::cors",
+      config: {
+        enabled: true,
+        headers: "*",
+        origin: ["http://localhost:1337", env("MEDUSA_BACKEND_URL")],
       },
     },
     "strapi::logger",

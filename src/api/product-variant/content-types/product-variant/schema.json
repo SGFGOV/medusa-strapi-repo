@@ -91,8 +91,8 @@
     },
     "product": {
       "via": "product_variants",
-      "model": "product",
-      "required":true
+      "model": "product"
+      
     },
     "money_amounts": {
       "via": "product_variant",
