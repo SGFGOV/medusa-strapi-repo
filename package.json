@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-strapi-ts",
-  "version": "2.0.0",
+  "version": "2.0.6",
   "description": "A plugin for medusa to use strapi in the backend as the cms in typescript",
   "main": "index.js",
   "types": "index.d.ts",
@@ -32,6 +32,7 @@
     "@types/jest": "^27.4.0",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.11.9",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "axios-mock-adapter": "^1.21.2",
