@@ -9,12 +9,9 @@ import utils from "../../middleware/utils";
 import { ConfigModule } from "@medusajs/medusa/dist/types/global";
 import { StrapiMedusaPluginOptions } from "../../../types/globals";
 
-export default (
-    rootDirectory: string,
-    options: StrapiMedusaPluginOptions,
-    config: ConfigModule
-) => {
-    const hooksRouter = Router();
+const hooksRouter = Router();
+export default (app: Router, options: StrapiMedusaPluginOptions) => {
+    app.use("/strapi/hooks", hooksRouter);
     const updateMedusa = require("../controllers/update-medusa").default;
     const seed = require("../controllers/seed").default;
     const strapiSignal = require("../controllers/strapi-signal").default;

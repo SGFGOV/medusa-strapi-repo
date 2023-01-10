@@ -12,9 +12,9 @@ export default async (req: Request, res: Response) => {
         email: process.env.STRAPI_MEDUSA_EMAIL,
         password: process.env.STRAPI_MEDUSA_PASSWORD
     };
-    const urlElements = req.url.split("/");
-    const strapiEntityType = urlElements[urlElements.length - 2];
-    const id = urlElements[urlElements.length - 1];
+
+    const strapiEntityType = req.params.type;
+    const id = req.params.id;
 
     const strapiParams: GetFromStrapiParams = {
         authInterface,
@@ -24,4 +24,5 @@ export default async (req: Request, res: Response) => {
 
     const data = await updateStrapiService.getEntitiesFromStrapi(strapiParams);
     res.send(data);
+    return data;
 };

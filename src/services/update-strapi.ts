@@ -1008,6 +1008,20 @@ class UpdateStrapiService extends BaseService {
         return -1;
     }
 
+    async getEditorId(): Promise<number> {
+        const response = await this.executeStrapiAdminSend("get", "roles");
+        // console.log("role:", response);
+        if (response) {
+            const availableRoles = response.data.data as role[];
+            for (const role of availableRoles) {
+                if (role.name == "Editor") {
+                    return role.id;
+                }
+            }
+        }
+        return -1;
+    }
+
     async processStrapiEntry(command: StrapiSendParams): Promise<any> {
         try {
             return await this.strapiSend(command);

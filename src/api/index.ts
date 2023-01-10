@@ -2,11 +2,13 @@ import { Router } from "express";
 import hooksRouter from "./routes/hooks";
 import contentRouter from "./routes/content";
 
-export default (app) => {
+export default (app, options, config) => {
     //  app.use("/strapi", strapiRouter);
     // Authenticated routes
     const strapiRouter = Router();
-    strapiRouter.use("/strapi/hooks", hooksRouter as any);
-    strapiRouter.use("/strapi/content", contentRouter);
+
+    hooksRouter(strapiRouter, options);
+    contentRouter(strapiRouter, options, config);
+
     return strapiRouter;
 };
