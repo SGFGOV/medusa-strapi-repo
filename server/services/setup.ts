@@ -53,9 +53,9 @@ export async function createMedusaRole(
         const error = e as Error;
         strapi.log.warn(
             "Unable to determine with medusa role exists: " +
-            error.message +
-            ":" +
-            error.stack
+                error.message +
+                ":" +
+                error.stack
         );
     }
 
@@ -78,9 +78,9 @@ export async function createMedusaRole(
         const error = e as Error;
         strapi.log.warn(
             "Unable to create with medusa role: " +
-            error.message +
-            ":" +
-            error.stack
+                error.message +
+                ":" +
+                error.stack
         );
         return -1;
     }
@@ -224,8 +224,9 @@ export async function sendSignalToMedusa(
     code = 200,
     data?: any
 ): Promise<AxiosResponse | undefined> {
-    const medusaServer = `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-        }`;
+    const medusaServer = `${
+        process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+    }`;
     const strapiSignalHook = `${medusaServer}/hooks/strapi/strapi-signal`;
     let medusaReady = false;
     const messageData = {
@@ -251,26 +252,27 @@ export async function sendSignalToMedusa(
 }
 
 export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
-    const medusaServer = `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-        }`;
+    const medusaServer = `${
+        process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+    }`;
     const medusaSeedHookUrl = `${medusaServer}/hooks/strapi/seed`;
-    try {
-        // return;
 
-        let medusaReady = false;
-        while (!medusaReady) {
+    // return;
+
+    let medusaReady = false;
+    while (!medusaReady) {
+        try {
             const response = await axios.head(`${medusaServer}/health`);
-            medusaReady = response.status < 300 ? true : false;
-        }
-    } catch (e) {
-        // console.log(e);
+            medusaReady = response.status < 300 && response.status >= 200;
+        } catch (e) {
+            // console.log(e);
 
-        strapi.log.info(
-            "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
-            JSON.stringify(e)
-        );
-        return false;
-        // process.exit(1)
+            strapi.log.info(
+                "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
+                JSON.stringify(e)
+            );
+            // process.exit(1)
+        }
     }
     let seedData: AxiosResponse;
     try {
@@ -338,9 +340,13 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     }
 }
 
-export async function sendResult(type: string, result: any): Promise<AxiosResponse> {
+export async function sendResult(
+    type: string,
+    result: any
+): Promise<AxiosResponse> {
     const postRequestResult = await axios.post(
-        `${process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+        `${
+            process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
         }/strapi/hooks/update-medusa`,
         {
             type,
