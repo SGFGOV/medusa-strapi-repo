@@ -12,7 +12,7 @@ const routes = [
         path: "/synchronise-medusa-tables",
         handler: "setup.synchroniseWithMedusa",
         config: {
-            auth: false
+            auth: true
         }
     }
 ];

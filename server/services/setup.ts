@@ -227,7 +227,7 @@ export async function sendSignalToMedusa(
     const medusaServer = `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
     }`;
-    const strapiSignalHook = `${medusaServer}/hooks/strapi-signal`;
+    const strapiSignalHook = `${medusaServer}/hooks/strapi/strapi-signal`;
     let medusaReady = false;
     const messageData = {
         message,
@@ -255,7 +255,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     const medusaServer = `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
     }`;
-    const medusaSeedHookUrl = `${medusaServer}/hooks/seed`;
+    const medusaSeedHookUrl = `${medusaServer}/hooks/strapi/seed`;
     try {
         // return;
 
@@ -340,12 +340,36 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     }
 }
 
+async function sendResult(type: string, result: any): Promise<AxiosResponse> {
+    const postRequestResult = await axios.post(
+        `${
+            process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+        }/hooks/strapi/update-medusa`,
+        {
+            type,
+            data: result
+        },
+        {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+    if (postRequestResult.status < 300 && postRequestResult.status >= 200) {
+        strapi.log.info(`update to ${type} posted successfully`);
+    } else {
+        strapi.log.info(`error updating type ${type}  posted successfully`);
+    }
+    return postRequestResult;
+}
+
 const setup = {
     createMedusaUser,
     synchroniseWithMedusa,
     deleteAllEntries,
     hasMedusaRole,
-    hasMedusaUser
+    hasMedusaUser,
+    sendResult
 };
 
 export default setup;
