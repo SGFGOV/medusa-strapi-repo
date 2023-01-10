@@ -67,7 +67,7 @@ export interface CreateInStrapiParams<T> {
     relations: string[];
 }
 
-export interface GetFromStrapiParams<T> {
+export interface GetFromStrapiParams {
     id?: string;
     authInterface: AuthInterface;
     strapiEntityType: string;

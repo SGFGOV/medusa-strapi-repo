@@ -234,7 +234,7 @@ class UpdateStrapiService extends BaseService {
     }
 
     async getEntitiesFromStrapi<T extends BaseEntity>(
-        params: GetFromStrapiParams<T>
+        params: GetFromStrapiParams
     ): Promise<AxiosResponse | void> {
         await this.checkType(params.strapiEntityType, params.authInterface);
         const result = await this.getEntriesInStrapi({
@@ -1245,6 +1245,8 @@ class UpdateStrapiService extends BaseService {
 
     async executeRegisterMedusaUser(auth: MedusaUserType): Promise<any> {
         let response: AxiosResponse;
+
+        await this.executeLoginAsStrapiAdmin();
         await this.waitForHealth();
         /* if (auth.email == this.options_.strapi_default_user.email &&
       this.userTokens[auth.email].length>1) {
@@ -1254,7 +1256,13 @@ class UpdateStrapiService extends BaseService {
         try {
             response = await axios.post(
                 `${this.strapi_url}/strapi-plugin-medusajs/create-medusa-user`,
-                auth
+                auth,
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.strapiAdminAuthToken}`
+                    },
+                    timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/
+                }
             );
         } catch (e) {
             this.logger.error("unable to register user " + JSON.stringify(e));
@@ -1342,10 +1350,13 @@ class UpdateStrapiService extends BaseService {
         if (this.strapiAdminAuthToken) {
             const user = (await this.registerOrLoginDefaultMedusaUser()).user;
             if (user) {
-                const response = await this.configureStrapiMedusaForUser({
+                const response = await this.executeSync(
+                    this.strapiAdminAuthToken
+                );
+                /* const response = await this.configureStrapiMedusaForUser({
                     email: this.options_.strapi_default_user.email,
                     password: this.options_.strapi_default_user.password
-                });
+                });*/
                 if (response.status < 300) {
                     this.logger.info("medusa-strapi-successfully-bootstrapped");
                     return response;
