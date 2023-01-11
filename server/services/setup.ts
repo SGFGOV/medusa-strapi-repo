@@ -228,19 +228,14 @@ export async function sendSignalToMedusa(
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
     }`;
     const strapiSignalHook = `${medusaServer}/strapi/hooks/strapi-signal`;
-    let medusaReady = false;
     const messageData = {
         message,
         code,
         data
     };
-    while (!medusaReady && !(process.env.NODE_ENV == "test")) {
-        const response = await axios.head(`${medusaServer}/health`);
-        medusaReady = response.status < 300 ? true : false;
-        if (medusaReady) {
-            break;
-        }
-        await new Promise((r) => setTimeout(r, 30000));
+    if ((await checkMedusaReady(medusaServer)) == 0) {
+        strapi.log.error("abandoning, medusa server dead");
+        return;
     }
     try {
         const signedMessage = jwt.sign(
@@ -263,24 +258,8 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
 
     // return;
 
-    let medusaReady = false;
-    while (!medusaReady && !(process.env.NODE_ENV == "test")) {
-        try {
-            const response = await axios.head(`${medusaServer}/health`);
-            medusaReady = response.status < 300 && response.status >= 200;
-            if (medusaReady) {
-                break;
-            }
-        } catch (e) {
-            // console.log(e);
+    await checkMedusaReady(medusaServer);
 
-            strapi.log.info(
-                "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
-                JSON.stringify(e)
-            );
-            // process.exit(1)
-        }
-    }
     let seedData: AxiosResponse | undefined;
     try {
         strapi.log.info(
@@ -368,6 +347,33 @@ export async function sendResult(
         strapi.log.info(`error updating type ${type}  posted successfully`);
     }
     return postRequestResult;
+}
+
+async function checkMedusaReady(
+    medusaServer: string,
+    timeout = 30e3,
+    attempts = 1000
+): Promise<number> {
+    let medusaReady = false;
+    while (!medusaReady && !(process.env.NODE_ENV == "test") && attempts--) {
+        try {
+            const response = await axios.head(`${medusaServer}/health`);
+            medusaReady = response.status < 300 && response.status >= 200;
+            if (medusaReady) {
+                break;
+            }
+            await new Promise((r) => setTimeout(r, timeout));
+        } catch (e) {
+            // console.log(e);
+
+            strapi.log.info(
+                "Unable to connect to Medusa server. Please make sure Medusa server is up and running",
+                JSON.stringify(e)
+            );
+            // process.exit(1)
+        }
+    }
+    return attempts;
 }
 
 const setup = {
