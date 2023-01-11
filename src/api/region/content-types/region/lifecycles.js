@@ -20,9 +20,9 @@ module.exports = {
         return;
       }
     }
-    const respondViaPlugin =
-      strapi.plugins["plugin::strapi-plugin-medusajs"].service("setup");
-    return await respondViaPlugin.sendResult(
+    const respondViaPlugin = strapi.plugins["strapi-plugin-medusajs"];
+    const theService = respondViaPlugin.service("setup");
+    return await theService.sendResult(
       "region",
       result.result
     ); /* await axios.post(

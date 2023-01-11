@@ -1,5 +1,6 @@
 "use strict";
 const handleError = require("../../../utils/utils").handleError;
+const getFields = require("../../../utils/utils").getFields;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -133,9 +134,10 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
 
   async createWithRelations(region) {
     try {
-      region.medusa_id = region.id.toString();
-      delete region.id;
-
+      if (!region.medusa_id) {
+        region.medusa_id = region.id.toString();
+        delete region.id;
+      }
       return await createOrUpdateRegionAfterDelegation(region, strapi);
     } catch (e) {
       handleError(strapi, e);
@@ -143,7 +145,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
     }
   },
   async findOne(params = {}) {
-    const fields = ["id"];
+    const fields = getFields(__filename, __dirname);
     let filters = {};
     if (params.medusa_id) {
       filters = {

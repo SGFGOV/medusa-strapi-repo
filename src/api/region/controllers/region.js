@@ -1,5 +1,6 @@
 "use strict";
 const handleError = require("../../../utils/utils").handleError;
+const getFields = require("../../../utils/utils").getFields;
 /**
  *  image controller
  */

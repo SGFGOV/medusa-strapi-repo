@@ -1,5 +1,6 @@
 "use strict";
 const handleError = require("../../../utils/utils").handleError;
+const getFields = require("../../../utils/utils").getFields;
 /**
  * Read the mediaation (https://strapi.io/mediaation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -33,7 +34,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
   },
 
   async findOne(params = {}) {
-    const fields = ["id"];
+    const fields = getFields(__filename, __dirname);
     let filters = {};
     if (params.medusa_id) {
       filters = {

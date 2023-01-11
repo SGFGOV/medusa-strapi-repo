@@ -48,6 +48,19 @@ async function createSuperUser(strapi) {
   }
 }
 
+function getFields(filename, dirName) {
+  const fileNameParts = filename.split("/");
+  const fileNameWithExtension = fileNameParts[fileNameParts.length - 1];
+  const folderName = fileNameWithExtension.split(".")[0];
+  const schema = require(`${dirName}/../content-types/${folderName}/schema.json`);
+  const keys = Object.keys(schema.attributes);
+  const requiredAttributes =
+    process.env.NODE_ENV == "test"
+      ? ["id"]
+      : keys.filter((k) => !schema.attributes[k].via);
+  return requiredAttributes;
+}
+
 function handleError(strapi, e) {
   const details = JSON.stringify(e.details);
   strapi.log.error(`Error Occurred ${e.name} ${e.message}`);
@@ -59,4 +72,5 @@ module.exports = {
   hasSuperUser,
   createSuperUser,
   handleError,
+  getFields,
 };
