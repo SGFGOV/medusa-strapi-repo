@@ -237,6 +237,10 @@ export async function sendSignalToMedusa(
     while (!medusaReady) {
         const response = await axios.head(`${medusaServer}/health`);
         medusaReady = response.status < 300 ? true : false;
+        if (medusaReady) {
+            break;
+        }
+        await new Promise((r) => setTimeout(r, 30000));
     }
     try {
         const signedMessage = jwt.sign(
@@ -264,6 +268,9 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
         try {
             const response = await axios.head(`${medusaServer}/health`);
             medusaReady = response.status < 300 && response.status >= 200;
+            if (medusaReady) {
+                break;
+            }
         } catch (e) {
             // console.log(e);
 
