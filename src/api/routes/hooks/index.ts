@@ -10,9 +10,9 @@ import { StrapiMedusaPluginOptions } from "../../../types/globals";
 const hooksRouter = Router();
 export default (app: Router, options: StrapiMedusaPluginOptions) => {
     app.use("/strapi/hooks", hooksRouter);
-    const updateMedusa = require("../controllers/update-medusa").default;
-    const seed = require("../controllers/seed").default;
-    const strapiSignal = require("../controllers/strapi-signal").default;
+    const updateMedusa = require("../../controllers/update-medusa").default;
+    const seed = require("../../controllers/seed").default;
+    const strapiSignal = require("../../controllers/strapi-signal").default;
     const strapiUrl = `${options.strapi_protocol}://${options.strapi_host}:${options.strapi_port}`;
 
     // Authenticated routes

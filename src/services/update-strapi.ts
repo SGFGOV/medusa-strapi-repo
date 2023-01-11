@@ -9,7 +9,8 @@ import {
     ProductService,
     ProductTypeService,
     ProductVariantService,
-    RegionService} from "@medusajs/medusa";
+    RegionService
+} from "@medusajs/medusa";
 import { Service } from "medusa-extender";
 import role from "@strapi/plugin-users-permissions/server/content-types/role/index";
 import {
@@ -25,6 +26,7 @@ import {
 } from "../types/globals";
 import { EntityManager } from "typeorm";
 import _ from "lodash";
+import { AnyNsRecord } from "dns";
 
 const IGNORE_THRESHOLD = 3; // seconds
 
@@ -227,16 +229,25 @@ class UpdateStrapiService extends BaseService {
         }
     }
 
-    async getEntitiesFromStrapi<T extends BaseEntity>(
-        params: GetFromStrapiParams
-    ): Promise<AxiosResponse | void> {
+    async getEntitiesFromStrapi(params: GetFromStrapiParams): Promise<any> {
         await this.checkType(params.strapiEntityType, params.authInterface);
-        const result = await this.getEntriesInStrapi({
-            type: params.strapiEntityType,
-            authInterface: params.authInterface,
-            method: "get"
-        });
-        return result;
+        try {
+            const getEntityParams: StrapiSendParams = {
+                type: params.strapiEntityType,
+                authInterface: params.authInterface,
+                method: "GET",
+                id: params.id
+            };
+
+            const result = await this.getEntriesInStrapi(getEntityParams);
+            return result?.data;
+        } catch (e) {
+            this.logger.error(
+                `Unable to retrieve ${params.strapiEntityType}, ${
+                    params.id ?? "any"
+                }`
+            );
+        }
     }
 
     async createProductTypeInStrapi(

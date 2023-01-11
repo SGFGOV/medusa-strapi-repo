@@ -1,13 +1,12 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
-import middleware from "../../middleware";
-import fetchContent from "../controllers/fetch-content";
+import fetchContent from "../../controllers/fetch-content";
 import { parseCorsOrigins } from "medusa-core-utils";
 import cors from "cors";
 import utils from "../../middleware/utils";
 const contentRouter = Router();
 export default (app, options, config) => {
-    app.use("/strapi/content", contentRouter);
+    app.use("/strapi", contentRouter);
     const storeCors = config.store_cors || "http://localhost:8000";
     const strapiCors = {
         origin: parseCorsOrigins(storeCors),
@@ -18,7 +17,7 @@ export default (app, options, config) => {
     contentRouter.options(cors(config.store_cors));
     contentRouter.use(utils);
     contentRouter.use(bodyParser.json);
-    contentRouter.get("/:type/:id", fetchContent);
+    contentRouter.get("/content/:type/:id", fetchContent);
 
     return contentRouter;
 };
