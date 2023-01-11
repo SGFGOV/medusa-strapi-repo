@@ -4,16 +4,12 @@ import crypto = require("crypto");
 import { Logger } from "@medusajs/medusa/dist/types/global";
 import { sleep } from "@medusajs/medusa/dist/utils/sleep";
 import {
-    AuthService,
     BaseEntity,
     EventBusService,
     ProductService,
-    ProductType,
     ProductTypeService,
     ProductVariantService,
-    RegionService,
-    TransactionBaseService
-} from "@medusajs/medusa";
+    RegionService} from "@medusajs/medusa";
 import { Service } from "medusa-extender";
 import role from "@strapi/plugin-users-permissions/server/content-types/role/index";
 import {
@@ -28,9 +24,7 @@ import {
     userCreds as UserCreds
 } from "../types/globals";
 import { EntityManager } from "typeorm";
-import { FindConfig } from "@medusajs/medusa/dist/types/common";
 import _ from "lodash";
-import { setMaxIdleHTTPParsers } from "http";
 
 const IGNORE_THRESHOLD = 3; // seconds
 
