@@ -234,7 +234,7 @@ export async function sendSignalToMedusa(
         code,
         data
     };
-    while (!medusaReady) {
+    while (!medusaReady && !(process.env.NODE_ENV == "test")) {
         const response = await axios.head(`${medusaServer}/health`);
         medusaReady = response.status < 300 ? true : false;
         if (medusaReady) {
@@ -264,7 +264,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     // return;
 
     let medusaReady = false;
-    while (!medusaReady) {
+    while (!medusaReady && !(process.env.NODE_ENV == "test")) {
         try {
             const response = await axios.head(`${medusaServer}/health`);
             medusaReady = response.status < 300 && response.status >= 200;
