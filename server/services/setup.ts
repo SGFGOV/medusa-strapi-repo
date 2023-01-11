@@ -281,18 +281,20 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
             // process.exit(1)
         }
     }
-    let seedData: AxiosResponse;
+    let seedData: AxiosResponse | undefined;
     try {
         strapi.log.info(
             "attempting to sync connect with medusa server on ",
             medusaSeedHookUrl
         );
-        seedData = await axios.post(medusaSeedHookUrl, {}, {});
+        seedData = await sendSignalToMedusa("SEED");
+
+        // await axios.post(medusaSeedHookUrl, {}, {});
     } catch (e) {
         // console.log(e);
 
         strapi.log.info(
-            "Unable to Sync with to Medusa server. Check data recieved",
+            "Unable to Fetch Seed Data from Medusa server. Check data recieved",
             JSON.stringify(e)
         );
         return false;
@@ -350,22 +352,17 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
 export async function sendResult(
     type: string,
     result: any
-): Promise<AxiosResponse> {
-    const postRequestResult = await axios.post(
-        `${
-            process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
-        }/strapi/hooks/update-medusa`,
-        {
-            type,
-            data: result
-        },
-        {
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }
-    );
-    if (postRequestResult.status < 300 && postRequestResult.status >= 200) {
+): Promise<AxiosResponse | undefined> {
+    const postRequestResult = await sendSignalToMedusa("UPDATE MEDUSA", 200, {
+        type,
+        data: result
+    });
+
+    if (
+        postRequestResult?.status ??
+        (0 < 300 && postRequestResult?.status) ??
+        0 >= 200
+    ) {
         strapi.log.info(`update to ${type} posted successfully`);
     } else {
         strapi.log.info(`error updating type ${type}  posted successfully`);
