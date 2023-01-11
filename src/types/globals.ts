@@ -1,5 +1,4 @@
 import { FindConfig } from "@medusajs/medusa/dist/types/common";
-import { strapiSignal } from "api/controllers/strapi-signal";
 import { Method } from "axios";
 
 export interface StrapiMedusaPluginOptions {

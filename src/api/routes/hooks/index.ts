@@ -1,18 +1,18 @@
 import { Router } from "express";
 import bodyParser from "body-parser";
 import middleware from "../../middleware";
-import middlewares from "@medusajs/medusa/dist/api/middlewares/";
 import { parseCorsOrigins } from "medusa-core-utils";
 import cors from "cors";
 import utils from "../../middleware/utils";
 import { StrapiMedusaPluginOptions } from "../../../types/globals";
+const updateMedusa = require("../../controllers/hooks/update-medusa").default;
+const seed = require("../../controllers/hooks/seed").default;
+const strapiSignal = require("../../controllers/hooks/strapi-signal").default;
 
 const hooksRouter = Router();
 export default (app: Router, options: StrapiMedusaPluginOptions) => {
     app.use("/strapi/hooks", hooksRouter);
-    const updateMedusa = require("../../controllers/update-medusa").default;
-    const seed = require("../../controllers/seed").default;
-    const strapiSignal = require("../../controllers/strapi-signal").default;
+
     const strapiUrl = `${options.strapi_protocol}://${options.strapi_host}:${options.strapi_port}`;
 
     // Authenticated routes
