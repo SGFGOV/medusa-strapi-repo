@@ -16,7 +16,6 @@ export default (app, options, config) => {
     contentRouter.get(cors(config.store_cors));
     contentRouter.options(cors(config.store_cors));
     contentRouter.use(utils);
-    contentRouter.use(bodyParser.json);
     contentRouter.get("/content/:type/:id", fetchContent);
 
     return contentRouter;
