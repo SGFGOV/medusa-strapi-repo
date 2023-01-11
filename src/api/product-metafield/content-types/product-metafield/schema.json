@@ -29,9 +29,11 @@
     "metadata": {
       "type": "json"
     },
-    "products": {
-      "via": "product_metafields",
-      "collection": "product"
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product",
+      "inversedBy": "product-metafield"
     }
   }
 }

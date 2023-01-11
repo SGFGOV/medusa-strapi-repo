@@ -41,9 +41,11 @@
       "type": "string",
       "required": true
     },
-    "regions": {
-      "via": "currency",
-      "collection": "region"
+    "region": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::region.region",
+      "inversedBy": "currency"
     }
   }
 }

@@ -31,8 +31,10 @@
       "type": "json"
     },
     "products": {
-      "via": "product_tags",
-      "collection": "product"
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-tag.product-tag",
+      "mappedBy": "product-tag"
     }
   }
 }

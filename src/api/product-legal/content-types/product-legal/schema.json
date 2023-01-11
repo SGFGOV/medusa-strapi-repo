@@ -44,8 +44,10 @@
     },
    
     "products": {
-      "via": "product_legal",
-      "collection": "product"
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "product-legal"
     }
   }
 }

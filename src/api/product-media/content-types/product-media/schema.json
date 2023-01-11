@@ -35,9 +35,11 @@
     "metadata": {
       "type": "json"
     },
-    "products": {
-      "via": "product_medias",
-      "collection": "product"
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "product-medias"
     }
   }
 }

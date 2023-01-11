@@ -91,54 +91,78 @@
     "metafields": {
       "type": "json"
     },
-    "product_variants": {
-      "via": "product",
-      "collection": "product-variant"
+    "product-variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variant.product-variant",
+      "mappedBy": "product"
     },
-    "product_options": {
-      "via": "product",
-      "collection": "product-option"
+    "product-options": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-option.product-option",
+      "mappedBy": "product"
     },
     "images": {
-      "via": "products",
-      "collection": "image",
-      "dominant": true
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::image.image",
+      "mappedBy": "product"
     },
-    "shipping_profile": {
-      "via": "products",
-      "model": "shipping-profile"
+    "shipping-profile": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-profile.shipping-profile",
+      "mappedBy": "products"
     },
-    "product_collection": {
-      "via": "products",
-      "model": "product-collection"
+    "product-collections": {
+      "type": "relation", 
+      "relation": "manyToMany",
+      "target": "api::product-collection.product-collection",
+      "mappedBy": "products"
     },
-    "product_type": {
-      "via": "products",
-      "model": "product-type"
+    "product-type": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-collection.product-collection",
+      "inversedBy": "products"
     },
-    "product_tags": {
-      "via": "products",
-      "collection": "product-tag",
-      "dominant": true
+    "product-tag": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-tag.product-tag",
+      "inversedBy": "products"
     },
-    "product_metafields": {
-      "via": "products",
-      "collection": "product-metafields",
-      "model": "product-metafield"
+    "product-medias": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-media.product-media",
+      "mappedBy": "product"
     },
-    "product_documents": {
-      "via": "products",
-      "collection": "product-documents",
-      "model": "product-document"
+    
+    "product-metafield": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product-metafield.product-metafield",
+      "inversedBy": "product"
     },
-    "product_legals": {
-      "via": "products",
-      "collection": "product-legals",
-      "model": "product-legal"
+    "product-documents": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-document.product-document",
+      "mappedBy": "product"
+    },
+    "product-legal": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-legal.product-legal",
+      "inversedBy": "products"
     },
     "store": {
-      "model": "store",
-      "via": "products"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::store.store",
+      "inversedBy": "products"
     }
   }
 }

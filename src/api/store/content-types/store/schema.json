@@ -57,8 +57,11 @@
       "requred": true
     },
     "products": {
-      "via": "store",
-      "collection": "product"
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::product.product",
+        "mappedBy": "products"
+      
     }
 }
 }

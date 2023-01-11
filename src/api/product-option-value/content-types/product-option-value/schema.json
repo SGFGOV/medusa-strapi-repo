@@ -29,13 +29,17 @@
     "metadata": {
       "type": "json"
     },
-    "product_variant": {
-      "via": "product_option_values",
-      "model": "product-variant"
+    "product-variants": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-variant.product-variant",
+      "inversedBy": "product-options"
     },
-    "product_option": {
-      "via": "product_option_values",
-      "model": "product-option"
+    "product-option": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-option.product-option",
+      "inversedBy": "product-option-values"
     }
   }
 }

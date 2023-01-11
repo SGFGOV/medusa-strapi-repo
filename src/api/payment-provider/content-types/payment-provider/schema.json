@@ -28,9 +28,12 @@
       "default": true,
       "required": true
     },
+    
     "regions": {
-      "via": "payment_providers",
-      "collection": "region"
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::region.region",
+      "inversedBy": "payment-providers"
     }
   }
 }

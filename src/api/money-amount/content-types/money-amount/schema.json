@@ -30,9 +30,13 @@
     "sale_amount": {
       "type": "biginteger"
     },
-    "product_variant": {
-      "via": "money_amounts",
-      "model": "product-variant"
+
+    "product-variant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product-variant.product-variant",
+      "mappedBy": "money-amount"
     }
+    
   }
 }

@@ -54,21 +54,29 @@
     "metadata": {
       "type": "json"
     },
-    "shipping_option_requirements": {
-      "via": "shipping_option",
-      "collection": "shipping-option-requirement"
+    "shipping-option-requirements": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option-requirement.shipping-option-requirement",
+      "inversedBy": "shipping-options"
     },
-    "region": {
-      "via": "shipping_options",
-      "model": "region"
+    "regions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::region.region",
+      "mappedBy": "shipping-options"
     },
-    "shipping_profile": {
-      "via": "shipping_options",
-      "model": "shipping-profile"
+    "shipping-profiles": {
+     "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-profile.shipping-profile",
+      "inversedBy": "shipping-options"
     },
-    "fulfillment_provider": {
-      "via": "shipping_options",
-      "model": "fulfillment-provider"
+    "fulfillment-providers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::fulfillment-provider.fulfillment-provider",
+      "inversedBy": "shipping-options"
     }
   }
 }

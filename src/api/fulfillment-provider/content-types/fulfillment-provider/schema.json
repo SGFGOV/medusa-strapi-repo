@@ -29,12 +29,16 @@
       "required": true
     },
     "regions": {
-      "via": "fulfillment_providers",
-      "collection": "region"
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::region.region",
+      "inversedBy": "fulfillment-providers"
     },
-    "shipping_options": {
-      "via": "fulfillment_provider",
-      "collection": "shipping-option"
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "inversedBy": "fulfillment-providers"
     }
   }
 }

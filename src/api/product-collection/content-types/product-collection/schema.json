@@ -36,8 +36,10 @@
       "type": "json"
     },
     "products": {
-      "via": "product_collection",
-      "collection": "product"
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "product-collections"
     }
   }
 }

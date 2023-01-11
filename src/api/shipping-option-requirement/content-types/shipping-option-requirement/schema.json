@@ -33,9 +33,11 @@
     "amount": {
       "type": "decimal"
     },
-    "shipping_option": {
-      "via": "shipping_option_requirements",
-      "model": "shipping-option"
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "inversedBy": "shipping-option-requirements"
     }
   }
 }

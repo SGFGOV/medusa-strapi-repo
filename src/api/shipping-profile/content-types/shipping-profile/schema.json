@@ -40,13 +40,18 @@
     "metadata": {
       "type": "json"
     },
-    "shipping_options": {
-      "via": "shipping_profile",
-      "collection": "shipping-option"
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "mappedBy": "shipping-profiles"
     },
     "products": {
-      "via": "shipping_profile",
-      "collection": "product"
+        "type": "relation",
+        "relation": "manyToMany",
+        "target": "api::product.product",
+        "mappedBy": "shipping-profiles"
+  
     }
   }
 }

@@ -30,13 +30,23 @@
     "metadata": {
       "type": "json"
     },
-    "product_option_values": {
-      "via": "product_option",
-      "collection": "product-option-value"
+    "product-option-values": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-option-value.product-option-value",
+      "mappedBy": "product-option"
     },
     "product": {
-      "via": "product_options",
-      "model": "product"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "product-options"
+    },
+    "product-variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variant.product-variant",
+      "mappedBy": "product-options"
     }
   }
 }
