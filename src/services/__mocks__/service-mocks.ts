@@ -26,21 +26,36 @@ export const storeService = {
 };
 
 export const productService = {
-    retrieve: jest.fn((id) => {
-        if (id === "exists") {
-            return Promise.resolve({
-                id: "exists",
-                type: { id: "dummy" },
-                title: "test-product"
-            });
-        }
-        return Promise.resolve(undefined);
-    })
+    retrieve: jest
+        .fn()
+        .mockImplementationOnce((id) => {
+            if (id === "exists") {
+                return Promise.resolve({
+                    id: "exists",
+                    type: { id: "dummy" },
+                    title: "test-product"
+                });
+            }
+            return Promise.resolve(undefined);
+        })
+        .mockImplementation((id) => {
+            if (id === "exists") {
+                return Promise.resolve({
+                    id: "exists",
+                    type: { id: "dummy" },
+                    title: "test-product-2"
+                });
+            }
+            return Promise.resolve(undefined);
+        })
 };
 
 export const productTypeService = {
     retrieve: jest.fn((id) => {
-        return Promise.resolve({ medusa_id: "dummy", value: "dummy" });
+        return Promise.resolve({
+            value: "dummy",
+            id: "dummy"
+        });
     })
 };
 
@@ -57,17 +72,30 @@ export const redisClient = {
     }
 };
 export const productVariantService = {
-    retrieve: jest.fn((id) => {
-        if (id === "exists") {
-            return Promise.resolve({
-                id: "exists",
-                product: { id: "exists" },
-                title: "test-product-variant",
-                inventory_quantity: 10
-            });
-        }
-        return Promise.resolve(undefined);
-    })
+    retrieve: jest
+        .fn()
+        .mockImplementationOnce((id) => {
+            if (id === "exists") {
+                return Promise.resolve({
+                    id: "exists",
+                    product: { id: "exists" },
+                    title: "test-product-variant",
+                    inventory_quantity: 10
+                });
+            }
+            return Promise.resolve(undefined);
+        })
+        .mockImplementation((id) => {
+            if (id === "exists") {
+                return Promise.resolve({
+                    id: "exists",
+                    product: { id: "exists" },
+                    title: "test-product-variant-2",
+                    inventory_quantity: 20
+                });
+            }
+            return Promise.resolve(undefined);
+        })
 };
 export const eventBusService = {};
 export const logger = {

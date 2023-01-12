@@ -1,5 +1,6 @@
 import { FindConfig } from "@medusajs/medusa/dist/types/common";
 import { Method } from "axios";
+import { BaseEntity } from "@medusajs/medusa";
 
 export interface StrapiMedusaPluginOptions {
     encryption_algorithm: string;
@@ -47,10 +48,10 @@ export type MedusaUserType = {
     provider?: string;
 };
 export interface StrapiSendParams {
-    method: Method;
+    method?: Method;
     type: string;
     authInterface: AuthInterface;
-    data?: any;
+    data?: BaseEntity;
     id?: string;
     username?: string;
 }

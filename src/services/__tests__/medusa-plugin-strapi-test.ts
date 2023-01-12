@@ -145,6 +145,49 @@ describe("StrapiService", () => {
                 { id: "exists" },
                 defaultAuthInterface
             );
+            await service.deleteProductTypeInStrapi(
+                { id: "dummy" },
+                defaultAuthInterface
+            );
+
+            await service.deleteDefaultMedusaUser();
+        }, 600000);
+
+        it("calls product , product type and checks existence of type in strapi and updates the product", async () => {
+            const response = await service.registerOrLoginDefaultMedusaUser();
+            const defaultAuthInterface = service.defaultAuthInterface;
+            let typeResult = await service.createProductTypeInStrapi(
+                "dummy",
+                defaultAuthInterface
+            );
+            expect(response).toBeDefined();
+            if (!typeResult) {
+                typeResult = await service.getEntitiesFromStrapi({
+                    authInterface: defaultAuthInterface,
+                    strapiEntityType: "product-types"
+                });
+            }
+            expect(typeResult).toBeDefined();
+            let result = await service.createProductInStrapi(
+                "exists",
+                defaultAuthInterface
+            );
+            expect(result).toBeDefined();
+
+            result = await service.updateProductInStrapi(
+                "exists",
+                defaultAuthInterface
+            );
+            expect(result).toBeDefined();
+            expect(spy).toHaveBeenCalled();
+            await service.deleteProductInStrapi(
+                { id: "exists" },
+                defaultAuthInterface
+            );
+            await service.deleteProductTypeInStrapi(
+                { id: "dummy" },
+                defaultAuthInterface
+            );
             await service.deleteDefaultMedusaUser();
         }, 600000);
         it(
@@ -187,6 +230,10 @@ describe("StrapiService", () => {
 
                 await service.deleteProductInStrapi(
                     { id: "exists" },
+                    defaultAuthInterface
+                );
+                await service.deleteProductTypeInStrapi(
+                    { id: "dummy" },
                     defaultAuthInterface
                 );
                 await service.deleteDefaultMedusaUser();

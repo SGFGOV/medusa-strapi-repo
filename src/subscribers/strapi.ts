@@ -1,4 +1,5 @@
 import {
+    BaseEntity,
     EventBusService,
     ProductService,
     ProductVariantService,
@@ -31,35 +32,29 @@ class StrapiSubscriber {
         this.logger = logger;
         this.logger.info("Strapi Subscriber Initialized");
 
-        this.eventBus_.subscribe(
-            "region.created",
-            async (data: { id: string }) => {
-                const authInterace: AuthInterface =
-                    (await this.getLoggedInUserStrapiCreds()) ??
-                    this.strapiService_.defaultAuthInterface;
-                await this.strapiService_.createRegionInStrapi(
-                    data.id,
-                    authInterace
-                );
-            }
-        );
+        this.eventBus_.subscribe("region.created", async (data: BaseEntity) => {
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
+            await this.strapiService_.createRegionInStrapi(
+                data.id,
+                authInterace
+            );
+        });
 
-        this.eventBus_.subscribe(
-            "region.updated",
-            async (data: { id: string }) => {
-                const authInterace: AuthInterface =
-                    (await this.getLoggedInUserStrapiCreds()) ??
-                    this.strapiService_.defaultAuthInterface;
-                await this.strapiService_.updateRegionInStrapi(
-                    data.id,
-                    authInterace
-                );
-            }
-        );
+        this.eventBus_.subscribe("region.updated", async (data: BaseEntity) => {
+            const authInterace: AuthInterface =
+                (await this.getLoggedInUserStrapiCreds()) ??
+                this.strapiService_.defaultAuthInterface;
+            await this.strapiService_.updateRegionInStrapi(
+                data.id,
+                authInterace
+            );
+        });
 
         this.eventBus_.subscribe(
             "product-variant.created",
-            async (data: { id: string }) => {
+            async (data: BaseEntity) => {
                 const authInterace: AuthInterface =
                     (await this.getLoggedInUserStrapiCreds()) ??
                     this.strapiService_.defaultAuthInterface;
@@ -89,7 +84,7 @@ class StrapiSubscriber {
 
         this.eventBus_.subscribe(
             "product.created",
-            async (data: { id: string }) => {
+            async (data: BaseEntity) => {
                 const authInterace: AuthInterface =
                     (await this.getLoggedInUserStrapiCreds()) ??
                     this.strapiService_.defaultAuthInterface;
@@ -102,7 +97,7 @@ class StrapiSubscriber {
 
         this.eventBus_.subscribe(
             "product.metafields.create",
-            async (data: { id: string }) => {
+            async (data: BaseEntity) => {
                 const authInterace: AuthInterface =
                     (await this.getLoggedInUserStrapiCreds()) ??
                     this.strapiService_.defaultAuthInterface;
@@ -115,7 +110,7 @@ class StrapiSubscriber {
 
         this.eventBus_.subscribe(
             "product.metafields.update",
-            async (data: { id: string }) => {
+            async (data: BaseEntity) => {
                 const authInterace: AuthInterface =
                     (await this.getLoggedInUserStrapiCreds()) ??
                     this.strapiService_.defaultAuthInterface;

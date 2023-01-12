@@ -6,6 +6,7 @@ import { sleep } from "@medusajs/medusa/dist/utils/sleep";
 import {
     BaseEntity,
     EventBusService,
+    Product,
     ProductService,
     ProductTypeService,
     ProductVariantService,
@@ -176,7 +177,7 @@ class UpdateStrapiService extends BaseService {
     }
 
     async createImageAssets(
-        product,
+        product: Product,
         authInterface: AuthInterface
     ): Promise<any> {
         const assets = await Promise.all(
@@ -187,11 +188,7 @@ class UpdateStrapiService extends BaseService {
                         type: "images",
                         id: product.id,
                         authInterface,
-                        data: {
-                            image_id: image.id,
-                            url: image.url,
-                            metadata: image.metadata || {}
-                        },
+                        data: image,
                         method: "post"
                     });
                     return result?.data?.image ?? undefined;
@@ -222,7 +219,7 @@ class UpdateStrapiService extends BaseService {
             const result = await this.createEntryInStrapi({
                 type: params.strapiEntityType,
                 authInterface: params.authInterface,
-                data: { data: entity },
+                data: entity,
                 method: "POST"
             });
             return result;
@@ -449,12 +446,12 @@ class UpdateStrapiService extends BaseService {
 
             if (region) {
                 // Update entry in Strapi
-                const response = await this.updateEntryInStrapi(
-                    "regions",
-                    region.id,
+                const response = await this.updateEntryInStrapi({
+                    type: "regions",
+                    id: region.id,
                     authInterface,
-                    region
-                );
+                    data: region
+                });
                 this.logger.info("Region Strapi Id - ", response);
             }
 
@@ -465,7 +462,7 @@ class UpdateStrapiService extends BaseService {
     }
 
     async createProductMetafieldInStrapi(
-        data: { id: string },
+        data: BaseEntity,
         authInterface: AuthInterface = this.defaultAuthInterface
     ): Promise<any> {
         const typeExists = await this.checkType("metafields", authInterface);
@@ -482,7 +479,7 @@ class UpdateStrapiService extends BaseService {
         });
     }
     async updateProductMetafieldInStrapi(
-        data: { id: string },
+        data: BaseEntity,
         authInterface: AuthInterface = this.defaultAuthInterface
     ): Promise<any> {
         const typeExists = await this.checkType("metafields", authInterface);
@@ -580,12 +577,13 @@ class UpdateStrapiService extends BaseService {
             });
 
             if (product) {
-                await this.updateEntryInStrapi(
-                    "products",
-                    product.id,
+                await this.updateEntryInStrapi({
+                    type: "products",
+                    id: product.id,
                     authInterface,
-                    product
-                );
+                    data: product,
+                    method: "put"
+                });
             }
 
             return product;
@@ -652,12 +650,13 @@ class UpdateStrapiService extends BaseService {
 
             if (variant) {
                 // Update entry in Strapi
-                const response = await this.updateEntryInStrapi(
-                    "product-variants",
-                    variant.id,
+                const response = await this.updateEntryInStrapi({
+                    type: "product-variants",
+                    id: variant.id,
                     authInterface,
-                    variant
-                );
+                    data: variant,
+                    method: "put"
+                });
                 this.logger.info("Variant Strapi Id - ", response);
             }
 
@@ -687,11 +686,39 @@ class UpdateStrapiService extends BaseService {
             return Promise.resolve();
         }
 
-        return await this.deleteEntryInStrapi(
-            "products",
-            data.id,
-            authInterface
-        );
+        return await this.deleteEntryInStrapi({
+            type: "products",
+            id: data.id,
+            authInterface,
+            method: "delete"
+        });
+    }
+
+    async deleteProductTypeInStrapi(
+        data,
+        authInterface: AuthInterface
+    ): Promise<any> {
+        const hasType = await this.getType("product-types", authInterface)
+            .then(() => true)
+            .catch((err) => {
+                this.logger.info(err);
+                return false;
+            });
+        if (!hasType) {
+            return Promise.resolve();
+        }
+
+        const ignore = await this.shouldIgnore_(data.id, "strapi");
+        if (ignore) {
+            return Promise.resolve();
+        }
+
+        return await this.deleteEntryInStrapi({
+            type: "product-types",
+            id: data.id,
+            authInterface,
+            method: "delete"
+        });
     }
 
     async deleteProductVariantInStrapi(
@@ -713,11 +740,12 @@ class UpdateStrapiService extends BaseService {
             return Promise.resolve();
         }
 
-        return await this.deleteEntryInStrapi(
-            "product-variants",
-            data.id,
-            authInterface
-        );
+        return await this.deleteEntryInStrapi({
+            type: "product-variants",
+            id: data.id,
+            authInterface,
+            method: "delete"
+        });
     }
 
     // Blocker - Delete Region API
@@ -737,15 +765,16 @@ class UpdateStrapiService extends BaseService {
             return Promise.resolve();
         }
 
-        return await this.deleteEntryInStrapi(
-            "regions",
-            data.id,
-            authInterface
-        );
+        return await this.deleteEntryInStrapi({
+            type: "regions",
+            id: data.id,
+            authInterface,
+            method: "delete"
+        });
     }
 
     async getType(type: string, authInterface: AuthInterface): Promise<any> {
-        const result = await this.strapiSend({
+        const result = await this.strapiSendDataLayer({
             method: "get",
             type,
             authInterface
@@ -872,7 +901,7 @@ class UpdateStrapiService extends BaseService {
     async deleteMedusaUserFromStrapi(
         authInterface: AuthInterface
     ): Promise<any> {
-        const fetchedResult = await this.strapiSend({
+        const fetchedResult = await this.strapiSendDataLayer({
             method: "get",
             type: "users",
             id: "me",
@@ -882,7 +911,7 @@ class UpdateStrapiService extends BaseService {
         const fetchedUser = fetchedResult.data;
         this.logger.info("found user: " + JSON.stringify(fetchedResult.data));
 
-        const result = await this.strapiSend({
+        const result = await this.strapiSendDataLayer({
             method: "delete",
             type: "users",
             id: fetchedUser.id,
@@ -1029,7 +1058,7 @@ class UpdateStrapiService extends BaseService {
 
     async processStrapiEntry(command: StrapiSendParams): Promise<any> {
         try {
-            return await this.strapiSend(command);
+            return await this.strapiSendDataLayer(command);
         } catch (e) {
             this.logger.error(e);
         }
@@ -1063,45 +1092,44 @@ class UpdateStrapiService extends BaseService {
         });
     }
 
-    async updateEntryInStrapi(
-        type,
-        id,
-        authInterface: AuthInterface,
-        data
-    ): Promise<any> {
+    async updateEntryInStrapi(command: StrapiSendParams): Promise<any> {
         return await this.processStrapiEntry({
-            method: "put",
-            type,
-            id,
-            authInterface,
-            data
+            ...command,
+            method: "put"
         });
     }
 
-    async deleteEntryInStrapi(type, id, authInterface): Promise<any> {
+    async deleteEntryInStrapi(command: StrapiSendParams): Promise<any> {
         return await this.processStrapiEntry({
-            method: "delete",
-            type,
-            id,
-            authInterface
+            ...command,
+            method: "delete"
         });
     }
 
     /* using cached tokens */
     /* @todo enable api based access */
-    async strapiSend(params: StrapiSendParams): Promise<any> {
+    async strapiSendDataLayer(params: StrapiSendParams): Promise<any> {
         const { method, type, id, data, authInterface } = params;
 
         const userCreds = await this.executeLoginAsStrapiUser(authInterface);
+        let dataToSend: BaseEntity & { medusa_id?: string };
+        if (data) {
+            dataToSend = _.cloneDeep(data);
+            dataToSend["medusa_id"] = data.id;
+            delete dataToSend.id;
+        }
 
         try {
-            return await this.executeStrapiSend(
-                method,
-                type,
-                userCreds.token,
-                id,
-                data
-            );
+            const result = (
+                await this.executeStrapiSend(
+                    method,
+                    type,
+                    userCreds.token,
+                    id,
+                    { data: dataToSend }
+                )
+            ).data;
+            return result;
         } catch (e) {
             this.logger.error(e.message);
         }
@@ -1156,6 +1184,7 @@ class UpdateStrapiService extends BaseService {
             : {
                   ...basicConfig
               };
+
         try {
             const result = await axios(config);
             this.logger.info(`User Endpoint fired: ${endPoint}`);
