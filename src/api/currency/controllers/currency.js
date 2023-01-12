@@ -1,9 +1,6 @@
 "use strict";
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
 
-/**
- *  currency controller
- */
-
-const { createCoreController } = require("@strapi/strapi").factories;
-
-module.exports = createCoreController("api::currency.currency");
+const uid = "api::currency.currency";
+module.exports = createMedusaDefaultController(uid);

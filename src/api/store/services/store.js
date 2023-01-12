@@ -27,7 +27,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       throw new Error("Delegated creation failed");
     }
   },
-  async findOne(params = {}) {
+  /*async findOne(params = {}) {
     const fields = getFields(__filename, __dirname);
     let filters = {};
     if (params.medusa_id) {
@@ -45,7 +45,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
         filters,
       })
     )[0];
-  },
+  },*/
   async delete(strapi_id, params = {}) {
     return await strapi.entityService.delete(uid, strapi_id, params);
   },

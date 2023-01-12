@@ -1,29 +1,23 @@
 "use strict";
 const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
+const controllerfindOne = require("../../../utils/utils").controllerfindOne;
+
 /**
- *  image controller
+ *  region controller
  */
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
+const uid = "api::region.region";
+module.exports = createMedusaDefaultController(uid);
 
+/*
 const { createCoreController } = require("@strapi/strapi").factories;
-
+const uid = "api::region.region";
 module.exports = createCoreController("api::region.region", {
-  async findOne(ctx) {
-    try {
-      const { id: medusaId } = ctx.params;
-      const region = await strapi
-        .service("api::region.region")
-        .findOne({ region_id: medusaId });
-      if (region && region.id) {
-        return (ctx.body = { region });
-      }
-      return ctx.notFound(ctx);
-    } catch (e) {
-      handleError(strapi, e);
-      return ctx.internalServerError(ctx);
-    }
-  },
-  async create(ctx) {
+  async findOne(ctx){
+    return controllerfindOne(ctx, strapi, uid)
+  }
+  /* async create(ctx) {
     try {
       const regionBody = ctx.request.body.data ?? ctx.request.body;
       //const regionBody = ctx.request.body;
@@ -95,4 +89,4 @@ module.exports = createCoreController("api::region.region", {
       return ctx.internalServerError(ctx, e);
     }
   },
-});
+});*/

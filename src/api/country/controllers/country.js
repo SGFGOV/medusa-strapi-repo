@@ -1,9 +1,6 @@
 "use strict";
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
 
-/**
- *  country controller
- */
-
-const { createCoreController } = require("@strapi/strapi").factories;
-
-module.exports = createCoreController("api::country.country");
+const uid = "api::country.country";
+module.exports = createMedusaDefaultController(uid);

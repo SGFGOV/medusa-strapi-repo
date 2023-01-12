@@ -16,10 +16,15 @@ module.exports = ({ env }) => ({
       jwt: {
         expiresIn: "1h",
       },
-      ratelimit: {
-        interval: 60000,
-        max: 100000,
-      },
+      ratelimit:
+        process.env.NODE_ENV == "test"
+          ? {
+              interval: 60000,
+              max: 100000,
+            }
+          : {
+              headers: true,
+            },
     },
   },
   "strapi-plugin-sso": {

@@ -34,6 +34,7 @@ const getDirectories = (source) =>
 
 const path = `${__dirname}/../src/api`;
 let apis = getDirectories(path);
+const apisCount = apis.length;
 const testString = `testabcd`;
 const authCreds = {
   identifier: userTestCreds.email,
@@ -78,9 +79,8 @@ function generataTestData(attribute) {
         inventory_quantity: 10,
         id: 1,
       };
-  }
-  if (attribute.model) {
-    return { medusa_id: "1", id: 1, name: "testabcd" };
+    case "relation":
+      return { medusa_id: "1", id: 1, name: "testabcd" };
   }
 }
 
@@ -96,10 +96,17 @@ function createTestDataObjects(path) {
   });
   expect(requiredAttributes.length > 0).toBeTruthy();
   const deps = arrayAttributes
-    .map((attrib) => {
-      return attrib.model;
-    })
-    .filter((v) => v != undefined);
+    .filter((v) => v.type == "relation" && v.inversedBy)
+    .map((r) => {
+      switch (r.relation) {
+        case "manyToOne":
+        case "oneToOne": {
+          return r.attribName;
+        }
+        default:
+          return r.target.split(".")[1];
+      }
+    });
   const d = {};
   for (const attribute of requiredAttributes) {
     const synthData = generataTestData(attribute);
@@ -117,6 +124,12 @@ async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+const testPostMock = jest
+  .fn()
+  .mockImplementation((apiName, testInfo) =>
+    Promise.resolve(testPost(apiName, testInfo))
+  );
+
 async function testPost(apiName, testInfo) {
   const data = testInfo.data;
   await delay(100);
@@ -129,23 +142,7 @@ async function testPost(apiName, testInfo) {
     .post(`/api/${apiName}`)
     .send({ data: data })
     .set("Authorization", `Bearer ${creds.body.jwt}`);
-  /* if (r.status == 400) {
-    r = await request(strapi.server.httpServer)
-      .post(`/api/${apiName}`)
-      .send({ ...data })
-      .set("Authorization", `Bearer ${creds.body.jwt}`);
-  }*/
-  /*  if (r.status == 400) {
-      r = await request(strapi.server.httpServer)
-        .post(`/api/${apiName}`)
-        .send(data)
-        .set("Authorization", `Bearer ${creds.body.jwt}`);
-      if (r.status == 400) {
-        console.log("unable to post");
-        r.status = 500;
-      }
-    }*
-  }*/
+  
   const status = r.status == 200;
   expect(status).toBeTruthy();
   return data;
@@ -164,7 +161,8 @@ async function testGet(apiName, id) {
     s = await request(strapi.server.httpServer)
       .get(`/api/${apiName}/${id}`)
       .set("Authorization", `Bearer ${creds.body.jwt}`);
-    expect(s.status).toBe(200);
+    const status = s.status == 200;
+    expect(status).toBeTruthy();
   }
   // Expect response http code 200
   return s;
@@ -181,6 +179,8 @@ async function testPut(apiName, id, data) {
     .set("Authorization", `Bearer ${creds.body.jwt}`);
   expect(s.status).toBe(200);
   // Expect response http code 200
+  const status = s.status == 200;
+  expect(status).toBeTruthy();
   return s;
 }
 
@@ -193,42 +193,33 @@ async function testDelete(apiName, id) {
     .delete(`/api/${apiName}/${id}`)
     .set("Authorization", `Bearer ${creds.body.jwt}`);
   expect(s.status).toBeDefined(); // Expect response http code 200
+  const status = s.status == 200;
+  expect(status).toBeTruthy();
   return s;
 }
 
 async function processTest(apiSingular, testInfo) {
   const apiUrl = testInfo.schema.info.pluralName;
-  postResult[apiSingular] = await testPost(apiUrl, testInfo);
+  postResult[apiSingular] = await testPostMock(apiUrl, testInfo);
 }
 
-const resolved = [];
-
-async function isResolved(deps) {
-  const result =
-    deps
-      .map((m) => resolved.includes(m))
-      .filter((r) => {
-        return r == false || r == undefined;
-      })?.length > 0;
-  return result;
-}
-
+const processing = [];
 async function performPost(apiSingular) {
   const schemaFilePath = `${path}/${apiSingular}/content-types/${apiSingular}/schema.json`;
 
   const testInfo = createTestDataObjects(schemaFilePath);
   for (const dep of testInfo.deps) {
-    await performPost(dep);
+    if (apis.includes(dep)) {
+      processing.push(dep);
+      apis.splice(apis.indexOf(dep), 1);
+      await performPost(dep);
+      processing.pop();
+    }
   }
+  await processTest(apiSingular, testInfo);
 
   if (apis.includes(apiSingular)) {
-    while (!isResolved(testInfo.deps)) {
-      await delay(1000);
-    }
-    await processTest(apiSingular, testInfo);
-
     apis.splice(apis.indexOf(apiSingular), 1);
-    resolved.push({ name: apiSingular, value: testInfo.data });
   }
 }
 
@@ -263,7 +254,6 @@ async function testApis() {
         );
       }
     }
-    // Promise.all(getResult);
   });
 
   it(`testing  put individuals`, async () => {
@@ -355,14 +345,14 @@ describe("Testing strapi ", () => {
     await cleanupStrapi();
   });
   describe("Testing strapi apis ", () => {
-    /* it("strapi is defined", () => {
-    expect(strapi).toBeDefined();
-  }, 10000);*/
-
     describe("should return 200", (done) => {
-      testApis().then((res) => {
+      // const spy = jest.spyOn(testPost, testPost");
+
+      testApis().then(() => {
         done;
+      //    expect(testPostMock).toHaveBeenCalledTimes(apisCount);
       });
+
       // await request(strapi.server.httpServer).get("/api/countries").expect(200); // Expect response http code 200
     }, 600e3);
   }, 600e3);

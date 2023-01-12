@@ -31,9 +31,9 @@
       "type": "biginteger"
     },
 
-    "product-variant": {
+    "product-variants": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "money-amount"
     }

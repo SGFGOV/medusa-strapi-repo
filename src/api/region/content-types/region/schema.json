@@ -45,9 +45,9 @@
     },
     "payment-providers": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "manyToOne",
       "target": "api::payment-provider.payment-provider",
-      "mappedBy": "regions"
+      "inversedBy": "regions"
     },
     "currency": {
       "type": "relation",

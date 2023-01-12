@@ -1,9 +1,12 @@
 "use strict";
+const handleError = require("../../../utils/utils").handleError;
+const controllerfindOne = require("../../../utils/utils").controllerfindOne;
 
 /**
- *  image controller
+ * shipping-option controller
  */
 
-const { createCoreController } = require("@strapi/strapi").factories;
-
-module.exports = createCoreController("api::shipping-option.shipping-option");
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
+const uid = "api::shipping-option.shipping-option";
+module.exports = createMedusaDefaultController(uid);

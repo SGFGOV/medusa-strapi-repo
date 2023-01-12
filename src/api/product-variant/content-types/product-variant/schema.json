@@ -97,9 +97,9 @@
       },
     "money-amount": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::money-amount.money-amount",
-      "mappedBy": "product-variant"
+      "inversedBy": "product-variants"
     },
     "product-option-value": {
       "type": "relation",

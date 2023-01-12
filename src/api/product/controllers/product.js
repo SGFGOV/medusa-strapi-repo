@@ -1,12 +1,17 @@
 /* eslint-disable no-undef */
 "use strict";
+const handleError = require("../../../utils/utils").handleError;
+const controllerfindOne = require("../../../utils/utils").controllerfindOne;
 
 /**
  *  product controller
  */
 
-const { createCoreController } = require("@strapi/strapi").factories;
-
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
+const uid = "api::payment-provider.payment-provider";
+module.exports = createMedusaDefaultController(uid);
+/*
 module.exports = createCoreController("api::product.product", {
   async findOne(ctx) {
     try {
@@ -28,7 +33,7 @@ module.exports = createCoreController("api::product.product", {
       return ctx.internalServerError(ctx, e);
     }
   },
-  async create(ctx) {
+  /* async create(ctx) {
     try {
       const productBody = ctx.request.body.data || ctx.request.body;
 
@@ -43,8 +48,8 @@ module.exports = createCoreController("api::product.product", {
       handleError(strapi, e);
       return ctx.internalServerError(ctx, e);
     }
-  },
-  async update(ctx) {
+  },*/
+  /* async update(ctx) {
     try {
       const { id: medusaId } = ctx.params;
       const productBody = ctx.request.body.data || ctx.request.body;
@@ -79,8 +84,8 @@ module.exports = createCoreController("api::product.product", {
       handleError(strapi, e);
       return ctx.internalServerError(ctx, e);
     }
-  },
-  async delete(ctx) {
+  },*/
+ /* async delete(ctx) {
     try {
       const { id: medusaId } = ctx.params;
       const product = await strapi.services["api::product.product"].findOne({
@@ -104,4 +109,4 @@ module.exports = createCoreController("api::product.product", {
       return ctx.internalServerError(ctx, e);
     }
   },
-});
+});*/

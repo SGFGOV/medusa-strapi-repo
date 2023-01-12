@@ -31,9 +31,9 @@
     
     "regions": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "oneToMany",
       "target": "api::region.region",
-      "inversedBy": "payment-providers"
+      "mappedBy": "payment-providers"
     }
   }
 }

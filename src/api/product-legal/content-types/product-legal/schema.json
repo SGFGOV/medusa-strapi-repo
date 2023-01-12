@@ -1,5 +1,5 @@
 {
-  "kind": "collectionLegal",
+  "kind": "collectionType",
   "collectionName": "product_legals",
   "info": {
     "singularName": "product-legal",

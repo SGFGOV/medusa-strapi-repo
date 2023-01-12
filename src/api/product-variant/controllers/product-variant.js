@@ -1,6 +1,4 @@
 "use strict";
-const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
 /**
  *  product-variant controller
  */
@@ -19,8 +17,14 @@ function performCleanups(productVariantBody) {
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
+const uid = "api::product-variant.product-variant";
+module.exports = createMedusaDefaultController(uid);
+
+/*
 module.exports = createCoreController("api::product-variant.product-variant", {
-  async findOne(ctx) {
+ /* async findOne(ctx) {
     try {
       const { id: medusaId } = ctx.params;
       const productVariant = await strapi.services[
@@ -37,7 +41,7 @@ module.exports = createCoreController("api::product-variant.product-variant", {
       return ctx.internalServerError(ctx, e);
     }
   },
-  async create(ctx) {
+  /* async create(ctx) {
     try {
       const productVariantBody = ctx.request.body.data || ctx.request.body;
 
@@ -61,8 +65,8 @@ module.exports = createCoreController("api::product-variant.product-variant", {
       handleError(strapi, e);
       return ctx.internalServerError(ctx, e);
     }
-  },
-  async update(ctx) {
+  },*/
+/* async update(ctx) {
     try {
       const { id: medusaId } = ctx.params;
       const productVariantBody = ctx.request.body.data || ctx.request.body;
@@ -126,4 +130,4 @@ module.exports = createCoreController("api::product-variant.product-variant", {
       return ctx.internalServerError(ctx, e);
     }
   },
-});
+});*/

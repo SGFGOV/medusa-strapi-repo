@@ -1,9 +1,6 @@
 "use strict";
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
 
-/**
- *  image controller
- */
-
-const { createCoreController } = require("@strapi/strapi").factories;
-
-module.exports = createCoreController("api::image.image");
+const uid = "api::image.image";
+module.exports = createMedusaDefaultController(uid);

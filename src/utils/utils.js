@@ -1,3 +1,5 @@
+const { createCoreController } = require("@strapi/strapi").factories;
+
 async function hasSuperUser(strapi) {
   strapi.log.debug(`Checking if Superuser exists`);
   const superAdminRole = await strapi.service("admin::user").exists();
@@ -53,11 +55,15 @@ function getFields(filename, dirName) {
   const fileNameWithExtension = fileNameParts[fileNameParts.length - 1];
   const folderName = fileNameWithExtension.split(".")[0];
   const schema = require(`${dirName}/../content-types/${folderName}/schema.json`);
-  const keys = Object.keys(schema.attributes);
+  return getRequiredKeys(schema.attributes);
+}
+
+function getRequiredKeys(attributes) {
+  const keys = Object.keys(attributes);
   const requiredAttributes =
     process.env.NODE_ENV == "test"
-      ? ["id"]
-      : keys.filter((k) => !schema.attributes[k].via);
+      ? ["id", "medusa_id"]
+      : keys.filter((k) => !attributes[k].relation);
   return requiredAttributes;
 }
 
@@ -68,9 +74,127 @@ function handleError(strapi, e) {
   strapi.log.error(`stack trace ${e.stack}`);
 }
 
+async function controllerfindOne(ctx, strapi, uid) {
+  const { id: medusa_id } = ctx.params;
+  const apiName = uid.split(".")[1];
+  const model = strapi.api[apiName].contentTypes;
+  const fields = getRequiredKeys(model[apiName].attributes);
+
+  try {
+    const entity = await getStrapiDataByMedusaId(
+      uid,
+      strapi,
+      medusa_id,
+      fields
+    );
+
+    if (entity && entity.id) {
+      return (ctx.body = { data: entity });
+    }
+    return ctx.notFound(ctx);
+  } catch (e) {
+    handleError(strapi, e);
+    return ctx.internalServerError(ctx);
+  }
+  // const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
+}
+
+async function controllerCreate(ctx, strapi, uid) {
+  delete ctx.request.body?.data?.id;
+  try {
+    ctx.body = await strapi.entityService.create(uid, ctx.request.body);
+  } catch (e) {
+    handleError(strapi, e);
+    return ctx.internalServerError(ctx);
+  }
+  return ctx.body;
+}
+
+async function getStrapiIdFromMedusaId(uid, strapi, medusa_id) {
+  return (
+    await getStrapiDataByMedusaId(uid, strapi, medusa_id, ["id", "medusa_id"])
+  ).id;
+}
+
+async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
+  const filters = {
+    medusa_id: medusa_id,
+  };
+  let entity = await strapi.entityService.findMany(uid, {
+    fields,
+    filters,
+  })[0];
+  if (!entity) {
+    const allEntities = await strapi.entityService.findMany(uid, {
+      fields,
+    });
+    entity = allEntities.filter((e) => {
+      return e?.medusa_id == medusa_id;
+    })[0];
+    return entity;
+  }
+}
+
+async function controllerDelete(ctx, strapi, uid) {
+  const { id: medusa_id } = ctx.params;
+  try {
+    const entityId = await getStrapiIdFromMedusaId(uid, strapi, medusa_id);
+    if (!entityId) {
+      return ctx.notFound(ctx);
+    }
+    const result = await strapi.services[uid].delete(entityId);
+    if (result) {
+      return (ctx.body = { deletedData: result });
+    }
+  } catch (e) {
+    handleError(strapi, e);
+    return ctx.internalServerError(ctx);
+  }
+}
+
+async function controllerUpdate(ctx, strapi, uid) {
+  const { id: medusa_id } = ctx.params;
+  delete ctx.request.body?.data?.id;
+  try {
+    const entityId = await getStrapiIdFromMedusaId(uid, strapi, medusa_id);
+
+    if (entityId) {
+      return (ctx.body = await strapi.services[uid].update(
+        entityId,
+        ctx.request.body
+      ));
+    } else {
+      return ctx.notFound(ctx);
+    }
+  } catch (e) {
+    handleError(strapi, e);
+    return ctx.internalServerError(ctx);
+  }
+}
+
+function createMedusaDefaultController(uid) {
+  return createCoreController(uid, {
+    async findOne(ctx) {
+      return controllerfindOne(ctx, strapi, uid);
+    },
+    async delete(ctx) {
+      return controllerDelete(ctx, strapi, uid);
+    },
+    async create(ctx) {
+      return controllerCreate(ctx, strapi, uid);
+    },
+
+    async update(ctx) {
+      return controllerUpdate(ctx, strapi, uid);
+    },
+  });
+}
+
 module.exports = {
   hasSuperUser,
   createSuperUser,
   handleError,
   getFields,
+  controllerfindOne,
+  createMedusaDefaultController,
 };
