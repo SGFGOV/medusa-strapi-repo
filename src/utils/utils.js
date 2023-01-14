@@ -1,5 +1,5 @@
 const { createCoreController } = require("@strapi/strapi").factories;
-
+const _ = require("lodash");
 async function hasSuperUser(strapi) {
   strapi.log.debug(`Checking if Superuser exists`);
   const superAdminRole = await strapi.service("admin::user").exists();
@@ -101,8 +101,19 @@ async function controllerfindOne(ctx, strapi, uid) {
 
 async function controllerCreate(ctx, strapi, uid) {
   delete ctx.request.body?.data?.id;
+  let processedData;
   try {
-    ctx.body = await strapi.entityService.create(uid, ctx.request.body);
+    const data = _.cloneDeep(ctx.request.body.data);
+    processedData = await translateMedusaIdsToStrapiIds(uid, strapi, data);
+  } catch (e) {
+    handleError(strapi, e);
+    return ctx.internalServerError(ctx);
+  }
+  try {
+    ctx.body = await strapi.entityService.create(uid, {
+      ...ctx.request.body,
+      data: processedData,
+    });
   } catch (e) {
     handleError(strapi, e);
     return ctx.internalServerError(ctx);
@@ -113,7 +124,74 @@ async function controllerCreate(ctx, strapi, uid) {
 async function getStrapiIdFromMedusaId(uid, strapi, medusa_id) {
   return (
     await getStrapiDataByMedusaId(uid, strapi, medusa_id, ["id", "medusa_id"])
-  ).id;
+  )?.id;
+}
+
+async function translateMedusaIdsToStrapiIds(uid, strapi, dataRecieved) {
+  if (!dataRecieved) {
+    return;
+  }
+  const keys = Object.keys(dataRecieved);
+  for (const key of keys) {
+    if (dataRecieved[key] instanceof Array) {
+      const objectUid = `api::${key}.${key}`;
+      for (const element of dataRecieved[key]) {
+        translateMedusaIdsToStrapiIds(objectUid, strapi, element);
+      }
+    } else if (dataRecieved[key] instanceof Object) {
+      const objectUid = `api::${key}.${key}`;
+      translateMedusaIdsToStrapiIds(objectUid, strapi, dataRecieved[key]);
+    } else if (key == "medusa_id") {
+      try {
+        const service = strapi.service(uid);
+        const strapiId = await getStrapiIdFromMedusaId(
+          uid,
+          strapi,
+          dataRecieved[key]
+        );
+        if (strapiId) {
+          dataRecieved["id"] = strapiId;
+        }
+      } catch (e) {
+        strapi.log.error("no such service " + e.message);
+      }
+      return dataRecieved;
+    }
+  }
+  return dataRecieved;
+}
+
+async function translateStrapiIdsToMedusaIds(uid, strapi, dataToSend) {
+  if (!dataToSend) {
+    return;
+  }
+  const keys = Object.keys(dataToSend);
+
+  for (const key of keys) {
+    if (dataToSend[key] instanceof Array) {
+      for (const element of dataToSend[key]) {
+        const objectUid = `api::${key}.${key}`;
+        translateStrapiIdsToMedusaIds(objectUid, strapi, element);
+      }
+    } else if (dataToSend[key] instanceof Object) {
+      const objectUid = `api::${key}.${key}`;
+      translateStrapiIdsToMedusaIds(objectUid, strapi, dataToSend[key]);
+    } else if (key == "id") {
+      try {
+        const entity = await strapi
+          .service(uid)
+          .findOne(dataToSend[key], uid, strapi);
+        if (entity) {
+          dataToSend["medusa_id"] = entity.medusa_id;
+        }
+      } catch (e) {
+        strapi.log.error("error retrieving one " + e.message);
+      }
+
+      return dataToSend;
+    }
+  }
+  return dataToSend;
 }
 
 async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
@@ -131,7 +209,12 @@ async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
     entity = allEntities.filter((e) => {
       return e?.medusa_id == medusa_id;
     })[0];
-    return entity;
+    const translatedEntity = await translateStrapiIdsToMedusaIds(
+      uid,
+      strapi,
+      entity
+    );
+    return translatedEntity;
   }
 }
 

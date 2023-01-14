@@ -27,16 +27,19 @@
       "type": "biginteger",
       "required": true
     },
+    "currency_code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
     "sale_amount": {
       "type": "biginteger"
     },
-
     "product-variants": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "money-amount"
     }
-    
   }
 }
