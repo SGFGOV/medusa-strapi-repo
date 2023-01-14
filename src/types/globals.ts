@@ -53,7 +53,19 @@ export interface StrapiSendParams {
     authInterface: AuthInterface;
     data?: BaseEntity;
     id?: string;
+    action?: string;
     username?: string;
+    query?: string;
+}
+
+export interface StrapiAdminSendParams {
+    method?: Method;
+    type: string;
+    data?: any;
+    id?: string;
+    action?: string;
+    username?: string;
+    query?: string;
 }
 
 export interface CreateInStrapiParams<T> {

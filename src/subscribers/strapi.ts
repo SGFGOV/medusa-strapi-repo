@@ -97,7 +97,7 @@ class StrapiSubscriber {
 
         this.eventBus_.subscribe(
             "product.metafields.create",
-            async (data: BaseEntity) => {
+            async (data: BaseEntity & { data: Record<string, unknown> }) => {
                 const authInterace: AuthInterface =
                     (await this.getLoggedInUserStrapiCreds()) ??
                     this.strapiService_.defaultAuthInterface;
@@ -110,7 +110,7 @@ class StrapiSubscriber {
 
         this.eventBus_.subscribe(
             "product.metafields.update",
-            async (data: BaseEntity) => {
+            async (data: BaseEntity & { data: Record<string, unknown> }) => {
                 const authInterace: AuthInterface =
                     (await this.getLoggedInUserStrapiCreds()) ??
                     this.strapiService_.defaultAuthInterface;

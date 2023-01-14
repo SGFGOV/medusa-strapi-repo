@@ -1,8 +1,12 @@
+"use strict";
+
 import { BaseService } from "medusa-interfaces";
 import axios, { AxiosResponse, Method } from "axios";
 import crypto = require("crypto");
 import { Logger } from "@medusajs/medusa/dist/types/global";
 import { sleep } from "@medusajs/medusa/dist/utils/sleep";
+import qs from "qs";
+import passwordGen from "generate-password";
 import {
     BaseEntity,
     EventBusService,
@@ -23,13 +27,53 @@ import {
     AuthInterface,
     CreateInStrapiParams,
     GetFromStrapiParams,
-    userCreds as UserCreds
+    userCreds as UserCreds,
+    StrapiAdminSendParams
 } from "../types/globals";
 import { EntityManager } from "typeorm";
 import _ from "lodash";
-import { AnyNsRecord } from "dns";
 
+export type StrapiEntity = BaseEntity & { medusa_id?: string };
+export type AdminResult = { data: any; status: number };
+export type AdminGetResult = {
+    data: {
+        data: {
+            results: [];
+        };
+        meta: any;
+    };
+    status: number;
+};
+export type StrapiGetResult = {
+    data?: {
+        data: [];
+        meta: any;
+    };
+    status: number;
+    medusa_id?: string;
+    id?: number;
+};
+
+export type StrapiResult = {
+    medusa_id?: string;
+    id?: number;
+    data?: any;
+    status: number;
+};
 const IGNORE_THRESHOLD = 3; // seconds
+
+export interface StrapiQueryInterface {
+    fields: string[];
+    filters: Record<string, unknown>;
+    populate?: any;
+    sort?: string[];
+    pagination?: {
+        pageSize: number;
+        page: number;
+    };
+    publicationState?: string;
+    locale?: string[];
+}
 
 @Service({ scope: "SINGLETON" })
 class UpdateStrapiService extends BaseService {
@@ -43,20 +87,20 @@ class UpdateStrapiService extends BaseService {
     options_: StrapiMedusaPluginOptions;
     protocol: string;
     strapi_url: string;
-    encryption_key: any;
+    encryption_key: string;
     userTokens: Tokens;
     // strapiDefaultMedusaUserAuthToken: string;
     redis_: any;
     key: WithImplicitCoercion<ArrayBuffer | SharedArrayBuffer>;
     iv: any;
     defaultAuthInterface: AuthInterface;
-    strapiAdminAuthToken: string;
+    strapiSuperAdminAuthToken: string;
     defaultUserEmail: string;
     defaultUserPassword: string;
     userAdminProfile: any;
     logger: Logger;
     static isHealthy: boolean;
-    strapiDefaultUserId: any;
+
     isStarted: boolean;
 
     constructor(
@@ -159,7 +203,7 @@ class UpdateStrapiService extends BaseService {
     async getVariantEntries_(
         variants,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         // eslint-disable-next-line no-useless-catch
         try {
             const allVariants = variants.map(async (variant) => {
@@ -168,9 +212,9 @@ class UpdateStrapiService extends BaseService {
                     variant,
                     authInterface
                 );
-                return result.data?.productVariant;
+                return result;
             });
-            return Promise.all(allVariants);
+            return { status: 400 };
         } catch (error) {
             throw error;
         }
@@ -179,7 +223,7 @@ class UpdateStrapiService extends BaseService {
     async createImageAssets(
         product: Product,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const assets = await Promise.all(
             product.images
                 ?.filter((image) => image.url !== product.thumbnail)
@@ -191,10 +235,10 @@ class UpdateStrapiService extends BaseService {
                         data: image,
                         method: "post"
                     });
-                    return result?.data?.image ?? undefined;
+                    return result;
                 })
         );
-        return assets || [];
+        return assets ? { status: 200, data: assets } : { status: 400 };
     }
 
     getCustomField(field, type): string {
@@ -209,7 +253,7 @@ class UpdateStrapiService extends BaseService {
 
     async createEntityInStrapi<T extends BaseEntity>(
         params: CreateInStrapiParams<T>
-    ): Promise<AxiosResponse | void> {
+    ): Promise<StrapiResult> {
         await this.checkType(params.strapiEntityType, params.authInterface);
         const entity = await params.medusaService.retrieve(params.id, {
             select: params.selectFields,
@@ -226,7 +270,9 @@ class UpdateStrapiService extends BaseService {
         }
     }
 
-    async getEntitiesFromStrapi(params: GetFromStrapiParams): Promise<any> {
+    async getEntitiesFromStrapi(
+        params: GetFromStrapiParams
+    ): Promise<StrapiGetResult> {
         await this.checkType(params.strapiEntityType, params.authInterface);
         try {
             const getEntityParams: StrapiSendParams = {
@@ -237,20 +283,21 @@ class UpdateStrapiService extends BaseService {
             };
 
             const result = await this.getEntriesInStrapi(getEntityParams);
-            return result?.data;
+            return { data: result?.data, status: result.status };
         } catch (e) {
             this.logger.error(
                 `Unable to retrieve ${params.strapiEntityType}, ${
                     params.id ?? "any"
                 }`
             );
+            return { data: undefined, status: 404 };
         }
     }
 
     async createProductTypeInStrapi(
         productTypeId: string,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         return await this.createEntityInStrapi({
             id: productTypeId,
             authInterface: authInterface,
@@ -265,12 +312,14 @@ class UpdateStrapiService extends BaseService {
     async createProductInStrapi(
         productId,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = (await this.getType("products", authInterface))
             ? true
             : false;
         if (!hasType) {
-            return Promise.resolve();
+            return Promise.resolve({
+                status: 400
+            });
         }
 
         // eslint-disable-next-line no-useless-catch
@@ -306,12 +355,25 @@ class UpdateStrapiService extends BaseService {
                     "metadata"
                 ]
             });
-
             if (product) {
+                const productToSend = _.cloneDeep(product);
+                productToSend["product-type"] = _.cloneDeep(productToSend.type);
+                delete productToSend.type;
+                productToSend["product-tag"] = _.cloneDeep(productToSend.tags);
+                delete productToSend.tags;
+                productToSend["product-option"] = _.cloneDeep(
+                    productToSend.options
+                );
+                delete productToSend.options;
+                productToSend["product-variant"] = _.cloneDeep(
+                    productToSend.variants
+                );
+                delete productToSend.variants;
+
                 const result = await this.createEntryInStrapi({
                     type: "products",
                     authInterface,
-                    data: product,
+                    data: productToSend,
                     method: "POST"
                 });
                 return result;
@@ -324,13 +386,15 @@ class UpdateStrapiService extends BaseService {
     async createProductVariantInStrapi(
         variantId,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("product-variants", authInterface)
             .then(() => true)
             .catch((e) => false);
 
         if (!hasType) {
-            return Promise.resolve();
+            return Promise.resolve({
+                status: 400
+            });
         }
 
         // eslint-disable-next-line no-useless-catch
@@ -344,11 +408,20 @@ class UpdateStrapiService extends BaseService {
 
             // this.logger.info(variant)
             if (variant) {
+                const variantToSend = _.cloneDeep(variant);
+                variantToSend["money-amount"] = _.cloneDeep(
+                    variantToSend.prices
+                );
+                delete variantToSend.prices;
+                variantToSend["product-option"] = _.cloneDeep(
+                    variantToSend.options
+                );
+
                 return await this.createEntryInStrapi({
                     type: "product-variants",
                     id: variantId,
                     authInterface,
-                    data: variant,
+                    data: variantToSend,
                     method: "POST"
                 });
             }
@@ -360,13 +433,13 @@ class UpdateStrapiService extends BaseService {
     async createRegionInStrapi(
         regionId,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("regions", authInterface)
             .then(() => true)
             .catch(() => false);
         if (!hasType) {
             this.logger.info('Type "Regions" doesnt exist in Strapi');
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         // eslint-disable-next-line no-useless-catch
@@ -398,7 +471,7 @@ class UpdateStrapiService extends BaseService {
     async updateRegionInStrapi(
         data,
         authInterface: AuthInterface = this.defaultAuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("regions", authInterface)
             .then((res) => {
                 // this.logger.info(res.data)
@@ -409,7 +482,7 @@ class UpdateStrapiService extends BaseService {
                 return false;
             });
         if (!hasType) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         const updateFields = [
@@ -423,14 +496,14 @@ class UpdateStrapiService extends BaseService {
         // check if update contains any fields in Strapi to minimize runs
         const found = this.verifyDataContainsFields(data, updateFields);
         if (!found) {
-            return;
+            return { status: 400 };
         }
 
         // eslint-disable-next-line no-useless-catch
         try {
             const ignore = await this.shouldIgnore_(data.id, "strapi");
             if (ignore) {
-                return;
+                return { status: 400 };
             }
 
             const region = await this.regionService_.retrieve(data.id, {
@@ -453,45 +526,71 @@ class UpdateStrapiService extends BaseService {
                     data: region
                 });
                 this.logger.info("Region Strapi Id - ", response);
+                return response;
+            } else {
+                return { status: 400 };
             }
-
-            return region;
         } catch (error) {
+            return { status: 400 };
             throw error;
         }
     }
+    /**
+     * Product metafields id is the same as product id
+     * @param data
+     * @param authInterface
+     * @returns
+     */
 
     async createProductMetafieldInStrapi(
-        data: BaseEntity,
+        data: { id: string; data: Record<string, unknown> },
         authInterface: AuthInterface = this.defaultAuthInterface
-    ): Promise<any> {
-        const typeExists = await this.checkType("metafields", authInterface);
+    ): Promise<StrapiResult> {
+        const typeExists = await this.checkType(
+            "product-metafields",
+            authInterface
+        );
         if (!typeExists) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
+        const productInfo = await this.productService_.retrieve(data.id);
+        const dataToInsert: BaseEntity = {
+            ..._.cloneDeep(data),
+            created_at: productInfo.created_at,
+            updated_at: productInfo.updated_at
+        };
+
         return await this.createEntryInStrapi({
-            type: "metafields",
+            type: "product-metafields",
             id: data.id,
             authInterface,
-            data,
+            data: dataToInsert,
             method: "post"
         });
     }
+
     async updateProductMetafieldInStrapi(
-        data: BaseEntity,
-        authInterface: AuthInterface = this.defaultAuthInterface
-    ): Promise<any> {
+        data: { id: string; data: Record<string, unknown> },
+        authInterface: AuthInterface
+    ): Promise<StrapiResult> {
         const typeExists = await this.checkType("metafields", authInterface);
         if (!typeExists) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
-        return await this.createEntryInStrapi({
-            type: "metafields",
+        const productInfo = await this.productService_.retrieve(data.id);
+        const dataToInsert: BaseEntity = {
+            ..._.cloneDeep(data),
+            created_at: productInfo.created_at,
+            updated_at: productInfo.updated_at
+        };
+        delete dataToInsert.id;
+        return await this.updateEntryInStrapi({
+            type: "product-metafields",
             id: data.id,
             authInterface,
-            data,
+            data: dataToInsert,
             method: "put"
         });
     }
@@ -499,7 +598,7 @@ class UpdateStrapiService extends BaseService {
     async updateProductInStrapi(
         data,
         authInterface: AuthInterface = this.defaultAuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("products", authInterface)
             .then((res) => {
                 // this.logger.info(res.data)
@@ -510,7 +609,7 @@ class UpdateStrapiService extends BaseService {
                 return false;
             });
         if (!hasType) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         // this.logger.info(data)
@@ -531,7 +630,7 @@ class UpdateStrapiService extends BaseService {
         // check if update contains any fields in Strapi to minimize runs
         const found = this.verifyDataContainsFields(data, updateFields);
         if (!found) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         // eslint-disable-next-line no-useless-catch
@@ -542,7 +641,7 @@ class UpdateStrapiService extends BaseService {
                     "Strapi has just updated this product" +
                         " which triggered this function. IGNORING... "
                 );
-                return Promise.resolve();
+                return { status: 400 };
             }
             const product = await this.productService_.retrieve(data.id, {
                 relations: [
@@ -577,29 +676,29 @@ class UpdateStrapiService extends BaseService {
             });
 
             if (product) {
-                await this.updateEntryInStrapi({
+                const response = await this.updateEntryInStrapi({
                     type: "products",
                     id: product.id,
                     authInterface,
                     data: product,
                     method: "put"
                 });
+                return response;
             }
-
-            return product;
+            return { status: 400 };
         } catch (error) {
             throw error;
         }
     }
 
     async checkType(type, authInterface): Promise<boolean> {
-        let result;
+        let result: StrapiResult;
         try {
             result = await this.getType(type, authInterface);
         } catch (error) {
             this.logger.error(`${type} type not found in strapi`);
             this.logger.error(JSON.stringify(error));
-            result = false;
+            result = undefined;
         }
         return result ? true : false;
     }
@@ -607,7 +706,7 @@ class UpdateStrapiService extends BaseService {
     async updateProductVariantInStrapi(
         data,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.checkType("product-variants", authInterface);
 
         const updateFields = [
@@ -630,14 +729,14 @@ class UpdateStrapiService extends BaseService {
                 data.fields.find((f) => updateFields.includes(f)) ||
                 this.verifyDataContainsFields(data, updateFields);
             if (!found) {
-                return Promise.resolve();
+                return { status: 400 };
             }
         }
 
         try {
             const ignore = await this.shouldIgnore_(data.id, "strapi");
             if (ignore) {
-                return Promise.resolve();
+                return { status: 400 };
             }
 
             const variant = await this.productVariantService_.retrieve(
@@ -658,19 +757,20 @@ class UpdateStrapiService extends BaseService {
                     method: "put"
                 });
                 this.logger.info("Variant Strapi Id - ", response);
+                return response;
             }
 
-            return variant;
+            return { status: 400 };
         } catch (error) {
             this.logger.info("Failed to update product variant", data.id);
-            throw error;
+            return { status: 400 };
         }
     }
 
     async deleteProductInStrapi(
         data,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("products", authInterface)
             .then(() => true)
             .catch((err) => {
@@ -678,12 +778,14 @@ class UpdateStrapiService extends BaseService {
                 return false;
             });
         if (!hasType) {
-            return Promise.resolve();
+            return Promise.resolve({
+                status: 400
+            });
         }
 
         const ignore = await this.shouldIgnore_(data.id, "strapi");
         if (ignore) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         return await this.deleteEntryInStrapi({
@@ -697,7 +799,7 @@ class UpdateStrapiService extends BaseService {
     async deleteProductTypeInStrapi(
         data,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("product-types", authInterface)
             .then(() => true)
             .catch((err) => {
@@ -705,12 +807,12 @@ class UpdateStrapiService extends BaseService {
                 return false;
             });
         if (!hasType) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         const ignore = await this.shouldIgnore_(data.id, "strapi");
         if (ignore) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         return await this.deleteEntryInStrapi({
@@ -724,7 +826,7 @@ class UpdateStrapiService extends BaseService {
     async deleteProductVariantInStrapi(
         data,
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const hasType = await this.getType("product-variants", authInterface)
             .then(() => true)
             .catch((err) => {
@@ -732,12 +834,12 @@ class UpdateStrapiService extends BaseService {
                 return false;
             });
         if (!hasType) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         const ignore = await this.shouldIgnore_(data.id, "strapi");
         if (ignore) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         return await this.deleteEntryInStrapi({
@@ -749,7 +851,7 @@ class UpdateStrapiService extends BaseService {
     }
 
     // Blocker - Delete Region API
-    async deleteRegionInStrapi(data, authInterface): Promise<any> {
+    async deleteRegionInStrapi(data, authInterface): Promise<StrapiResult> {
         const hasType = await this.getType("product-variants", authInterface)
             .then(() => true)
             .catch((err) => {
@@ -757,12 +859,12 @@ class UpdateStrapiService extends BaseService {
                 return false;
             });
         if (!hasType) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         const ignore = await this.shouldIgnore_(data.id, "strapi");
         if (ignore) {
-            return Promise.resolve();
+            return { status: 400 };
         }
 
         return await this.deleteEntryInStrapi({
@@ -773,7 +875,10 @@ class UpdateStrapiService extends BaseService {
         });
     }
 
-    async getType(type: string, authInterface: AuthInterface): Promise<any> {
+    async getType(
+        type: string,
+        authInterface: AuthInterface
+    ): Promise<StrapiResult> {
         const result = await this.strapiSendDataLayer({
             method: "get",
             type,
@@ -835,38 +940,29 @@ class UpdateStrapiService extends BaseService {
             : UpdateStrapiService.isHealthy; /** sending last known health status */
         return result;
     }
-
-    encrypt(text: string): any {
+    /**
+     *
+     * @param text the text to encrpyt
+     * @returns encrypted text
+     */
+    encrypt(text: string): string {
         return text;
-        const cipher = crypto.createCipheriv(
-            "aes-256-cbc",
-            Buffer.from(this.key),
-            this.iv
-        );
-        let encrypted = cipher.update(text);
-        encrypted = Buffer.concat([encrypted, cipher.final()]);
-        return {
-            iv: this.iv.toString("hex"),
-            encryptedData: encrypted.toString("hex")
-        };
     }
+    /**
+     * @todo  implement decryption
+     * @param text
+     * @returns
+     */
 
     // Decrypting text
     decrypt(text): string {
         return text;
-        const iv = Buffer.from(text.iv, "hex");
-        const encryptedText = Buffer.from(text.encryptedData, "hex");
-        const decipher = crypto.createDecipheriv(
-            "aes-256-cbc",
-            Buffer.from(this.key),
-            this.iv
-        );
-        let decrypted = decipher.update(encryptedText);
-        decrypted = Buffer.concat([decrypted, decipher.final()]);
-        return decrypted.toString();
     }
-
-    async registerDefaultMedusaUser(): Promise<any> {
+    /**
+     *
+     * @returns the default user  - service account for medusa requests
+     */
+    async registerDefaultMedusaUser(): Promise<{ id: string }> {
         try {
             const authParams = {
                 ...this.options_.strapi_default_user
@@ -874,7 +970,7 @@ class UpdateStrapiService extends BaseService {
             const registerResponse = await this.executeRegisterMedusaUser(
                 authParams
             );
-            return registerResponse;
+            return registerResponse?.data;
         } catch (error) {
             this.logger.error(
                 "unable to register default user",
@@ -882,8 +978,12 @@ class UpdateStrapiService extends BaseService {
             );
         }
     }
+    /**
+     * Deletes the service account
+     * @returns the deleted default user
+     */
 
-    async deleteDefaultMedusaUser(): Promise<any> {
+    async deleteDefaultMedusaUser(): Promise<StrapiResult> {
         try {
             const response = await this.deleteMedusaUserFromStrapi(
                 this.defaultAuthInterface
@@ -898,30 +998,36 @@ class UpdateStrapiService extends BaseService {
         }
     }
 
+    /**
+     * Deletes a medusa user from strapi
+     * @param authInterface - the user authorisation parameters
+     * @returns
+     */
+
     async deleteMedusaUserFromStrapi(
         authInterface: AuthInterface
-    ): Promise<any> {
-        const fetchedResult = await this.strapiSendDataLayer({
+    ): Promise<StrapiResult> {
+        const fetchedUser = await this.strapiSendDataLayer({
             method: "get",
             type: "users",
             id: "me",
             data: undefined,
             authInterface
         });
-        const fetchedUser = fetchedResult.data;
-        this.logger.info("found user: " + JSON.stringify(fetchedResult.data));
 
-        const result = await this.strapiSendDataLayer({
-            method: "delete",
-            type: "users",
-            id: fetchedUser.id,
+        this.logger.info("found user: " + JSON.stringify(fetchedUser));
 
-            authInterface
-        });
-        return result;
+        const result = await this.executeStrapiSend(
+            "delete",
+            "users",
+            this.userTokens[authInterface.email].token,
+            fetchedUser.id?.toString()
+        );
+        return { data: result.data, status: result.status };
     }
 
-    /** Todo Create API based access
+    /** 
+     * @Todo Create API based access
   async fetchMedusaUserApiKey(emailAddress) {
 
     return await this.strapiAdminSend("get")
@@ -945,21 +1051,53 @@ class UpdateStrapiService extends BaseService {
         return result;
     }
 
+    /**
+     * Readies the server to be used with a service account
+     */
+
     async configureStrapiMedusaForUser(
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         const { email } = authInterface;
         try {
-            const jwt = (await this.executeLoginAsStrapiUser(authInterface))
+            const jwt = (await this.strapiLoginSendDatalayer(authInterface))
                 .token;
             if (!jwt) {
-                throw Error("no jwt for this user: " + email);
+                this.logger.error("no jwt for this user: " + email);
+                return { status: 400 };
             }
             const result = await this.executeSync(jwt);
             return { status: result.status };
         } catch (error) {
             // Handle error.
             this.logger.info("Unable to sync An error occurred:", error);
+            return { status: 400 };
+        }
+    }
+
+    async strapiLoginSendDatalayer(
+        authInterface: AuthInterface = {
+            email: this.defaultUserEmail,
+            password: this.defaultUserPassword
+        }
+    ): Promise<UserCreds> {
+        const { email } = authInterface;
+
+        const currentTime = Date.now();
+        const lastRetrived = this.userTokens[email];
+        if (currentTime - lastRetrived?.time ?? 0 < 60e3) {
+            this.logger.debug("using cached user credentials ");
+            return lastRetrived;
+        }
+        const res = await this.executeLoginAsStrapiUser(authInterface);
+        if (res?.data.jwt) {
+            this.userTokens[email] = {
+                token: res.data.jwt /** caching the jwt token */,
+                time: Date.now(),
+                user: res.data.user
+            };
+            this.logger.info(`${email} ` + "successfully logged in to Strapi");
+            return this.userTokens[email];
         }
     }
 
@@ -968,22 +1106,14 @@ class UpdateStrapiService extends BaseService {
             email: this.defaultUserEmail,
             password: this.defaultUserPassword
         }
-    ): Promise<UserCreds> {
+    ): Promise<AxiosResponse> {
         await this.waitForHealth();
-        const { email, password } = authInterface;
-        const authData = {
-            identifier: email,
-            password: password
-        };
-        const currentTime = Date.now();
-        const lastRetrived = this.userTokens[email];
-        if (currentTime - lastRetrived?.time ?? 0 < 60e3) {
-            this.logger.debug("using cached user credentials ");
-            return lastRetrived;
-        }
         try {
             let res: AxiosResponse;
-
+            const authData = {
+                identifier: authInterface.email,
+                password: authInterface.password
+            };
             try {
                 res = await axios.post(
                     `${this.strapi_url}/api/auth/local`,
@@ -1007,60 +1137,38 @@ class UpdateStrapiService extends BaseService {
                 }
             }
             // console.log("login result"+res);
-            if (res?.data.jwt) {
-                this.userTokens[email] = {
-                    token: res.data.jwt /** caching the jwt token */,
-                    time: Date.now(),
-                    user: res.data.user
-                };
-                this.logger.info(
-                    `${authData.identifier} ` +
-                        "successfully logged in to Strapi"
-                );
-                return this.userTokens[email];
-            }
+            return res;
         } catch (error) {
+            this._axiosError(error);
             throw new Error(
-                `\n Error  ${authData.identifier} while trying to login to strapi\n` +
+                `\n Error  ${authInterface.email} while trying to login to strapi\n` +
                     (error as Error).message
             );
         }
 
         return;
     }
-    async getAuthorRoleId(): Promise<number> {
+    async getRoleId(requestedRole: string): Promise<number> {
         const response = await this.executeStrapiAdminSend("get", "roles");
         // console.log("role:", response);
         if (response) {
             const availableRoles = response.data.data as role[];
             for (const role of availableRoles) {
-                if (role.name == "Author") {
+                if (role.name == requestedRole) {
                     return role.id;
                 }
             }
         }
         return -1;
     }
-
-    async getEditorId(): Promise<number> {
-        const response = await this.executeStrapiAdminSend("get", "roles");
-        // console.log("role:", response);
-        if (response) {
-            const availableRoles = response.data.data as role[];
-            for (const role of availableRoles) {
-                if (role.name == "Editor") {
-                    return role.id;
-                }
-            }
-        }
-        return -1;
-    }
-
-    async processStrapiEntry(command: StrapiSendParams): Promise<any> {
+    async processStrapiEntry(command: StrapiSendParams): Promise<StrapiResult> {
         try {
             return await this.strapiSendDataLayer(command);
         } catch (e) {
-            this.logger.error(e);
+            this.logger.error(
+                "Unable to process strapi entry request: " + e.message
+            );
+            return { status: 400, data: undefined };
         }
     }
 
@@ -1069,7 +1177,7 @@ class UpdateStrapiService extends BaseService {
         id: string,
 
         authInterface: AuthInterface
-    ): Promise<any> {
+    ): Promise<StrapiResult> {
         return await this.processStrapiEntry({
             method: "get",
             type,
@@ -1078,60 +1186,86 @@ class UpdateStrapiService extends BaseService {
         });
     }
 
-    async createEntryInStrapi(command: StrapiSendParams): Promise<any> {
+    async createEntryInStrapi(
+        command: StrapiSendParams
+    ): Promise<StrapiResult> {
         return await this.processStrapiEntry({
             ...command,
             method: "post"
         });
     }
 
-    async getEntriesInStrapi(command: StrapiSendParams): Promise<any> {
+    async getEntriesInStrapi(
+        command: StrapiSendParams
+    ): Promise<StrapiGetResult> {
         return await this.processStrapiEntry({
             ...command,
             method: "get"
         });
     }
 
-    async updateEntryInStrapi(command: StrapiSendParams): Promise<any> {
+    async updateEntryInStrapi(
+        command: StrapiSendParams
+    ): Promise<StrapiResult> {
         return await this.processStrapiEntry({
             ...command,
             method: "put"
         });
     }
 
-    async deleteEntryInStrapi(command: StrapiSendParams): Promise<any> {
+    async deleteEntryInStrapi(
+        command: StrapiSendParams
+    ): Promise<StrapiResult> {
         return await this.processStrapiEntry({
             ...command,
             method: "delete"
         });
     }
 
+    translateIdsToMedusaIds(dataToSend: StrapiEntity): StrapiEntity {
+        const keys = Object.keys(dataToSend);
+        for (const key of keys) {
+            if (dataToSend[key] instanceof Object) {
+                this.translateIdsToMedusaIds(dataToSend[key]);
+            } else if (key == "id") {
+                dataToSend["medusa_id"] = dataToSend[key];
+                delete dataToSend[key];
+            }
+        }
+        return dataToSend as BaseEntity & { medusa_id?: string };
+    }
+
     /* using cached tokens */
     /* @todo enable api based access */
-    async strapiSendDataLayer(params: StrapiSendParams): Promise<any> {
+    async strapiSendDataLayer(params: StrapiSendParams): Promise<StrapiResult> {
         const { method, type, id, data, authInterface } = params;
 
-        const userCreds = await this.executeLoginAsStrapiUser(authInterface);
+        const userCreds = await this.strapiLoginSendDatalayer(authInterface);
         let dataToSend: BaseEntity & { medusa_id?: string };
         if (data) {
             dataToSend = _.cloneDeep(data);
+            dataToSend = this.translateIdsToMedusaIds(dataToSend);
             dataToSend["medusa_id"] = data.id;
             delete dataToSend.id;
         }
 
         try {
-            const result = (
-                await this.executeStrapiSend(
-                    method,
-                    type,
-                    userCreds.token,
-                    id,
-                    { data: dataToSend }
-                )
-            ).data;
-            return result;
+            const result = await this.executeStrapiSend(
+                method,
+                type,
+                userCreds.token,
+                id,
+                { data: dataToSend }
+            );
+            return {
+                id: result.data.id,
+                medusa_id: result.data.medusa_id,
+                status: result.status,
+                data: result.data
+            };
         } catch (e) {
             this.logger.error(e.message);
+            return { status: 400 };
         }
     }
     /**
@@ -1158,7 +1292,8 @@ class UpdateStrapiService extends BaseService {
         type: string,
         token: string,
         id?: string,
-        data?: any
+        data?: any,
+        query?: string /** currently not supported*/
     ): Promise<AxiosResponse> {
         let endPoint: string = undefined;
         await this.waitForHealth();
@@ -1197,44 +1332,54 @@ class UpdateStrapiService extends BaseService {
 
             return result;
         } catch (error) {
-            const theError = (error as Error).message;
-            this.logger.error(
-                `AxiosError ${
-                    error.response
-                        ? JSON.stringify(
-                              error.response.data?.error ??
-                                  error.response.data?.data
-                          )
-                        : ""
-                }`
-            );
-            this.logger.info(theError);
-            throw new Error(`Error while trying to ${method},
-       ${id}, ${type}, ${data}  entry in strapi ${theError}`);
+            this._axiosError(error, id, type, data, method);
         }
     }
-
+    _axiosError(
+        error: any,
+        id?: string,
+        type?: string,
+        data?: any,
+        method?: Method
+    ): void {
+        const theError = `${(error as Error).message} `;
+        this.logger.error(
+            `AxiosError ${error?.response?.status} ${
+                error?.response
+                    ? JSON.stringify(
+                          error?.response.data?.error ??
+                              error?.response.data?.data
+                      )
+                    : ""
+            }`
+        );
+        this.logger.info(theError);
+        throw new Error(
+            `Error while trying admin ${method}` +
+                `,${type ?? ""} -  ${id ? `id: ${id}` : ""}  ,
+                }  entry in strapi ${theError}`
+        );
+    }
     async executeStrapiAdminSend(
         method: Method,
         type: string,
         id?: string,
         action?: string,
-        data?: any
-    ): Promise<any> {
-        const result = await this.executeLoginAsStrapiAdmin();
+        data?: any,
+        query?: string
+    ): Promise<AxiosResponse | undefined> {
+        const result = await this.executeLoginAsStrapiSuperAdmin();
         if (!result) {
             this.logger.error("No user Bearer token, check axios request");
             return;
         }
-        /* if (!await this.checkStrapiHealth()) {
-      return;
-    }*/
+
         let headers = undefined;
         /** refreshed token */
-        this.strapiAdminAuthToken = result.data.token;
-        if (this.strapiAdminAuthToken) {
+        this.strapiSuperAdminAuthToken = result.data.token;
+        if (this.strapiSuperAdminAuthToken) {
             headers = {
-                "Authorization": `Bearer ${this.strapiAdminAuthToken}`,
+                "Authorization": `Bearer ${this.strapiSuperAdminAuthToken}`,
                 "Content-type": "application/json"
             };
         }
@@ -1245,9 +1390,10 @@ class UpdateStrapiService extends BaseService {
                 path.push(item);
             }
         }
+        const q = query ? `?${query}` : "";
         const basicConfig = {
             method: method,
-            url: `${this.strapi_url}/admin/${path.join("/")}`,
+            url: `${this.strapi_url}/admin/${path.join("/")}${q}`,
             headers
         };
         this.logger.info(`Admin Endpoint fired: ${basicConfig.url}`);
@@ -1277,29 +1423,18 @@ class UpdateStrapiService extends BaseService {
 
             return result;
         } catch (error) {
-            this.logger.info(JSON.stringify(error?.response.data.error));
-            throw new Error(
-                `Error while admin ${method}, ${id}, ${type}, ${JSON.stringify(
-                    data
-                )}, ${action} in strapi, message:${error.message}`
-            );
+            this.logger.error("Admin endpoint error");
+            this._axiosError(error, id, type, data, method);
         }
     }
 
-    /* async registerMedusaUser(auth:UserType):Promise<any> {
-    return await this.strapiAdminSend("post",
-        "user", undefined, undefined, auth);
-  }*/
-
-    async executeRegisterMedusaUser(auth: MedusaUserType): Promise<any> {
+    async executeRegisterMedusaUser(
+        auth: MedusaUserType
+    ): Promise<AxiosResponse | undefined> {
         let response: AxiosResponse;
 
-        await this.executeLoginAsStrapiAdmin();
+        await this.executeLoginAsStrapiSuperAdmin();
         await this.waitForHealth();
-        /* if (auth.email == this.options_.strapi_default_user.email &&
-      this.userTokens[auth.email].length>1) {
-      return { response: this.strapiDefaultUserResponse, adminResponse: null };
-    }*/
 
         try {
             response = await axios.post(
@@ -1307,48 +1442,165 @@ class UpdateStrapiService extends BaseService {
                 auth,
                 {
                     headers: {
-                        Authorization: `Bearer ${this.strapiAdminAuthToken}`
+                        Authorization: `Bearer ${this.strapiSuperAdminAuthToken}`
                     },
                     timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/
                 }
             );
         } catch (e) {
-            this.logger.error("unable to register user " + JSON.stringify(e));
+            this.logger.error("user registration error");
+            this._axiosError(e);
         }
 
         return response;
     }
+    /** *
+     * send the command using elevated privileges
+     */
 
-    async registerAdminUserInStrapi(): Promise<any> {
+    async strapiAdminSendDatalayer(
+        command: StrapiAdminSendParams
+    ): Promise<AdminResult> {
+        const { method, type, id, action, data, query } = command;
+        try {
+            const result = await this.executeStrapiAdminSend(
+                method,
+                type,
+                id,
+                action,
+                data,
+                query
+            );
+            return { data: result.data, status: result.status };
+        } catch (e) {
+            this.logger.error(e.message);
+            return { data: undefined, status: 400 };
+        }
+    }
+
+    async registerSuperAdminUserInStrapi(): Promise<any> {
         const auth: AdminUserType = {
             ...this.options_.strapi_admin
         };
 
-        return await this.executeStrapiAdminSend(
-            "post",
-            "register-admin",
-            undefined,
-            undefined,
-            auth
-        );
-
-        try {
-            const response = await axios.post(
-                `${this.strapi_url}/admin/register-admin`,
+        return (
+            await this.executeStrapiAdminSend(
+                "post",
+                "register-admin",
+                undefined,
+                undefined,
                 auth
-            );
-            this.logger.info("Registered Admin " + auth.email + " with strapi");
-            this.logger.info("Admin profile", response.data.user);
-            this.logger.info("Admin token", response.data.token);
-            // console.log(response);
-            this.strapiAdminAuthToken = response.data.token;
-            this.userAdminProfile = response.data.user;
-            return response;
-        } catch (error) {
-            // Handle error.
-            this.logger.info("An error occurred:", error);
-            throw error;
+            )
+        ).data.user;
+    }
+
+    async registerAdminUserInStrapi(
+        email: string,
+        firstname: string,
+        password = passwordGen.generate({
+            length: 16,
+            numbers: true,
+            strict: true
+        }),
+        role = "Author"
+    ): Promise<AdminResult> {
+        const roleId = await this.getRoleId(role);
+        const auth = {
+            email,
+            firstname,
+            // password,
+            // isActive: true,
+            roles: [roleId]
+        };
+
+        const result = await this.strapiAdminSendDatalayer({
+            method: "post",
+            type: "users",
+            id: undefined,
+            // action: "user",
+            data: auth
+        });
+        return result;
+    }
+
+    async updateAdminUserInStrapi(
+        email: string,
+        firstname: string,
+        password = passwordGen.generate({
+            length: 16,
+            numbers: true,
+            strict: true
+        }),
+        role = "Author",
+        isActive = true
+    ): Promise<AdminResult> {
+        const userData = await this.getAdminUserInStrapi(email.toLowerCase());
+        if (userData) {
+            const roleId = await this.getRoleId(role);
+            const auth = {
+                email: email.toLowerCase(),
+                firstname,
+                password,
+                isActive,
+                roles: [roleId]
+            };
+
+            return await this.strapiAdminSendDatalayer({
+                method: "put",
+                type: "users",
+                id: userData.data.id,
+                // action: "user",
+                data: auth
+            });
+        } else {
+            return { data: undefined, status: 400 };
         }
+    }
+
+    async getAdminUserInStrapi(email: string): Promise<AdminResult> {
+        const userData = await this.strapiAdminSendDatalayer({
+            method: "get",
+            type: "users",
+            id: undefined,
+            action: undefined,
+            query: this._createStrapiRestQuery({
+                fields: ["email"],
+                filters: {
+                    email: `${email}`.toLocaleLowerCase()
+                }
+            })
+        });
+        if (userData.status == 200) {
+            return { status: 200, data: userData.data.data.results[0] };
+        } else {
+            return { status: 400, data: undefined };
+        }
+    }
+
+    async getAllAdminUserInStrapi(): Promise<AdminResult> {
+        return await this.strapiAdminSendDatalayer({
+            method: "get",
+            type: "users",
+            id: undefined,
+            action: undefined
+        });
+    }
+    async deleteAdminUserInStrapi(
+        email: string,
+        role = "Author"
+    ): Promise<AdminResult> {
+        const auth = {
+            email,
+            roles: [role]
+        };
+
+        const user = await this.getAdminUserInStrapi(email);
+
+        return await this.strapiAdminSendDatalayer({
+            method: "delete",
+            type: "users",
+            id: user.data.id
+        });
     }
 
     fetchUserToken(email: string = this.defaultUserEmail): string {
@@ -1358,7 +1610,7 @@ class UpdateStrapiService extends BaseService {
         }
         return token;
     }
-    async executeLoginAsStrapiAdmin(): Promise<any> {
+    async executeLoginAsStrapiSuperAdmin(): Promise<any> {
         const auth = {
             email: this.options_.strapi_admin.email,
             password: this.options_.strapi_admin.password
@@ -1381,25 +1633,24 @@ class UpdateStrapiService extends BaseService {
             this.logger.info("Admin profile", response.data.user);
             this.logger.info("Admin token", response.data.token);
 
-            this.strapiAdminAuthToken = response.data.token;
+            this.strapiSuperAdminAuthToken = response.data.token;
             this.userAdminProfile = response.data.user;
             return response;
         } catch (error) {
             // Handle error.
-            this.logger.info(
-                "An error occurred" + "while logging into admin:",
-                error.message
-            );
+            this.logger.info("An error occurred" + "while logging into admin:");
+            this._axiosError(error);
+
             throw error;
         }
     }
     async intializeServer(): Promise<any> {
         await this.registerOrLoginAdmin();
-        if (this.strapiAdminAuthToken) {
+        if (this.strapiSuperAdminAuthToken) {
             const user = (await this.registerOrLoginDefaultMedusaUser()).user;
             if (user) {
                 const response = await this.executeSync(
-                    this.strapiAdminAuthToken
+                    this.strapiSuperAdminAuthToken
                 );
                 /* const response = await this.configureStrapiMedusaForUser({
                     email: this.options_.strapi_default_user.email,
@@ -1418,36 +1669,33 @@ class UpdateStrapiService extends BaseService {
     }
     async registerOrLoginAdmin(): Promise<any> {
         try {
-            await this.registerAdminUserInStrapi();
+            await this.registerSuperAdminUserInStrapi();
         } catch (e) {
             this.logger.info(
                 "super admin already registered",
                 JSON.stringify(e)
             );
         }
-        return await this.executeLoginAsStrapiAdmin();
+        return await this.executeLoginAsStrapiSuperAdmin();
     }
 
     async loginAsDefaultMedusaUser(): Promise<UserCreds> {
-        let response: UserCreds;
+        let userCrds: UserCreds;
         try {
-            response = await this.executeLoginAsStrapiUser(
+            userCrds = await this.strapiLoginSendDatalayer(
                 this.defaultAuthInterface
             );
-            if (response) {
-                this.strapiDefaultUserId = response.user.id;
-            }
+
             this.logger.info("Default Medusa User Logged In");
         } catch (error) {
-            this.strapiDefaultUserId = undefined;
-            if (!response) {
+            if (!userCrds) {
                 this.logger.error(
                     "Unable to login default medusa user: " +
                         (error as Error).message
                 );
             }
         }
-        return response;
+        return userCrds;
     }
 
     async registerOrLoginDefaultMedusaUser(): Promise<UserCreds> {
@@ -1476,6 +1724,34 @@ class UpdateStrapiService extends BaseService {
             }
         }
         return found;
+    }
+
+    _createStrapiRestQuery(strapiQuery: StrapiQueryInterface): string {
+        const {
+            sort,
+            filters,
+            populate,
+            fields,
+            pagination,
+            publicationState,
+            locale
+        } = strapiQuery;
+
+        const query = qs.stringify(
+            {
+                sort,
+                filters,
+                populate,
+                fields,
+                pagination,
+                publicationState,
+                locale
+            },
+            {
+                encodeValuesOnly: true // prettify URL
+            }
+        );
+        return query;
     }
 }
 export default UpdateStrapiService;

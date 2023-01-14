@@ -69,6 +69,7 @@
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
+    "generate-password": "^1.7.0",
     "jsonwebtoken": "^8.5.1",
     "medusa-core-utils": "^1.1.37",
     "medusa-test-utils": "^1.1.37",

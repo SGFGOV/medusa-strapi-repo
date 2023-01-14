@@ -3,17 +3,38 @@ import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { jest } from "@jest/globals";
 
+import { IdMap } from "medusa-test-utils";
+
 export const regionService = {
-    retrieve: jest.fn((id) => {
-        if (id === "exists") {
-            return Promise.resolve({
-                id: "exists",
-                name: "test",
-                tax_rate: 18.0
-            });
-        }
-        return Promise.resolve(undefined);
-    })
+    retrieve: jest
+        .fn()
+        .mockImplementationOnce((id) => {
+            if (id === "exists") {
+                return Promise.resolve({
+                    id: "exists",
+                    name: "Test Region",
+                    // countries: [filters:{ id: "exists" }],
+                    tax_rate: 0.25,
+                    // payment_providers: ["default_provider", "unregistered"],
+                    // fulfillment_providers: ["test_shipper"],
+                    currency_code: "inr"
+                });
+            }
+            return Promise.resolve(undefined);
+        })
+        .mockImplementation((id) => {
+            if (id === "exists") {
+                return Promise.resolve({
+                    id: "exists",
+                    name: "new-name",
+                    // countries: [filters:{ id: "exists" }],
+                    tax_rate: 0.25,
+                    // payment_providers: ["default_provider", "unregistered"],
+                    // fulfillment_providers: ["test_shipper"],
+                    currency_code: "inr"
+                });
+            }
+        })
 };
 
 export const storeService = {
@@ -33,7 +54,14 @@ export const productService = {
                 return Promise.resolve({
                     id: "exists",
                     type: { id: "dummy" },
-                    title: "test-product"
+                    title: "test-product",
+                    variants: ["exists"],
+                    options: [
+                        {
+                            id: "exists",
+                            title: "Color"
+                        }
+                    ]
                 });
             }
             return Promise.resolve(undefined);
@@ -80,7 +108,16 @@ export const productVariantService = {
                     id: "exists",
                     product: { id: "exists" },
                     title: "test-product-variant",
-                    inventory_quantity: 10
+                    inventory_quantity: 10,
+                    allow_backorder: true,
+                    manage_inventory: true
+                    /* prices: [
+                        {
+                            region_id: "exists",
+                            currency_code: "inr",
+                            amount: 950
+                        }
+                    ]*/
                 });
             }
             return Promise.resolve(undefined);
@@ -97,6 +134,118 @@ export const productVariantService = {
             return Promise.resolve(undefined);
         })
 };
+
+export const options = {
+    validOption: {
+        _id: IdMap.getId("validId"),
+        name: "Default Option",
+        region_id: IdMap.getId("fr-region"),
+        provider_id: "default_provider",
+        data: {
+            id: "bonjour"
+        },
+        requirements: [
+            {
+                _id: "requirement_id",
+                type: "min_subtotal",
+                value: 100
+            }
+        ],
+        price: {
+            type: "flat_rate",
+            amount: 10
+        }
+    },
+    noCalc: {
+        _id: IdMap.getId("noCalc"),
+        name: "No Calc",
+        region_id: IdMap.getId("fr-region"),
+        provider_id: "default_provider",
+        data: {
+            id: "bobo"
+        },
+        requirements: [
+            {
+                _id: "requirement_id",
+                type: "min_subtotal",
+                value: 100
+            }
+        ],
+        price: {
+            type: "flat_rate",
+            amount: 10
+        }
+    }
+};
+
+export const ShippingOptionModelMock = {
+    create: jest.fn().mockReturnValue(Promise.resolve()),
+    updateOne: jest.fn().mockImplementation((query, update) => {
+        return Promise.resolve();
+    }),
+    deleteOne: jest.fn().mockReturnValue(Promise.resolve()),
+    findOne: jest.fn().mockImplementation((query: any) => {
+        if (query._id === IdMap.getId("noCalc")) {
+            return Promise.resolve(options.noCalc);
+        }
+        if (query._id === IdMap.getId("validId")) {
+            return Promise.resolve(options.validOption);
+        }
+        return Promise.resolve(undefined);
+    })
+};
+
+export const profiles = {
+    validProfile: {
+        _id: IdMap.getId("validId"),
+        name: "Default Profile",
+        products: [IdMap.getId("validId")],
+        shipping_options: [IdMap.getId("validId")]
+    },
+    profile1: {
+        _id: IdMap.getId("profile1"),
+        name: "Profile One",
+        products: [IdMap.getId("product1")],
+        shipping_options: [IdMap.getId("shipping_1")]
+    },
+    profile2: {
+        _id: IdMap.getId("profile2"),
+        name: "Profile two",
+        products: [IdMap.getId("product2")],
+        shipping_options: [IdMap.getId("shipping_2")]
+    }
+};
+
+export const ShippingProfileModelMock = {
+    create: jest.fn().mockReturnValue(Promise.resolve()),
+    updateOne: jest.fn().mockImplementation((query, update) => {
+        return Promise.resolve();
+    }),
+    find: jest.fn().mockImplementation((query: any) => {
+        if (query.products && query.products.$in) {
+            return Promise.resolve([profiles.profile1, profiles.profile2]);
+        }
+
+        return Promise.resolve([]);
+    }),
+    deleteOne: jest.fn().mockReturnValue(Promise.resolve()),
+    findOne: jest.fn().mockImplementation((query: any) => {
+        if (query.shipping_options === IdMap.getId("validId")) {
+            return Promise.resolve(profiles.validProfile);
+        }
+        if (query.products === IdMap.getId("validId")) {
+            return Promise.resolve(profiles.validProfile);
+        }
+        if (query._id === IdMap.getId("validId")) {
+            return Promise.resolve(profiles.validProfile);
+        }
+        if (query._id === IdMap.getId("profile1")) {
+            return Promise.resolve(profiles.profile1);
+        }
+        return Promise.resolve(undefined);
+    })
+};
+
 export const eventBusService = {};
 export const logger = {
     info: jest.fn((message: any, optionalParams?: any[]) => {
