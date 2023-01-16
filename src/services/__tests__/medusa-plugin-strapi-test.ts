@@ -19,7 +19,6 @@ import {
 } from "../__mocks__/service-mocks";
 import { StrapiMedusaPluginOptions } from "../../types/globals";
 import { MockManager } from "medusa-test-utils";
-import { query } from "express";
 import { StrapiResult } from "../update-strapi";
 import logger from "../__mocks__/logger";
 
@@ -27,7 +26,7 @@ import logger from "../__mocks__/logger";
 
 let service: StrapiService;
 let result: StrapiResult;
-jest.setTimeout(60e3);
+jest.setTimeout(600e3);
 describe("StrapiService Tests", () => {
     jest.setTimeout(60e3);
     const strapiConfigParameters: StrapiMedusaPluginOptions = {

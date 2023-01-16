@@ -1,12 +1,57 @@
 "use strict";
 
 import { BaseService } from "medusa-interfaces";
-import axios, { AxiosResponse, Method } from "axios";
-import crypto = require("crypto");
+import axios, { AxiosError, AxiosResponse, Method } from "axios";
 import { Logger } from "@medusajs/medusa/dist/types/global";
 import { sleep } from "@medusajs/medusa/dist/utils/sleep";
 import qs from "qs";
 import passwordGen from "generate-password";
+import axiosRetry from "axios-retry";
+
+let strapiRetryDelay: number;
+
+axiosRetry(axios, {
+    retries: 100,
+    retryDelay: (retryCount, error: AxiosError) => {
+        error.response &&
+            error.response.status === 429 &&
+            // Use X-Retry-After rather than Retry-After, and cap retry delay at 60 seconds
+            error.response.headers["x-retry-after"] &&
+            error.response.headers["x-retry-after"] <= 60;
+        let retryHeaderDelay = error.response.headers["x-retry-after"];
+        const rateLimitResetTime =
+            error.response.headers["x-ratelimit-reset"] ??
+            (Date.now() + 120000).toString();
+
+        if (!retryHeaderDelay) {
+            const currentTime = Date.now();
+            const timeDiffms =
+                Math.abs(
+                    parseInt(rateLimitResetTime) -
+                        Math.floor(currentTime / 1000)
+                ) + 2;
+            retryHeaderDelay = timeDiffms * 1000;
+            strapiRetryDelay = retryHeaderDelay;
+        } else {
+            strapiRetryDelay = retryCount * 1000 * retryHeaderDelay;
+        }
+        console.log(`retrying after ${strapiRetryDelay}`);
+        return strapiRetryDelay;
+    },
+    shouldResetTimeout: true,
+    onRetry(retryCount, error: AxiosError) {
+        console.info(
+            `retring request ${retryCount}` +
+                ` because of ${error.response.status}  ${error.request.path}`
+        );
+    },
+    async retryCondition(error: AxiosError): Promise<boolean> {
+        return error.response.status === 429;
+    }
+});
+
+// Custom retry delay
+
 import {
     BaseEntity,
     EventBusService,
@@ -33,6 +78,7 @@ import {
 } from "../types/globals";
 import { EntityManager } from "typeorm";
 import _ from "lodash";
+import { time } from "console";
 
 export type StrapiEntity = BaseEntity & { medusa_id?: string };
 export type AdminResult = { data: any; status: number };
@@ -113,7 +159,7 @@ class UpdateStrapiService extends TransactionBaseService {
     userAdminProfile: { email: string };
     logger: Logger;
     static isHealthy: boolean;
-
+    lastAdminLoginAttemptTime: number;
     isStarted: boolean;
 
     constructor(
@@ -221,14 +267,6 @@ class UpdateStrapiService extends TransactionBaseService {
     ): Promise<StrapiResult> {
         // eslint-disable-next-line no-useless-catch
         try {
-            const allVariants = variants.map(async (variant) => {
-                // update product variant in strapi
-                const result = await this.updateProductVariantInStrapi(
-                    variant,
-                    authInterface
-                );
-                return result;
-            });
             return { status: 400 };
         } catch (error) {
             throw error;
@@ -242,7 +280,7 @@ class UpdateStrapiService extends TransactionBaseService {
         const assets = await Promise.all(
             product.images
                 ?.filter((image) => image.url !== product.thumbnail)
-                .map(async (image, i) => {
+                .map(async (image) => {
                     const result = await this.createEntryInStrapi({
                         type: "images",
                         id: product.id,
@@ -404,7 +442,7 @@ class UpdateStrapiService extends TransactionBaseService {
     ): Promise<StrapiResult> {
         const hasType = await this.getType("product-variants", authInterface)
             .then(() => true)
-            .catch((e) => false);
+            .catch(() => false);
 
         if (!hasType) {
             return Promise.resolve({
@@ -488,11 +526,11 @@ class UpdateStrapiService extends TransactionBaseService {
         authInterface: AuthInterface = this.defaultAuthInterface
     ): Promise<StrapiResult> {
         const hasType = await this.getType("regions", authInterface)
-            .then((res) => {
+            .then(() => {
                 // this.logger.info(res.data)
                 return true;
             })
-            .catch((error) => {
+            .catch(() => {
                 // this.logger.info(error.response.status)
                 return false;
             });
@@ -615,11 +653,11 @@ class UpdateStrapiService extends TransactionBaseService {
         authInterface: AuthInterface = this.defaultAuthInterface
     ): Promise<StrapiResult> {
         const hasType = await this.getType("products", authInterface)
-            .then((res) => {
+            .then(() => {
                 // this.logger.info(res.data)
                 return true;
             })
-            .catch((error) => {
+            .catch(() => {
                 // this.logger.info(error.response.status)
                 return false;
             });
@@ -722,8 +760,6 @@ class UpdateStrapiService extends TransactionBaseService {
         data,
         authInterface: AuthInterface
     ): Promise<StrapiResult> {
-        const hasType = await this.checkType("product-variants", authInterface);
-
         const updateFields = [
             "title",
             "prices",
@@ -844,7 +880,7 @@ class UpdateStrapiService extends TransactionBaseService {
     ): Promise<StrapiResult> {
         const hasType = await this.getType("product-variants", authInterface)
             .then(() => true)
-            .catch((err) => {
+            .catch(() => {
                 // this.logger.info(err)
                 return false;
             });
@@ -869,7 +905,7 @@ class UpdateStrapiService extends TransactionBaseService {
     async deleteRegionInStrapi(data, authInterface): Promise<StrapiResult> {
         const hasType = await this.getType("product-variants", authInterface)
             .then(() => true)
-            .catch((err) => {
+            .catch(() => {
                 // this.logger.info(err)
                 return false;
             });
@@ -1100,9 +1136,17 @@ class UpdateStrapiService extends TransactionBaseService {
 
         const currentTime = Date.now();
         const lastRetrived = this.userTokens[email];
-        if (currentTime - lastRetrived?.time ?? 0 < 60e3) {
-            this.logger.debug("using cached user credentials ");
-            return lastRetrived;
+        if (lastRetrived) {
+            if (!strapiRetryDelay) {
+                strapiRetryDelay = 180e3;
+            }
+            const diff =
+                Math.floor(currentTime / 1000) -
+                Math.floor((lastRetrived.time ?? 0) / 1000);
+            if (diff < strapiRetryDelay) {
+                this.logger.debug("using cached user credentials ");
+                return lastRetrived;
+            }
         }
         const res = await this.executeLoginAsStrapiUser(authInterface);
         if (res?.data.jwt) {
@@ -1129,28 +1173,31 @@ class UpdateStrapiService extends TransactionBaseService {
                 identifier: authInterface.email,
                 password: authInterface.password
             };
-            try {
-                res = await axios.post(
-                    `${this.strapi_url}/api/auth/local`,
-                    authData
-                );
-            } catch (e) {
-                if (e.response.status == 429) {
+
+            res = await axios.post(
+                `${this.strapi_url}/api/auth/local`,
+                authData
+            );
+            // } catch (e) {
+            /* if (e.response.status == 429) {
                     let i = 0;
                     let timeOut: NodeJS.Timeout;
-                    while (i++ < 5000) {
+                    while (i++ < 60000) {
                         if (timeOut) {
                             clearTimeout(timeOut);
+                            this.logger.info(
+                                `429 recieved backing off  seconds: ${timeOut} remaining`
+                            );
                         }
                         timeOut = setTimeout(async () => {
                             res = await axios.post(
                                 `${this.strapi_url}/api/auth/local`,
                                 authData
                             );
-                        }, 5000 - i);
+                        }, 60000 - i);
                     }
-                }
-            }
+                }*/
+            // }
             // console.log("login result"+res);
             return res;
         } catch (error) {
@@ -1307,8 +1354,7 @@ class UpdateStrapiService extends TransactionBaseService {
         type: string,
         token: string,
         id?: string,
-        data?: any,
-        query?: string /** currently not supported*/
+        data?: any
     ): Promise<AxiosResponse> {
         let endPoint: string = undefined;
         await this.waitForHealth();
@@ -1604,11 +1650,6 @@ class UpdateStrapiService extends TransactionBaseService {
         email: string,
         role = "Author"
     ): Promise<AdminResult> {
-        const auth = {
-            email,
-            roles: [role]
-        };
-
         const user = await this.getAdminUserInStrapi(email);
 
         return await this.strapiAdminSendDatalayer({
@@ -1625,14 +1666,29 @@ class UpdateStrapiService extends TransactionBaseService {
         }
         return token;
     }
-    async executeLoginAsStrapiSuperAdmin(): Promise<any> {
+    async executeLoginAsStrapiSuperAdmin(): Promise<{
+        data: { user: any; token: string };
+    }> {
         const auth = {
             email: this.options_.strapi_admin.email,
             password: this.options_.strapi_admin.password
         };
+        const currentLoginAttempt = Date.now();
+        const timeDiff = Math.floor(
+            (currentLoginAttempt - (this.lastAdminLoginAttemptTime ?? 0)) / 1000
+        );
+        if (strapiRetryDelay && timeDiff < strapiRetryDelay) {
+            return {
+                data: {
+                    user: this.userAdminProfile,
+                    token: this.strapiSuperAdminAuthToken
+                }
+            };
+        }
+        this.lastAdminLoginAttemptTime = currentLoginAttempt;
         await this.waitForHealth();
         try {
-            let response = await axios.post(
+            const response = await axios.post(
                 `${this.strapi_url}/admin/login`,
                 auth,
                 {
@@ -1641,16 +1697,21 @@ class UpdateStrapiService extends TransactionBaseService {
                     }
                 }
             );
-            response = response.data;
+
             this.logger.info(
                 "Logged In   Admin " + auth.email + " with strapi"
             );
-            this.logger.info("Admin profile", response.data.user);
-            this.logger.info("Admin token", response.data.token);
+            this.logger.info("Admin profile", response.data.data.user);
+            this.logger.info("Admin token", response.data.data.token);
 
-            this.strapiSuperAdminAuthToken = response.data.token;
-            this.userAdminProfile = response.data.user;
-            return response;
+            this.strapiSuperAdminAuthToken = response.data.data.token;
+            this.userAdminProfile = response.data.data.user;
+            return {
+                data: {
+                    user: this.userAdminProfile,
+                    token: this.strapiSuperAdminAuthToken
+                }
+            };
         } catch (error) {
             // Handle error.
             this.logger.info("An error occurred" + "while logging into admin:");
@@ -1682,7 +1743,12 @@ class UpdateStrapiService extends TransactionBaseService {
             this.logger.error("unable to connect as super user");
         }
     }
-    async registerOrLoginAdmin(): Promise<any> {
+    async registerOrLoginAdmin(): Promise<{
+        data: {
+            user: any;
+            token: string;
+        };
+    }> {
         try {
             await this.registerSuperAdminUserInStrapi();
         } catch (e) {

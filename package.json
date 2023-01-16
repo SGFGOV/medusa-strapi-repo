@@ -65,6 +65,7 @@
   "dependencies": {
     "@strapi/plugin-users-permissions": "^4.5.5",
     "@types/bcrypt": "^5.0.0",
+    "axios-retry": "^3.3.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.1",
     "cors": "^2.8.5",
