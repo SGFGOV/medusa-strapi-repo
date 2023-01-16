@@ -1,6 +1,5 @@
 "use strict";
 
-import { BaseService } from "medusa-interfaces";
 import axios, { AxiosError, AxiosResponse, Method } from "axios";
 import { Logger } from "@medusajs/medusa/dist/types/global";
 import { sleep } from "@medusajs/medusa/dist/utils/sleep";
@@ -78,7 +77,6 @@ import {
 } from "../types/globals";
 import { EntityManager } from "typeorm";
 import _ from "lodash";
-import { time } from "console";
 
 export type StrapiEntity = BaseEntity & { medusa_id?: string };
 export type AdminResult = { data: any; status: number };
