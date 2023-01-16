@@ -15,12 +15,13 @@ import {
     redisClient,
     productVariantService,
     eventBusService,
-    logger,
     disableMocks
 } from "../__mocks__/service-mocks";
 import { StrapiMedusaPluginOptions } from "../../types/globals";
+import { MockManager } from "medusa-test-utils";
 import { query } from "express";
 import { StrapiResult } from "../update-strapi";
+import logger from "../__mocks__/logger";
 
 // This sets the mock adapter on the default instance
 
@@ -55,13 +56,14 @@ describe("StrapiService Tests", () => {
 
     service = new StrapiService(
         {
-            regionService,
-            productService,
+            manager: MockManager,
+            regionService: regionService as any,
+            productService: productService as any,
             redisClient,
-            productVariantService,
-            productTypeService,
-            eventBusService,
-            logger
+            productVariantService: productVariantService as any,
+            productTypeService: productTypeService as any,
+            eventBusService: eventBusService as any,
+            logger: logger as any
         },
         strapiConfigParameters
     );

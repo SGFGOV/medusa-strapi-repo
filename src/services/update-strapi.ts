@@ -14,7 +14,8 @@ import {
     ProductService,
     ProductTypeService,
     ProductVariantService,
-    RegionService
+    RegionService,
+    TransactionBaseService
 } from "@medusajs/medusa";
 import { Service } from "medusa-extender";
 import role from "@strapi/plugin-users-permissions/server/content-types/role/index";
@@ -75,8 +76,21 @@ export interface StrapiQueryInterface {
     locale?: string[];
 }
 
+export interface UpdateStrapiServiceParams {
+    manager: EntityManager;
+    regionService: RegionService;
+    productService: ProductService;
+    redisClient: any;
+    productVariantService: ProductVariantService;
+    productTypeService: ProductTypeService;
+    eventBusService: EventBusService;
+    logger: Logger;
+}
+
 @Service({ scope: "SINGLETON" })
-class UpdateStrapiService extends BaseService {
+class UpdateStrapiService extends TransactionBaseService {
+    protected manager_: EntityManager;
+    protected transactionManager_: EntityManager;
     static lastHealthCheckTime = 0;
     productService_: ProductService;
     productVariantService_: ProductVariantService;
@@ -92,41 +106,31 @@ class UpdateStrapiService extends BaseService {
     // strapiDefaultMedusaUserAuthToken: string;
     redis_: any;
     key: WithImplicitCoercion<ArrayBuffer | SharedArrayBuffer>;
-    iv: any;
     defaultAuthInterface: AuthInterface;
     strapiSuperAdminAuthToken: string;
     defaultUserEmail: string;
     defaultUserPassword: string;
-    userAdminProfile: any;
+    userAdminProfile: { email: string };
     logger: Logger;
     static isHealthy: boolean;
 
     isStarted: boolean;
 
     constructor(
-        {
-            regionService,
-            productService,
-            redisClient,
-            productVariantService,
-            productTypeService,
-            eventBusService,
-            logger
-        },
+        container: UpdateStrapiServiceParams,
         options: StrapiMedusaPluginOptions
     ) {
-        super();
+        super(container);
 
-        this.logger = logger ?? console;
-        this.productService_ = productService;
-        this.productVariantService_ = productVariantService;
-        this.productTypeService_ = productTypeService;
-        this.regionService_ = regionService;
-        this.eventBus_ = eventBusService;
+        this.logger = container.logger ?? (console as any);
+        this.productService_ = container.productService;
+        this.productVariantService_ = container.productVariantService;
+        this.productTypeService_ = container.productTypeService;
+        this.regionService_ = container.regionService;
+        this.eventBus_ = container.eventBusService;
 
         this.options_ = options;
         this.algorithm = this.options_.encryption_algorithm || "aes-256-cbc"; // Using AES encryption
-        this.iv = crypto.randomBytes(16);
         this.protocol = this.options_.strapi_protocol;
         this.strapi_url = `${this.protocol ?? "https"}://${
             this.options_.strapi_host ?? "localhost"
@@ -159,18 +163,29 @@ class UpdateStrapiService extends BaseService {
         });
 
         // attaching the default user
-        this.redis_ = redisClient;
+        this.redis_ = container.redisClient;
     }
 
-    withTransaction(transactionManager?: EntityManager): BaseService {
+    withTransaction(transactionManager?: EntityManager): this {
         if (!transactionManager) {
             return this;
         }
+        const cloned = new UpdateStrapiService(
+            {
+                manager: transactionManager,
+                logger: this.logger,
+                productService: this.productService_,
+                productVariantService: this.productVariantService_,
+                productTypeService: this.productTypeService_,
+                regionService: this.regionService_,
+                eventBusService: this.eventBus_,
+                redisClient: this.redis_
+            },
+            this.options_
+        );
 
-        const clone = _.cloneDeep(this);
-        clone.manager_ = transactionManager;
         this.transactionManager_ = transactionManager;
-        return clone;
+        return cloned as this;
     }
 
     async startInterface(): Promise<any> {
