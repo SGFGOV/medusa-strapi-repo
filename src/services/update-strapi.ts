@@ -1166,13 +1166,12 @@ class UpdateStrapiService extends TransactionBaseService {
     ): Promise<AxiosResponse> {
         await this.waitForHealth();
         try {
-            let res: AxiosResponse;
             const authData = {
                 identifier: authInterface.email,
                 password: authInterface.password
             };
 
-            res = await axios.post(
+            const response = await axios.post(
                 `${this.strapi_url}/api/auth/local`,
                 authData
             );
@@ -1197,7 +1196,7 @@ class UpdateStrapiService extends TransactionBaseService {
                 }*/
             // }
             // console.log("login result"+res);
-            return res;
+            return response;
         } catch (error) {
             this._axiosError(error);
             throw new Error(
