@@ -117,15 +117,13 @@ export async function deleteAllEntries(): Promise<void> {
     for (const key of apisToFlush) {
         const controllers = permissions[key].controllers;
         for (const controller of Object.keys(controllers)) {
-            const queryKey = `${key}.${controller}`;
-            const count = await strapi.query(queryKey).count();
+            const uid = `${key}.${controller}`;
             try {
-                await strapi.query(queryKey).delete({
-                    _limit: count
-                });
+                await strapi.entityService.deleteMany(uid);
+                strapi.log.info(`flushed entity ${uid}`);
             } catch (error) {
-                strapi.log.info(
-                    "unable to flush entity " + queryKey,
+                strapi.log.error(
+                    "unable to flush entity " + uid,
                     JSON.stringify(error)
                 );
             }
