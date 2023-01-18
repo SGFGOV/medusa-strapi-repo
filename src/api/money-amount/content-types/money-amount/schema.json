@@ -20,17 +20,17 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "amount": {
       "type": "biginteger",
       "required": true
     },
     "currency_code": {
-      "type": "string",
+      "type": "uid",
       "required": true,
-      "unique": true
+      "maxLength": 3,
+      "minLength": 3
     },
     "sale_amount": {
       "type": "biginteger"

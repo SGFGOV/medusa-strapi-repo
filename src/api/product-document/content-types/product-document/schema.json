@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "value": {
       "type": "media",

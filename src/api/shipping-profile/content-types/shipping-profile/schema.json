@@ -20,12 +20,10 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "name": {
-      "type": "string",
-      "required": false
+      "type": "string"
     },
     "type": {
       "type": "enumeration",
@@ -47,11 +45,10 @@
       "mappedBy": "shipping-profiles"
     },
     "products": {
-        "type": "relation",
-        "relation": "manyToMany",
-        "target": "api::product.product",
-        "mappedBy": "shipping-profiles"
-  
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "shipping-profiles"
     }
   }
 }

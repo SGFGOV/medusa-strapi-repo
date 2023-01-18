@@ -20,20 +20,18 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "string",
-      "required": true
+      "type": "uid"
     },
     "is_installed": {
       "type": "boolean",
       "default": true,
       "required": true
     },
-    
     "regions": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::region.region",
-      "mappedBy": "payment-providers"
+      "mappedBy": "payment-provider"
     }
   }
 }

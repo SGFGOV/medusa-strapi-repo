@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "title": {
       "type": "text",
@@ -109,14 +108,14 @@
       "target": "api::image.image",
       "mappedBy": "product"
     },
-    "shipping-profile": {
+    "shipping-profiles": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-profile.shipping-profile",
       "mappedBy": "products"
     },
     "product-collections": {
-      "type": "relation", 
+      "type": "relation",
       "relation": "manyToMany",
       "target": "api::product-collection.product-collection",
       "mappedBy": "products"
@@ -127,11 +126,11 @@
       "target": "api::product-collection.product-collection",
       "inversedBy": "products"
     },
-    "product-tag": {
+    "product-tags": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::product-tag.product-tag",
-      "inversedBy": "products"
+      "mappedBy": "products"
     },
     "product-medias": {
       "type": "relation",
@@ -139,7 +138,6 @@
       "target": "api::product-media.product-media",
       "mappedBy": "product"
     },
-    
     "product-metafield": {
       "type": "relation",
       "relation": "oneToOne",

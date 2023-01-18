@@ -67,6 +67,22 @@ function getRequiredKeys(attributes) {
   return requiredAttributes;
 }
 
+function getFieldsWithoutRelations(attributes) {
+  const keys = Object.keys(attributes);
+  const fields = keys.filter((k) => !attributes[k].relation);
+  return fields;
+}
+
+function getUniqueKeys(attributes) {
+  const keys = Object.keys(attributes);
+  const uniqueAttributes = keys.filter(
+    (k) =>
+      !attributes[k].relation &&
+      (attributes[k].unique == true || attributes[k].type == "uid")
+  );
+  return uniqueAttributes;
+}
+
 function handleError(strapi, e) {
   const details = JSON.stringify(e.details);
   strapi.log.error(`Error Occurred ${e.name} ${e.message}`);
@@ -78,8 +94,8 @@ async function controllerfindOne(ctx, strapi, uid) {
   const { id: medusa_id } = ctx.params;
   const apiName = uid.split(".")[1];
   const model = strapi.api[apiName].contentTypes;
-  const fields = getRequiredKeys(model[apiName].attributes);
-
+  const fields = getFieldsWithoutRelations(model[apiName].attributes);
+  strapi.log.debug(`requested ${uid} ${medusa_id}`);
   try {
     const entity = await getStrapiDataByMedusaId(
       uid,
@@ -104,61 +120,193 @@ async function controllerCreate(ctx, strapi, uid) {
   let processedData;
   try {
     const data = _.cloneDeep(ctx.request.body.data);
-    processedData = await translateMedusaIdsToStrapiIds(uid, strapi, data);
+    processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
+    ctx.body = processedData;
+    strapi.log.info(`created element ${uid} ${JSON.stringify(processedData)}`);
   } catch (e) {
     handleError(strapi, e);
     return ctx.internalServerError(ctx);
   }
-  try {
-    ctx.body = await strapi.entityService.create(uid, {
-      ...ctx.request.body,
-      data: processedData,
-    });
-  } catch (e) {
-    handleError(strapi, e);
-    return ctx.internalServerError(ctx);
-  }
+
   return ctx.body;
 }
 
 async function getStrapiIdFromMedusaId(uid, strapi, medusa_id) {
   return (
-    await getStrapiDataByMedusaId(uid, strapi, medusa_id, ["id", "medusa_id"])
+    await getStrapiDataByMedusaId(uid, strapi, medusa_id, ["medusa_id", "id"])
   )?.id;
 }
 
-async function translateMedusaIdsToStrapiIds(uid, strapi, dataRecieved) {
-  if (!dataRecieved) {
-    return;
-  }
-  const keys = Object.keys(dataRecieved);
-  for (const key of keys) {
-    if (dataRecieved[key] instanceof Array) {
-      const objectUid = `api::${key}.${key}`;
-      for (const element of dataRecieved[key]) {
-        translateMedusaIdsToStrapiIds(objectUid, strapi, element);
-      }
-    } else if (dataRecieved[key] instanceof Object) {
-      const objectUid = `api::${key}.${key}`;
-      translateMedusaIdsToStrapiIds(objectUid, strapi, dataRecieved[key]);
-    } else if (key == "medusa_id") {
-      try {
-        const service = strapi.service(uid);
-        const strapiId = await getStrapiIdFromMedusaId(
-          uid,
-          strapi,
-          dataRecieved[key]
-        );
-        if (strapiId) {
-          dataRecieved["id"] = strapiId;
-        }
-      } catch (e) {
-        strapi.log.error("no such service " + e.message);
-      }
-      return dataRecieved;
+function findContentUid(name, strapi) {
+  let objectUid;
+  const contentTypes = Object.keys(strapi.contentTypes);
+  for (const contentType of contentTypes) {
+    const value = strapi.contentTypes[contentType];
+    if (
+      value.collectionName == name ||
+      value.info.singularName == name ||
+      value.info.pluralName == name
+    ) {
+      objectUid = `api::${value.info.singularName}.${value.info.singularName}`;
+      return objectUid;
     }
   }
-  return dataRecieved;
+  return objectUid;
+}
+// eslint-disable-next-line valid-jsdoc
+/**
+ * retrieves the strapi id of the received medusa data and attaches it to the data.
+ * @param {*} uid - the application uid
+ * @param {*} strapi - the strapi Object
+ * @param {*} dataReceived the medusa data
+ * @returns
+ */
+async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived) {
+  if (!dataReceived) {
+    return;
+  }
+  const keys = Object.keys(dataReceived);
+  if (keys.includes("medusa_id")) {
+    for (const key of keys) {
+      if (Array.isArray(dataReceived[key])) {
+        for (const element of dataReceived[key]) {
+          const objectUid = findContentUid(key, strapi);
+          if (objectUid) {
+            await attachOrCreateStrapiIdFromMedusaId(
+              objectUid,
+              strapi,
+              element
+            );
+          }
+        }
+      } else if (dataReceived[key] instanceof Object) {
+        const objectUid = findContentUid(key, strapi);
+        await attachOrCreateStrapiIdFromMedusaId(
+          objectUid,
+          strapi,
+          dataReceived[key]
+        );
+      }
+    }
+    try {
+      let strapiId;
+      const service = strapi.service(uid);
+      if (keys.includes("medusa_id")) {
+        const key = "medusa_id";
+
+        strapiId = await getStrapiIdFromMedusaId(
+          uid,
+          strapi,
+          dataReceived[key]
+        );
+      } else {
+        strapiId = await getStrapiEntityByUniqueField(
+          uid,
+          strapi,
+          dataReceived
+        );
+      }
+      try {
+        if (!strapiId) {
+          strapi.log.debug(`${uid} creating, ${JSON.stringify(dataReceived)}`);
+          const newEntity = await strapi.entityService.create(uid, {
+            data: dataReceived,
+          });
+          dataReceived["id"] = newEntity.id;
+        } else {
+          dataReceived["id"] = strapiId;
+        }
+      } catch (e) {
+        strapi.log.error(`unable to create  ${e.message} ${uid}`);
+        throw e;
+      }
+    } catch (e) {
+      strapi.log.error(`no such service  ${e.message} ${uid}`);
+      throw e;
+    }
+    return dataReceived;
+  }
+
+  return dataReceived;
+}
+
+async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
+  try {
+    const service = strapi.service(uid);
+
+    const apiName = uid.split(".")[1];
+    const model = strapi.api[apiName].contentTypes;
+    const uniqueFields = getUniqueKeys(model[apiName].attributes);
+
+    for (const field of uniqueFields) {
+      const filters = {};
+      filters[field] = dataReceived[field];
+      try {
+        const entity = await strapi.entityService.findMany(uid, {
+          filters,
+        });
+        if (entity.length > 0) {
+          return entity[0];
+        }
+      } catch (e) {
+        strapi.log.error(`unique entity search error ${uid} ${e.message}`);
+      }
+    }
+  } catch (e) {
+    strapi.log.error(`service not found ${uid} ${e.message}`);
+  }
+}
+
+async function createNestedEntity(uid, strapi, dataReceived) {
+  if (!dataReceived) {
+    return;
+  }
+  const keys = Object.keys(dataReceived);
+  if (keys.includes("medusa_id")) {
+    for (const key of keys) {
+      if (Array.isArray(dataReceived[key])) {
+        for (const element of dataReceived[key]) {
+          const objectUid = findContentUid(key, strapi);
+          if (objectUid) {
+            createNestedEntity(objectUid, strapi, element);
+          }
+        }
+      } else if (dataReceived[key] instanceof Object) {
+        const objectUid = findContentUid(key, strapi);
+        createNestedEntity(objectUid, strapi, dataReceived[key]);
+      } else {
+        try {
+          const objectUid = findContentUid(key, strapi);
+          const service = strapi.service(objectUid);
+          let existingEntity;
+          if (keys.includes("medusa_id")) {
+            existingEntity = await getStrapiIdFromMedusaId(
+              uid,
+              strapi,
+              dataReceived["medusa_id"]
+            );
+            return existingEntity;
+          } else {
+            existingEntity = await getStrapiEntityByUniqueField(
+              uid,
+              strapi,
+              dataReceived[key]
+            );
+            if (!existingEntity) {
+              const newEntity = service.create({ data: dataReceived[key] });
+              return newEntity;
+            }
+            return existingEntity;
+          }
+        } catch (e) {
+          strapi.log.error(`no such servce ${uid}`);
+        }
+      }
+      return dataReceived;
+    }
+  }
+
+  return dataReceived;
 }
 
 async function translateStrapiIdsToMedusaIds(uid, strapi, dataToSend) {
@@ -195,27 +343,37 @@ async function translateStrapiIdsToMedusaIds(uid, strapi, dataToSend) {
 }
 
 async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
+  let service;
+  try {
+    service = strapi.service(uid);
+  } catch (e) {
+    return;
+  }
   const filters = {
     medusa_id: medusa_id,
   };
-  let entity = await strapi.entityService.findMany(uid, {
+  const entities = await strapi.entityService.findMany(uid, {
     fields,
     filters,
-  })[0];
+  });
+  let entity = entities?.length ? entities[0] : undefined;
   if (!entity) {
-    const allEntities = await strapi.entityService.findMany(uid, {
-      fields,
-    });
+    const allEntities = await strapi.entityService.findMany(uid);
     entity = allEntities.filter((e) => {
       return e?.medusa_id == medusa_id;
     })[0];
-    const translatedEntity = await translateStrapiIdsToMedusaIds(
+    if (entity) {
+      entity = await strapi.entityService.findOne(uid, entity.id, {
+        fields,
+      });
+    }
+    /* const translatedEntity = await translateStrapiIdsToMedusaIds(
       uid,
       strapi,
       entity
-    );
-    return translatedEntity;
+    );*/
   }
+  return entity;
 }
 
 async function controllerDelete(ctx, strapi, uid) {
@@ -258,17 +416,17 @@ async function controllerUpdate(ctx, strapi, uid) {
 function createMedusaDefaultController(uid) {
   return createCoreController(uid, {
     async findOne(ctx) {
-      return controllerfindOne(ctx, strapi, uid);
+      return await controllerfindOne(ctx, strapi, uid);
     },
     async delete(ctx) {
-      return controllerDelete(ctx, strapi, uid);
+      return await controllerDelete(ctx, strapi, uid);
     },
     async create(ctx) {
-      return controllerCreate(ctx, strapi, uid);
+      return await controllerCreate(ctx, strapi, uid);
     },
 
     async update(ctx) {
-      return controllerUpdate(ctx, strapi, uid);
+      return await controllerUpdate(ctx, strapi, uid);
     },
   });
 }
@@ -279,5 +437,8 @@ module.exports = {
   handleError,
   getFields,
   controllerfindOne,
+  getStrapiDataByMedusaId,
   createMedusaDefaultController,
+  createNestedEntity,
+  translateStrapiIdsToMedusaIds,
 };

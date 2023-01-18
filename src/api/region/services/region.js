@@ -1,6 +1,10 @@
 "use strict";
+
+const { createNestedEntity } = require("../../../utils/utils");
+
 const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
+const getStrapiDataByMedusaId =
+  require("../../../utils/utils").getStrapiDataByMedusaId;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -54,10 +58,12 @@ async function createOrUpdateRegionAfterDelegation(
     return update.id;
   }
 
-  const create = await strapi.entityService.create(uid, {
-    data: payload,
-  });
-  return create.id;
+  try {
+    const regionEntity = await createNestedEntity(uid, strapi, payload);
+    return regionEntity;
+  } catch (e) {
+    strapi.log.error(`unable to sync region ${uid} ${payload}`);
+  }
 }
 
 const { createCoreService } = require("@strapi/strapi").factories;
@@ -68,22 +74,29 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
     try {
       if (data && data.length) {
         for (const region of data) {
-          region.medusa_id = region.id.toString();
-          delete region.id;
+          if (!region.medusa_id) {
+            region.medusa_id = region.id.toString();
+          }
 
-          const found = await strapi.services[uid].findOne({
-            medusa_id: region.medusa_id,
-          });
+          const found = await getStrapiDataByMedusaId(
+            uid,
+            strapi,
+            region.medusa_id,
+            ["id", "medusa_id"]
+          );
+
           if (found) {
             continue;
           }
-
-          const regionStrapiId = await createOrUpdateRegionAfterDelegation(
-            region,
-            strapi
-          );
-          if (regionStrapiId) {
-            strapi.log.info("Region created");
+          try {
+            const regionStrapiId = await strapi.services[uid].create({
+              data: region,
+            });
+            if (regionStrapiId) {
+              strapi.log.info(`Region created : ${regionStrapiId}`);
+            }
+          } catch (e) {
+            strapi.log.error(`unable to sync region ${uid} ${region}`);
           }
         }
       }
@@ -97,7 +110,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
   },
 
   // Many "X" to One "region"
-  async handleManyToOneRelation(region, caller) {
+  async handleManyToOneRelation(region) {
     try {
       region.medusa_id = region.id.toString();
       delete region.id;
@@ -144,7 +157,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-  /*async findOne(params = {}) {
+  /* async findOne(params = {}) {
     const fields = getFields(__filename, __dirname);
     let filters = {};
     if (params.medusa_id) {

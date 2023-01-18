@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "name": {
       "type": "string",
@@ -38,12 +37,12 @@
       "type": "json"
     },
     "fulfillment-providers": {
-        "type": "relation",
-        "relation": "manyToMany",
-        "target": "api::fulfillment-provider.fulfillment-provider",
-        "inversedBy": "regions"
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::fulfillment-provider.fulfillment-provider",
+      "inversedBy": "regions"
     },
-    "payment-providers": {
+    "payment-provider": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::payment-provider.payment-provider",
@@ -51,9 +50,9 @@
     },
     "currency": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::currency.currency",
-      "mappedBy": "region"
+      "inversedBy": "regions"
     },
     "countries": {
       "type": "relation",
@@ -64,7 +63,7 @@
     "shipping-options": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::shipping-option.shipping.option",
+      "target": "api::shipping-option.shipping-option",
       "mappedBy": "regions"
     }
   }

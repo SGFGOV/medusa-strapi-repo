@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "value": {
       "type": "json"
@@ -33,7 +32,7 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::product.product",
-      "inversedBy": "product-metafield"
+      "mappedBy": "product-metafield"
     }
   }
 }

@@ -1,6 +1,11 @@
 "use strict";
+
+const { createNestedEntity } = require("../../../utils/utils");
+
 const handleError = require("../../../utils/utils").handleError;
 const getFields = require("../../../utils/utils").getFields;
+const getStrapiDataByMedusaId =
+  require("../../../utils/utils").getStrapiDataByMedusaId;
 
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -122,18 +127,22 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       product.medusa_id = product.id.toString();
       delete product.id;
     }
-    const found = await strapi.services[uid].findOne({
-      medusa_id: product.medusa_id,
-    });
+
+    const medusa_id = product.medusa_id;
+    const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, [
+      "id",
+      "medusa_id",
+    ]);
+
     if (found) {
       return found.id;
     }
-
-    const productStrapiId = await createOrUpdateProductAfterDelegation(
-      product,
-      strapi
-    );
-    return productStrapiId;
+    try {
+      const productEntity = await createNestedEntity(uid, strapi, product);
+      return productEntity;
+    } catch (e) {
+      strapi.log.error(`unable to sync product ${uid} ${product}`);
+    }
   },
   async bootstrap(data) {
     strapi.log.debug("Syncing Products...");
@@ -161,7 +170,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-  async createWithRelations(product) {
+  /* async createWithRelations(product) {
     try {
       product.medusa_id = product.id.toString();
       delete product.id;
@@ -189,7 +198,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-  async findOne(params = {}) {
+  ?*async findOne(params = {}) {
     const fields = getFields(__filename, __dirname);
     let filters = {};
     if (params.medusa_id) {
@@ -211,7 +220,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
         filters,
       })
     )[0];
-  },
+  },*/
   async delete(strapi_id, params = {}) {
     return await strapi.entityService.delete(uid, strapi_id, params);
   },

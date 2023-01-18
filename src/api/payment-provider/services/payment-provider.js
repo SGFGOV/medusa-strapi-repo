@@ -1,6 +1,10 @@
 "use strict";
+
+const { createNestedEntity } = require("../../../utils/utils");
+
 const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
+const getStrapiDataByMedusaId =
+  require("../../../utils/utils").getStrapiDataByMedusaId;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -19,24 +23,33 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
             delete paymentProvider.id;
           }
 
-          const found = await strapi.services[uid].findOne({
-            medusa_id: paymentProvider.medusa_id,
-          });
+          const medusa_id = paymentProvider.medusa_id;
+          const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, [
+            "id",
+            "medusa_id",
+          ]);
           if (found) {
             continue;
           }
-
-          const createSuccesful = await strapi.entityService.create(uid, {
-            data: paymentProvider,
-          });
-          if (createSuccesful) {
-            strapi.log.info("payment provider created");
+          try {
+            const paymentProviderEntity = await createNestedEntity(
+              uid,
+              strapi,
+              paymentProvider
+            );
+            if (paymentProviderEntity) {
+              strapi.log.info("payment provider created");
+            }
+          } catch (e) {
+            strapi.log.error(
+              `unable to sync payment provider ${uid} ${paymentProvider}`
+            );
           }
         }
-      }
-      strapi.log.info("Payment Providers synced");
+        strapi.log.info("Payment Providers synced");
 
-      return true;
+        return true;
+      }
     } catch (e) {
       handleError(strapi, e);
       return false;
@@ -71,7 +84,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
     }
     return strapiPaymentProvidersIds;
   },
-  /*async findOne(params = {}) {
+  /* async findOne(params = {}) {
   const fields = getFields(__filename, __dirname);
   let filters = {};
   if (params.medusa_id) {

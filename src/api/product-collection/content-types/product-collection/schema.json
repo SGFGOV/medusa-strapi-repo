@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "title": {
       "type": "string",
@@ -29,8 +28,7 @@
     },
     "handle": {
       "type": "string",
-      "required": false,
-      "unique": true
+      "required": false
     },
     "metadata": {
       "type": "json"

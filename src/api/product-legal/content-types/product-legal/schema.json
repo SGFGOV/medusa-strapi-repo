@@ -23,8 +23,7 @@
       "type": "richtext"
     },
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "privacy-policy": {
       "type": "richtext"
@@ -32,17 +31,15 @@
     "return-policy": {
       "type": "richtext"
     },
-    "fssai-license":{
-      "type":"string",
-      "maxLength":14,
-      "minLength":0
+    "fssai-license": {
+      "type": "string",
+      "maxLength": 14,
+      "minLength": 0
     },
-    "last-updated":
-    {
-      "type":"date",
-      "required":true
+    "last-updated": {
+      "type": "date",
+      "required": true
     },
-   
     "products": {
       "type": "relation",
       "relation": "oneToMany",

@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "title": {
       "type": "string",
@@ -32,21 +31,15 @@
     },
     "product-option-values": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToOne",
       "target": "api::product-option-value.product-option-value",
-      "mappedBy": "product-option"
+      "inversedBy": "product-option"
     },
     "product": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
       "inversedBy": "product-options"
-    },
-    "product-variants": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product-variant.product-variant",
-      "mappedBy": "product-options"
     }
   }
 }

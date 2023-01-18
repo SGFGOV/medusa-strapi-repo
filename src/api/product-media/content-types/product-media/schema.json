@@ -20,15 +20,13 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "value": {
       "type": "media",
       "multiple": true
     },
-    "media_url":
-    {
+    "media_url": {
       "type": "text",
       "multiple": true
     },

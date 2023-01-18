@@ -22,15 +22,14 @@
     "iso_2": {
       "type": "string",
       "required": true,
-      "unique": true,
-      "maxLength":2,
-      "minLength":2
+      "maxLength": 2,
+      "minLength": 2
     },
     "iso_3": {
       "type": "string",
       "required": true,
-      "maxLength":3,
-      "minLength":3
+      "maxLength": 3,
+      "minLength": 3
     },
     "num_code": {
       "type": "integer",
@@ -51,8 +50,7 @@
       "inversedBy": "countries"
     },
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     }
   }
 }

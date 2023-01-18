@@ -9,7 +9,7 @@ const controllerfindOne = require("../../../utils/utils").controllerfindOne;
 
 const createMedusaDefaultController =
   require("../../../utils/utils").createMedusaDefaultController;
-const uid = "api::payment-provider.payment-provider";
+const uid = "api::product.product";
 module.exports = createMedusaDefaultController(uid);
 /*
 module.exports = createCoreController("api::product.product", {

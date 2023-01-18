@@ -116,3 +116,4 @@ build
 dist
 ./src/plugins/**/*
 .env
+jest-html-reporters-attach/

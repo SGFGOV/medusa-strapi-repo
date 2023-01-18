@@ -19,15 +19,14 @@
     }
   },
   "attributes": {
-
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "code": {
-      "type": "string",
+      "type": "uid",
       "required": true,
-      "unique": true
+      "maxLength": 3,
+      "minLength": 3
     },
     "symbol": {
       "type": "string",
@@ -41,11 +40,11 @@
       "type": "string",
       "required": true
     },
-    "region": {
+    "regions": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::region.region",
-      "inversedBy": "currency"
+      "mappedBy": "currency"
     }
   }
 }

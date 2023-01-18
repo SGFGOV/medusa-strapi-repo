@@ -130,9 +130,9 @@ function DatabaseConfiguration({ env }) {
   const connection =
     process.env.AWS_ENABLED == "true" ? awsConnection : noAwsConnection;
 
-  console.log(connection);
+  // console.log(connection);
 
-  console.log(connection.connection.password);
+  // console.log(connection.connection.password);
 
   return connection;
 }

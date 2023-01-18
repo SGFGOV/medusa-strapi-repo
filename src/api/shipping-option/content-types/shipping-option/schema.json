@@ -20,8 +20,7 @@
   },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "name": {
       "type": "string"
@@ -64,10 +63,10 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::region.region",
-      "mappedBy": "shipping-options"
+      "inversedBy": "shipping-options"
     },
     "shipping-profiles": {
-     "type": "relation",
+      "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-profile.shipping-profile",
       "inversedBy": "shipping-options"

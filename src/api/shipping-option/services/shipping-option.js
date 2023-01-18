@@ -1,12 +1,16 @@
 "use strict";
+
+const { createNestedEntity } = require("../../../utils/utils");
+
 const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
+const getStrapiDataByMedusaId =
+  require("../../../utils/utils").getStrapiDataByMedusaId;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
 const uid = "api::shipping-option.shipping-option";
-async function createShippingOptionAfterDelegation(shippingOption, strapi) {
+/* async function createShippingOptionAfterDelegation(shippingOption, strapi) {
   const {
     region,
     profile: shipping_profile,
@@ -39,11 +43,9 @@ async function createShippingOptionAfterDelegation(shippingOption, strapi) {
       .handleManyToOneRelation(fulfillment_provider, "shipping-option");
   }
 
-  const create = await strapi.entityService.create(uid, {
-    data: createPayload,
-  });
+  const create = await createNestedEntity(uid, strapi, createPayload);
   return create.id;
-}
+}*/
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
@@ -59,14 +61,23 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
             delete shipping_option.id;
           }
 
-          const found = await strapi.services[uid].findOne({
-            medusa_id: shipping_option.medusa_id,
-          });
+          const found = await getStrapiDataByMedusaId(
+            uid,
+            strapi,
+            shipping_option.medusa_id,
+            ["id", "medusa_id"]
+          );
+
           if (found) {
             continue;
           }
-
-          await createShippingOptionAfterDelegation(shipping_option, strapi);
+          try {
+            await createNestedEntity(uid, strapi, shipping_option);
+          } catch (e) {
+            strapi.log.error(
+              `unable to sync shipping option ${uid} ${shipping_option}`
+            );
+          }
         }
       }
       strapi.log.info("Shipping Options Synced");
@@ -77,7 +88,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
     }
   },
 
-  async handleOneToManyRelation(shippingOptions, caller) {
+  /* async handleOneToManyRelation(shippingOptions, caller) {
     const shippingOptionsStrapiIds = [];
 
     try {
@@ -115,7 +126,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       throw new Error("Delegated creation failed");
     }
   },
-  /*async findOne(params = {}) {
+  /* async findOne(params = {}) {
   const fields = getFields(__filename, __dirname);
   let filters = {};
   if (params.medusa_id) {

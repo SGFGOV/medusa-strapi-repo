@@ -39,7 +39,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       throw new Error("Delegated creation failed");
     }
   },
-  /*async findOne(params = {}) {
+  /* async findOne(params = {}) {
   const fields = getFields(__filename, __dirname);
   let filters = {};
   if (params.medusa_id) {
