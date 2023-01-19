@@ -116,23 +116,30 @@ async function controllerfindOne(ctx, strapi, uid) {
   }
   // const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
-async function uploadFile(strapi, uid, files, processedData, fieldName) {
-  const service = strapi.service("plugin::upload.content-api");
+async function uploadFile(
+  strapi,
+  uid,
+  fileData,
+  processedData,
+  fieldName = "files"
+) {
+  const service = strapi.service("plugin::upload.upload");
   const id = processedData.id;
   const apiName = uid.split(".")[1];
-  const model = strapi.api[apiName].contentTypes;
+  const model = strapi.contentTypes[uid];
   const field = fieldName;
-
+  const { files } = fileData;
+  const theModel = {};
   try {
-    const uploadedFile = await service.uploadToEntity(
-      {
-        id,
-        model,
-        field,
-      },
-      files
-    );
-    return uploadedFile;
+    theModel[uid] = model;
+
+    const params = {
+      id,
+      model: uid,
+      field,
+    };
+    // Object.assign(params.model,theModel)
+    await service.uploadToEntity(params, files);
   } catch (e) {
     strapi.log.error("file upload failed");
     throw e;

@@ -1,6 +1,46 @@
 const { getDefaultRoleAssumerWithWebIdentity } = require("@aws-sdk/client-sts");
 const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 
+const providerConfigAws = (env) => {
+  return {
+    provider: "aws-s3",
+    providerOptions: {
+      accessKeyId: env("AWS_ACCESS_KEY_ID"),
+      secretAccessKey: env("AWS_ACCESS_SECRET"),
+      credentialDefaultProvider: !env("AWS_ACCESS_KEY_ID")
+        ? defaultProvider({
+            roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity,
+          })
+        : undefined,
+      region: env("S3_REGION"),
+      params: {
+        Bucket: env("S3_BUCKET"),
+      },
+      sizeLimit: 250 * 1024 * 1024,
+    },
+    actionOptions: {
+      upload: {},
+      uploadStream: {},
+      delete: {},
+    },
+    breakpoints: {
+      xlarge: 1920,
+      large: 1000,
+      medium: 750,
+      small: 500,
+      xsmall: 64,
+    },
+  };
+};
+
+const providerConfigLocal = {
+  providerOptions: {
+    localServer: {
+      maxage: 300000,
+    },
+  },
+};
+
 module.exports = ({ env }) => ({
   // ...
   seo: {
@@ -36,35 +76,8 @@ module.exports = ({ env }) => ({
   },
 
   upload: {
-    config: {
-      provider: "aws-s3",
-      providerOptions: {
-        accessKeyId: env("AWS_ACCESS_KEY_ID"),
-        secretAccessKey: env("AWS_ACCESS_SECRET"),
-        credentialDefaultProvider: !env("AWS_ACCESS_KEY_ID")
-          ? defaultProvider({
-              roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity,
-            })
-          : undefined,
-        region: env("S3_REGION"),
-        params: {
-          Bucket: env("S3_BUCKET"),
-        },
-        sizeLimit: 250 * 1024 * 1024,
-      },
-      actionOptions: {
-        upload: {},
-        uploadStream: {},
-        delete: {},
-      },
-      breakpoints: {
-        xlarge: 1920,
-        large: 1000,
-        medium: 750,
-        small: 500,
-        xsmall: 64,
-      },
-    },
+    config:
+      env("NODE_ENV") == "test" ? providerConfigLocal : providerConfigAws(env),
   },
   email: {
     config: {
