@@ -2,6 +2,8 @@ const Strapi = require("@strapi/strapi");
 const fs = require("fs");
 const _ = require("lodash");
 const qs = require("qs");
+const FormData = require("formdata-node").FormData;
+const blobFrom = require("node-fetch");
 
 let instance;
 async function clearStrapiDb() {
@@ -96,6 +98,12 @@ function generateTestData(
       const max = attribute.max;
       return max ?? min ?? 1;
     }
+    /* case "media": {
+      const file = new FormData();
+      file.append("files", "../fixtures/test.pdf");
+      file.append("field", "files");
+      return file;
+    }*/
     case "boolean":
       return true;
     case "enumeration":
@@ -154,7 +162,8 @@ function createTestDataObjects(
     return (
       attrib.required == true ||
       (attrib.unique != undefined && includeUnqiueFields) ||
-      attrib.type == "relation"
+      attrib.type == "relation" ||
+      attrib.type == "media"
     );
   });
   expect(requiredAttributes.length > 0).toBeTruthy();
@@ -170,26 +179,58 @@ function createTestDataObjects(
           return r.target.split(".")[1];
       }
     });
-  const d = {};
-  for (const attribute of requiredAttributes) {
-    const synthesisedTestData = generateTestData(
-      attribute,
-      includeUnqiueFields,
-      processedRelations,
-      unchangingUnique
-    );
-    if (synthesisedTestData) {
-      d[attribute.attribName] = synthesisedTestData;
-    }
+  const nonMediaData = {};
+  const mediaData = new FormData();
 
+  const file = fs.readFileSync(`${__dirname}/../fixtures/test-1.pdf`);
+  mediaData.append("files", file);
+  const isMedia = containsMediaType(schema);
+  for (const attribute of requiredAttributes) {
+    if (!isMedia) {
+      const synthesisedTestData = generateTestData(
+        attribute,
+        includeUnqiueFields,
+        processedRelations,
+        unchangingUnique
+      );
+      if (synthesisedTestData) {
+        nonMediaData[attribute.attribName] = synthesisedTestData;
+        nonMediaData["medusa_id"] = `1`;
+      }
+    } else {
+      if (
+        attribute.attribName == "files" ||
+        attribute.attribName == "medusa_id"
+      ) {
+        continue;
+      }
+      const synthesisedTestData = generateTestData(
+        attribute,
+        includeUnqiueFields,
+        processedRelations,
+        unchangingUnique
+      );
+      if (synthesisedTestData) {
+        mediaData.append(attribute.attribName, synthesisedTestData);
+      }
+    }
     //  d["id"] = 1;
-    d["medusa_id"] = `1`;
   }
-  return {
-    ...d,
-    deps,
-    schema,
-  };
+  mediaData.append("medusa_id", "1");
+  let retValue;
+  if (!isMedia) {
+    retValue = {
+      ...nonMediaData,
+      deps,
+      schema,
+    };
+  } else {
+    retValue = mediaData;
+    retValue["deps"] = deps;
+    retValue["schema"] = schema;
+  }
+
+  return retValue;
 }
 async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -205,7 +246,7 @@ function sanitizeData(data) {
       for (const obj of data[key]) {
         sanitizeData(obj);
       }
-    } else if (data[key] instanceof Object) {
+    } else if (data[key] instanceof Object && key != "files") {
       sanitizeData(data[key]);
     }
   }
@@ -240,6 +281,19 @@ function createStrapiRestQuery(strapiQuery) {
   return query;
 }
 
+function containsAttributeOfType(schema, type) {
+  const keys = Object.keys(schema.attributes);
+  for (const key of keys) {
+    if (schema.attributes[key].type == type) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function containsMediaType(schema) {
+return containsAttributeOfType(schema, "media");
+}
 async function flushDb() {}
 
 module.exports = {
@@ -254,4 +308,6 @@ module.exports = {
   generateTestData,
   createTestDataObjects,
   createStrapiRestQuery,
+  checkMediaType: containsMediaType,
+  checkType: containsAttributeOfType,
 };

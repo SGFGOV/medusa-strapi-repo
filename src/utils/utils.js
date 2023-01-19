@@ -67,9 +67,11 @@ function getRequiredKeys(attributes) {
   return requiredAttributes;
 }
 
-function getFieldsWithoutRelations(attributes) {
+function getFieldsWithoutRelationsAndMedia(attributes) {
   const keys = Object.keys(attributes);
-  const fields = keys.filter((k) => !attributes[k].relation);
+  const fields = keys.filter(
+    (k) => !(attributes[k].relation || attributes[k].type == "media")
+  );
   return fields;
 }
 
@@ -94,7 +96,7 @@ async function controllerfindOne(ctx, strapi, uid) {
   const { id: medusa_id } = ctx.params;
   const apiName = uid.split(".")[1];
   const model = strapi.api[apiName].contentTypes;
-  const fields = getFieldsWithoutRelations(model[apiName].attributes);
+  const fields = getFieldsWithoutRelationsAndMedia(model[apiName].attributes);
   strapi.log.debug(`requested ${uid} ${medusa_id}`);
   try {
     const entity = await getStrapiDataByMedusaId(
@@ -114,13 +116,43 @@ async function controllerfindOne(ctx, strapi, uid) {
   }
   // const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
+async function uploadFile(strapi, uid, files, processedData, fieldName) {
+  const service = strapi.service("plugin::upload.content-api");
+  const id = processedData.id;
+  const apiName = uid.split(".")[1];
+  const model = strapi.api[apiName].contentTypes;
+  const field = fieldName;
+
+  try {
+    const uploadedFile = await service.uploadToEntity(
+      {
+        id,
+        model,
+        field,
+      },
+      files
+    );
+    return uploadedFile;
+  } catch (e) {
+    strapi.log.error("file upload failed");
+    throw e;
+  }
+}
 
 async function controllerCreate(ctx, strapi, uid) {
   delete ctx.request.body?.data?.id;
   let processedData;
   try {
-    const data = _.cloneDeep(ctx.request.body.data);
+    const data = _.cloneDeep(ctx.request.body.data ?? ctx.request.body);
+    let files;
+    if (ctx.request.files) {
+      files = _.cloneDeep(ctx.request.files);
+      delete data.files;
+    }
     processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
+    if (processedData && files) {
+      await uploadFile(strapi, uid, files, processedData);
+    }
     ctx.body = processedData;
     strapi.log.info(`created element ${uid} ${JSON.stringify(processedData)}`);
   } catch (e) {
@@ -190,7 +222,6 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived) {
     }
     try {
       let strapiId;
-      const service = strapi.service(uid);
       if (keys.includes("medusa_id")) {
         const key = "medusa_id";
 
@@ -232,8 +263,6 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived) {
 
 async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
   try {
-    const service = strapi.service(uid);
-
     const apiName = uid.split(".")[1];
     const model = strapi.api[apiName].contentTypes;
     const uniqueFields = getUniqueKeys(model[apiName].attributes);
@@ -343,12 +372,6 @@ async function translateStrapiIdsToMedusaIds(uid, strapi, dataToSend) {
 }
 
 async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
-  let service;
-  try {
-    service = strapi.service(uid);
-  } catch (e) {
-    return;
-  }
   const filters = {
     medusa_id: medusa_id,
   };

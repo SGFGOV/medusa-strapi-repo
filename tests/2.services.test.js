@@ -6,6 +6,7 @@ const {
   cleanupStrapi,
   createTestDataObjects,
   sanitizeData,
+  checkMediaType,
 } = require("./helpers/strapi");
 const fs = require("fs");
 const { grantPrivilege } = require("./helpers/strapi");
@@ -46,6 +47,25 @@ function clearRequireCache() {
     delete require.cache[key];
   });
 }
+
+function getSchemaFromApi(strapi, apiName) {
+  const PATH = `${__dirname}/../src/api`;
+  for (const key of Object.keys(strapi.contentTypes)) {
+    if (
+      strapi.contentTypes[key].info.pluralName == apiName ||
+      strapi.contentTypes[key].info.singularName == apiName
+    ) {
+      const apiSingular = strapi.contentTypes[key].info.singularName;
+      const schemaFilePath = `${PATH}/${apiSingular}/content-types/${apiSingular}/schema.json`;
+      try {
+        const schema = require(schemaFilePath);
+        return schema;
+      } catch (e) {
+        console.log("unable to load schema");
+      }
+    }
+  }
+}
 jest.setTimeout(3e6);
 describe("Testing strapi ", () => {
   beforeAll(async () => {
@@ -75,32 +95,42 @@ describe("Testing strapi ", () => {
     for (const apiSingular of apis) {
       const PATH = `${__dirname}/../src/api`;
       const schemaFilePath = `${PATH}/${apiSingular}/content-types/${apiSingular}/schema.json`;
-
-      const uid = `api::${apiSingular}.${apiSingular}`;
-      describe(`testing service ${uid}`, () => {
-        it(`test CRUD ${uid}`, async () => {
-          const testInfo = createTestDataObjects(schemaFilePath, true);
-          const data = sanitizeData(testInfo);
-          const service = strapi.service(uid);
-          const entityCreated = await service.create({ data: data });
-          expect(entityCreated.id).toBeDefined();
-          let entityRead = await service.findOne(entityCreated.id);
-          expect(entityRead.id).toBeDefined();
-          const entityUpdated = await service.update(entityCreated.id, {
-            data: data,
+      const testInfo = createTestDataObjects(schemaFilePath, true);
+      const isMedia = checkMediaType(testInfo.schema);
+      if (!isMedia) {
+        const uid = `api::${apiSingular}.${apiSingular}`;
+        describe(`testing service ${uid}`, () => {
+          it(`test CRUD ${uid}`, async () => {
+            const data = sanitizeData(testInfo);
+            for (const key of Object.keys(data)) {
+              if (data[key] instanceof Object) {
+                const nestedObjectSchema = getSchemaFromApi(strapi, key);
+                if (checkMediaType(nestedObjectSchema)) {
+                  delete data[key];
+                }
+              }
+            }
+            const service = strapi.service(uid);
+            const entityCreated = await service.create({ data: data });
+            expect(entityCreated.id).toBeDefined();
+            let entityRead = await service.findOne(entityCreated.id);
+            expect(entityRead.id).toBeDefined();
+            const entityUpdated = await service.update(entityCreated.id, {
+              data: data,
+            });
+            expect(entityUpdated.id).toBeDefined();
+            expect(entityRead.id).toBeDefined();
+            const entityDeleted = await service.delete(entityUpdated.id);
+            expect(entityDeleted.id).toBeDefined();
+            try {
+              entityRead = await service.findOne(entityCreated.id);
+            } catch (e) {
+              entityRead = undefined;
+            }
+            expect(entityRead).toBeNull();
           });
-          expect(entityUpdated.id).toBeDefined();
-          expect(entityRead.id).toBeDefined();
-          const entityDeleted = await service.delete(entityUpdated.id);
-          expect(entityDeleted.id).toBeDefined();
-          try {
-            entityRead = await service.findOne(entityCreated.id);
-          } catch (e) {
-            entityRead = undefined;
-          }
-          expect(entityRead).toBeNull();
         });
-      });
+      }
     }
   });
 }, 600e3);

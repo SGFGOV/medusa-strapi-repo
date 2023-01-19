@@ -8,7 +8,7 @@ const getFields = require("../../../utils/utils").getFields;
 
 const { createCoreService } = require("@strapi/strapi").factories;
 const uid = "api::product-option-value.product-option-value";
-module.exports = createCoreService(uid, ({ strapi }) => ({
+module.exports = createCoreService(uid, ({ strapi }) => ({ /*
   async handleOneToManyRelation(product_option_values, forceUpdate) {
     const productOptionValuesStrapiIds = [];
     if (product_option_values && product_option_values.length) {

@@ -10,61 +10,6 @@ const getStrapiDataByMedusaId =
  * to customize this service
  */
 const uid = "api::region.region";
-async function createOrUpdateRegionAfterDelegation(
-  region,
-  strapi,
-  action = "create"
-) {
-  const {
-    currency,
-    countries,
-    payment_providers,
-    fulfillment_providers,
-    ...payload
-  } = region;
-
-  if (currency) {
-    payload.currency = await strapi
-      .service("api::currency.currency")
-      .handleManyToOneRelation(currency);
-  }
-
-  if (countries && countries.length) {
-    payload.countries = await strapi
-      .service("api::country.country")
-      .handleOneToManyRelation(countries, "region");
-  }
-
-  if (payment_providers && payment_providers.length) {
-    payload.payment_providers = await strapi
-      .service("api::payment-provider.payment-provider")
-      .handleManyToManyRelation(payment_providers, "region");
-  }
-
-  if (fulfillment_providers && fulfillment_providers.length) {
-    payload.fulfillment_providers = await strapi
-      .service("api::fulfillment-provider.fulfillment-provider")
-      .handleManyToManyRelation(fulfillment_providers, "region");
-  }
-
-  if (action === "update") {
-    const exists = await strapi.services[uid].findOne({
-      medusa_id: region.medusa_id,
-    });
-    const update = await strapi.services[uid].update(exists.id, {
-      data: payload,
-    });
-    strapi.log.info(update);
-    return update.id;
-  }
-
-  try {
-    const regionEntity = await createNestedEntity(uid, strapi, payload);
-    return regionEntity;
-  } catch (e) {
-    strapi.log.error(`unable to sync region ${uid} ${payload}`);
-  }
-}
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
@@ -89,9 +34,11 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
             continue;
           }
           try {
-            const regionStrapiId = await strapi.services[uid].create({
-              data: region,
-            });
+            const regionStrapiId = await createNestedEntity(
+              uid,
+              strapi,
+              region
+            );
             if (regionStrapiId) {
               strapi.log.info(`Region created : ${regionStrapiId}`);
             }
@@ -108,7 +55,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-
+  /*
   // Many "X" to One "region"
   async handleManyToOneRelation(region) {
     try {

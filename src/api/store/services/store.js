@@ -10,7 +10,7 @@ const getFields = require("../../../utils/utils").getFields;
 
 const { createCoreService } = require("@strapi/strapi").factories;
 const uid = "api::store.store";
-module.exports = createCoreService(uid, ({ strapi }) => ({
+module.exports = createCoreService(uid, ({ strapi }) => ({ /*
   async handleManyToOneRelation(store) {
     try {
       const found = await strapi.services[uid].findOne({

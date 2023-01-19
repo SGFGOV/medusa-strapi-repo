@@ -46,7 +46,7 @@ async function createOrUpdateProductVariantAfterDelegation(
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
-module.exports = createCoreService(uid, ({ strapi }) => ({
+module.exports = createCoreService(uid, ({ strapi }) => ({ /*
   async handleOneToManyRelation(productVariants, caller, forceUpdate) {
     const productVariantsIds = [];
 

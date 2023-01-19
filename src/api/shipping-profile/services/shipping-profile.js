@@ -10,12 +10,6 @@ const getStrapiDataByMedusaId =
  * to customize this service
  */
 const uid = "api::shipping-profile.shipping-profile";
-async function createShippingProfileAfterDelegation(shippingProfile, strapi) {
-  const shippingProfileCreated = await strapi.entityService.create(uid, {
-    data: shippingProfile,
-  });
-  return shippingProfileCreated.id;
-}
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
@@ -63,7 +57,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-
+  /*
   async handleManyToOneRelation(shippingProfile, caller) {
     if (shippingProfile.id) {
       shippingProfile.medusa_id = shippingProfile.id;

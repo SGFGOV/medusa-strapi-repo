@@ -8,7 +8,7 @@ const getFields = require("../../../utils/utils").getFields;
 
 const { createCoreService } = require("@strapi/strapi").factories;
 const uid = "api::product-type.product-type";
-module.exports = createCoreService(uid, ({ strapi }) => ({
+module.exports = createCoreService(uid, ({ strapi }) => ({ /*
   async handleManyToOneRelation(product_type) {
     try {
       if (!product_type.medusa_id) {

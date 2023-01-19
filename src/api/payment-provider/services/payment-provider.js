@@ -55,7 +55,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-
+  /*
   async handleManyToManyRelation(paymentProviders) {
     const strapiPaymentProvidersIds = [];
 

@@ -10,15 +10,6 @@ const getStrapiDataByMedusaId =
  * to customize this service
  */
 const uid = "api::fulfillment-provider.fulfillment-provider";
-async function createFulfillmentProviderAfterDelegation(
-  fulfillmentProvider,
-  strapi
-) {
-  const create = await strapi.entityService.create(uid, {
-    data: fulfillmentProvider,
-  });
-  return create.id;
-}
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
@@ -38,9 +29,6 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
             "id",
             "medusa_id",
           ]);
-          /* const found = await strapi.services[uid].findOne({
-            
-          });*/
           if (found) {
             continue;
           }
@@ -67,59 +55,59 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       return false;
     }
   },
-
+  /*
   async handleManyToManyRelation(fulfillmentProviders) {
-    const strapiFulfillmentProvidersIds = [];
+  const strapiFulfillmentProvidersIds = [];
 
-    try {
-      for (const fulfillmentProvider of fulfillmentProviders) {
-        fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
-        delete fulfillmentProvider.id;
-
-        const found = await strapi.services[uid].findOne({
-          medusa_id: fulfillmentProvider.medusa_id,
-        });
-
-        if (found) {
-          strapiFulfillmentProvidersIds.push({ id: found.id });
-          continue;
-        }
-
-        const create = await strapi.entityService.create(uid, {
-          data: fulfillmentProvider,
-        });
-        strapiFulfillmentProvidersIds.push({ id: create.id });
-      }
-    } catch (e) {
-      handleError(strapi, e);
-      throw new Error("Delegated creation failed");
-    }
-    return strapiFulfillmentProvidersIds;
-  },
-
-  async handleManyToOneRelation(fulfillmentProvider) {
-    try {
+  try {
+    for (const fulfillmentProvider of fulfillmentProviders) {
       fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
       delete fulfillmentProvider.id;
 
       const found = await strapi.services[uid].findOne({
         medusa_id: fulfillmentProvider.medusa_id,
       });
+
       if (found) {
-        return found.id;
+        strapiFulfillmentProvidersIds.push({ id: found.id });
+        continue;
       }
 
-      const fulfillmentProviderStrapiId =
-        await createFulfillmentProviderAfterDelegation(
-          fulfillmentProvider,
-          strapi
-        );
-      return fulfillmentProviderStrapiId;
-    } catch (e) {
-      handleError(strapi, e);
-      throw new Error("Delegated creation failed");
+      const create = await strapi.entityService.create(uid, {
+        data: fulfillmentProvider,
+      });
+      strapiFulfillmentProvidersIds.push({ id: create.id });
     }
-  },
+  } catch (e) {
+    handleError(strapi, e);
+    throw new Error("Delegated creation failed");
+  }
+  return strapiFulfillmentProvidersIds;
+},
+
+  async handleManyToOneRelation(fulfillmentProvider) {
+  try {
+    fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
+    delete fulfillmentProvider.id;
+
+    const found = await strapi.services[uid].findOne({
+      medusa_id: fulfillmentProvider.medusa_id,
+    });
+    if (found) {
+      return found.id;
+    }
+
+    const fulfillmentProviderStrapiId =
+      await createFulfillmentProviderAfterDelegation(
+        fulfillmentProvider,
+        strapi
+      );
+    return fulfillmentProviderStrapiId;
+  } catch (e) {
+    handleError(strapi, e);
+    throw new Error("Delegated creation failed");
+  }
+},
   /* async findOne(params = {}) {
   const fields = getFields(__filename, __dirname);
   let filters = {};
@@ -138,8 +126,8 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       filters,
     })
   )[0];
-},*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+},
+  async delete (strapi_id, params = {}) {
+  return await strapi.entityService.delete(uid, strapi_id, params);
+}*/
 }));

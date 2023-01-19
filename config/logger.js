@@ -23,7 +23,7 @@ const alignColorsAndTime = winston.format.combine(
 module.exports = {
   transports: [
     new winston.transports.Console({
-      level: "silly",
+      level: "warn",
       debugStdout: true,
       format: winston.format.combine(
         winston.format.colorize(),

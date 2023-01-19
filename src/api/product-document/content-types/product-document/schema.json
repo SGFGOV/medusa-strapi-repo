@@ -5,7 +5,7 @@
     "singularName": "product-document",
     "pluralName": "product-documents",
     "displayName": "Product Document",
-    "description": ""
+    "description": "Used to store product related Document files"
   },
   "options": {
     "increments": true,
@@ -22,9 +22,13 @@
     "medusa_id": {
       "type": "uid"
     },
-    "value": {
-      "type": "media",
-      "multiple": true
+    "filename":
+    {
+      "type":"string",
+      "required":true
+    },
+    "files": {
+      "type": "media"
     },
     "metadata": {
       "type": "json"

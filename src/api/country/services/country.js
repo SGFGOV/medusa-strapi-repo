@@ -10,6 +10,7 @@ const getFields = require("../../../utils/utils").getFields;
 const { createCoreService } = require("@strapi/strapi").factories;
 const uid = "api::country.country";
 module.exports = createCoreService(uid, ({ strapi }) => ({
+  /*
   async handleOneToManyRelation(countries, parent) {
     const countriesStrapiIds = [];
 

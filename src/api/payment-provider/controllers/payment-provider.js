@@ -1,6 +1,4 @@
 "use strict";
-const handleError = require("../../../utils/utils").handleError;
-const controllerfindOne = require("../../../utils/utils").controllerfindOne;
 
 /**
  *  payment-provider controller

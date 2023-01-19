@@ -153,6 +153,7 @@ use th command npx strapi routes:list
 1. Get doesn't support queries, All entities have to be retrieved by via their corresponing medusa id, 
 2. Unique fields need to be set by medusa, strapi's unique fields feature has been not used. 
 3. Only UID is the strapi provided id. Each strapi id, is mapped to a medusa_id if the data exists in medusa, 
+4. Need to convert to typescript
 
 ## Support us 
 
