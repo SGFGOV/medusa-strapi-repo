@@ -6,7 +6,7 @@ const {
   cleanupStrapi,
   createTestDataObjects,
   sanitizeData,
-  checkMediaType,
+  containsMediaType,
 } = require("./helpers/strapi");
 const fs = require("fs");
 const { grantPrivilege } = require("./helpers/strapi");
@@ -96,40 +96,77 @@ describe("Testing strapi ", () => {
       const PATH = `${__dirname}/../src/api`;
       const schemaFilePath = `${PATH}/${apiSingular}/content-types/${apiSingular}/schema.json`;
       const testInfo = createTestDataObjects(schemaFilePath, true);
-      const isMedia = checkMediaType(testInfo.schema);
-      if (!isMedia) {
-        const uid = `api::${apiSingular}.${apiSingular}`;
-        describe(`testing service ${uid}`, () => {
-          it(`test CRUD ${uid}`, async () => {
-            const data = sanitizeData(testInfo);
-            for (const key of Object.keys(data)) {
-              if (data[key] instanceof Object) {
-                const nestedObjectSchema = getSchemaFromApi(strapi, key);
-                if (checkMediaType(nestedObjectSchema)) {
-                  delete data[key];
+      const isMedia = containsMediaType(testInfo.schema);
+      if (testInfo.schema.kind != "singleType") {
+        if (!isMedia) {
+          const uid = `api::${apiSingular}.${apiSingular}`;
+          describe(`testing service ${uid}`, () => {
+            it(`test CRUD ${uid}`, async () => {
+              const data = sanitizeData(testInfo);
+              for (const key of Object.keys(data)) {
+                if (data[key] instanceof Object) {
+                  const nestedObjectSchema = getSchemaFromApi(strapi, key);
+                  if (containsMediaType(nestedObjectSchema)) {
+                    delete data[key];
+                  }
                 }
               }
-            }
-            const service = strapi.service(uid);
-            const entityCreated = await service.create({ data: data });
-            expect(entityCreated.id).toBeDefined();
-            let entityRead = await service.findOne(entityCreated.id);
-            expect(entityRead.id).toBeDefined();
-            const entityUpdated = await service.update(entityCreated.id, {
-              data: data,
+              const service = strapi.service(uid);
+              const entityCreated = await service.create({ data: data });
+              expect(entityCreated.id).toBeDefined();
+              let entityRead = await service.findOne(entityCreated.id);
+              expect(entityRead.id).toBeDefined();
+              const entityUpdated = await service.update(entityCreated.id, {
+                data: data,
+              });
+              expect(entityUpdated.id).toBeDefined();
+              expect(entityRead.id).toBeDefined();
+              const entityDeleted = await service.delete(entityUpdated.id);
+              expect(entityDeleted.id).toBeDefined();
+              try {
+                entityRead = await service.findOne(entityCreated.id);
+              } catch (e) {
+                entityRead = undefined;
+              }
+              expect(entityRead).toBeNull();
             });
-            expect(entityUpdated.id).toBeDefined();
-            expect(entityRead.id).toBeDefined();
-            const entityDeleted = await service.delete(entityUpdated.id);
-            expect(entityDeleted.id).toBeDefined();
-            try {
-              entityRead = await service.findOne(entityCreated.id);
-            } catch (e) {
-              entityRead = undefined;
-            }
-            expect(entityRead).toBeNull();
           });
-        });
+        } else {
+          if (!isMedia) {
+            const uid = `api::${apiSingular}.${apiSingular}`;
+            describe(`testing service ${uid}`, () => {
+              it(`test CRUD ${uid}`, async () => {
+                const data = sanitizeData(testInfo);
+                for (const key of Object.keys(data)) {
+                  if (data[key] instanceof Object) {
+                    const nestedObjectSchema = getSchemaFromApi(strapi, key);
+                    if (containsMediaType(nestedObjectSchema)) {
+                      delete data[key];
+                    }
+                  }
+                }
+                const service = strapi.service(uid);
+                const entityCreated = await service.createOrUpdate({
+                  data: data,
+                });
+                expect(entityCreated.id).toBeDefined();
+                let entityRead = await service.find(entityCreated.id);
+                expect(entityRead.id).toBeDefined();
+                const entityDeleted = await service.delete(entityRead.id);
+                expect(entityDeleted.id).toBeDefined();
+                try {
+                  entityRead = await service.find(entityCreated.id);
+                } catch (e) {
+                  entityRead = undefined;
+                }
+                expect(entityRead).toBeNull();
+              });
+            });
+          }
+        }
+      }
+      if (isMedia) {
+        console.debug("skipping testing media type services");
       }
     }
   });

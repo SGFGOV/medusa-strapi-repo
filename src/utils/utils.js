@@ -125,14 +125,10 @@ async function uploadFile(
 ) {
   const service = strapi.service("plugin::upload.upload");
   const id = processedData.id;
-  const apiName = uid.split(".")[1];
-  const model = strapi.contentTypes[uid];
   const field = fieldName;
-  const { files } = fileData;
-  const theModel = {};
-  try {
-    theModel[uid] = model;
+  const files = fileData.files ?? fileData["files.files"];
 
+  try {
     const params = {
       id,
       model: uid,
@@ -140,6 +136,7 @@ async function uploadFile(
     };
     // Object.assign(params.model,theModel)
     await service.uploadToEntity(params, files);
+    return processedData;
   } catch (e) {
     strapi.log.error("file upload failed");
     throw e;
@@ -150,7 +147,10 @@ async function controllerCreate(ctx, strapi, uid) {
   delete ctx.request.body?.data?.id;
   let processedData;
   try {
-    const data = _.cloneDeep(ctx.request.body.data ?? ctx.request.body);
+    let data = _.cloneDeep(ctx.request.body.data ?? ctx.request.body);
+    if (typeof data == "string") {
+      data = JSON.parse(data);
+    }
     let files;
     if (ctx.request.files) {
       files = _.cloneDeep(ctx.request.files);
@@ -158,16 +158,15 @@ async function controllerCreate(ctx, strapi, uid) {
     }
     processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
     if (processedData && files) {
-      await uploadFile(strapi, uid, files, processedData);
+      processedData = await uploadFile(strapi, uid, files, processedData);
     }
-    ctx.body = processedData;
+
     strapi.log.info(`created element ${uid} ${JSON.stringify(processedData)}`);
+    return (ctx.body = { data: processedData });
   } catch (e) {
     handleError(strapi, e);
     return ctx.internalServerError(ctx);
   }
-
-  return ctx.body;
 }
 
 async function getStrapiIdFromMedusaId(uid, strapi, medusa_id) {
@@ -430,10 +429,9 @@ async function controllerUpdate(ctx, strapi, uid) {
     const entityId = await getStrapiIdFromMedusaId(uid, strapi, medusa_id);
 
     if (entityId) {
-      return (ctx.body = await strapi.services[uid].update(
-        entityId,
-        ctx.request.body
-      ));
+      return (ctx.body = {
+        data: await strapi.services[uid].update(entityId, ctx.request.body),
+      });
     } else {
       return ctx.notFound(ctx);
     }
@@ -446,16 +444,20 @@ async function controllerUpdate(ctx, strapi, uid) {
 function createMedusaDefaultController(uid) {
   return createCoreController(uid, {
     async findOne(ctx) {
+      // eslint-disable-next-line no-undef
       return await controllerfindOne(ctx, strapi, uid);
     },
     async delete(ctx) {
+      // eslint-disable-next-line no-undef
       return await controllerDelete(ctx, strapi, uid);
     },
     async create(ctx) {
+      // eslint-disable-next-line no-undef
       return await controllerCreate(ctx, strapi, uid);
     },
 
     async update(ctx) {
+      // eslint-disable-next-line no-undef
       return await controllerUpdate(ctx, strapi, uid);
     },
   });

@@ -3,7 +3,20 @@ const fs = require("fs");
 const _ = require("lodash");
 const qs = require("qs");
 const FormData = require("formdata-node").FormData;
-const blobFrom = require("node-fetch");
+const request = require("supertest");
+const userTestCreds = {
+  email: "hello@test.com",
+  password: "test-password",
+  username: "hello",
+  firstname: "hello",
+  provider: "local",
+  // email:"hello@test.com",
+};
+const authCreds = {
+  identifier: userTestCreds.email,
+  password: userTestCreds.password,
+  provider: "local",
+};
 
 let instance;
 async function clearStrapiDb() {
@@ -16,21 +29,26 @@ async function clearStrapiDb() {
 async function setupStrapi() {
   if (!instance) {
     await Strapi().load();
+    // eslint-disable-next-line no-undef
     instance = strapi;
 
     await instance.server.mount();
   }
+  // eslint-disable-next-line no-undef, no-unused-vars
   const dbSettings = strapi.config.get("database.connection");
-
-  return instance;
+  // eslint-disable-next-line no-undef, no-unused-vars
+  return instance ?? strapi;
 }
 
 async function cleanupStrapi() {
+  // eslint-disable-next-line no-undef
   const dbSettings = strapi.config.get("database.connection");
 
   // close server to release the db-file
+  // eslint-disable-next-line no-undef
   await strapi.server.httpServer.close();
   // close the connection to the database before deletion
+  // eslint-disable-next-line no-undef
   await strapi.db.connection.destroy();
 
   // delete test database after all tests have completed
@@ -40,6 +58,7 @@ async function cleanupStrapi() {
       fs.unlinkSync(tmpDbFile);
     }
   }
+  // eslint-disable-next-line no-undef
   await strapi.destroy();
 }
 
@@ -49,6 +68,7 @@ const grantPrivilege = async (
   enabled = true,
   policy = ""
 ) => {
+  // eslint-disable-next-line no-undef
   const service = strapi.plugin("users-permissions").service("role");
 
   const role = await service.findOne(roleID);
@@ -144,6 +164,12 @@ function generateTestData(
       }
     }
   }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 function createTestDataObjects(
@@ -291,10 +317,43 @@ function containsAttributeOfType(schema, type) {
   return false;
 }
 
+function namesAttributeOfType(schema, type) {
+  const keys = Object.keys(schema.attributes);
+  return keys
+    .map((key) => {
+      if (schema.attributes[key].type == type) {
+        return key;
+      }
+    })
+    .filter((r) => r != undefined);
+}
+
 function containsMediaType(schema) {
-return containsAttributeOfType(schema, "media");
+  return containsAttributeOfType(schema, "media");
 }
 async function flushDb() {}
+
+async function executeLoginAsStrapiAdmin(email, password, strapi) {
+  const auth = {
+    email: email,
+    password: password,
+  };
+  try {
+    const response = await request(strapi.server.httpServer)
+      .post(`/admin/login`)
+      .send(auth)
+      .set("Content-Type", "application/json");
+
+    return response;
+  } catch (error) {
+    // Handle error.
+    console.error(
+      "An error occurred" + "while logging into admin:",
+      error.message
+    );
+    throw error;
+  }
+}
 
 module.exports = {
   setupStrapi,
@@ -308,6 +367,11 @@ module.exports = {
   generateTestData,
   createTestDataObjects,
   createStrapiRestQuery,
-  checkMediaType: containsMediaType,
-  checkType: containsAttributeOfType,
+  containsMediaType,
+  containsAttributeOfType,
+  executeLoginAsStrapiAdmin,
+  namesAttributeOfType,
+  userTestCreds,
+  authCreds,
+  sleep,
 };

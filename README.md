@@ -154,6 +154,8 @@ use th command npx strapi routes:list
 2. Unique fields need to be set by medusa, strapi's unique fields feature has been not used. 
 3. Only UID is the strapi provided id. Each strapi id, is mapped to a medusa_id if the data exists in medusa, 
 4. Need to convert to typescript
+5. Service tests don't check apis that use media types, though api tests cover it all.
+6. Testing currently limited to APIs not plugins
 
 ## Support us 
 
