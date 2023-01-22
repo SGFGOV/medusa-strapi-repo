@@ -1,0 +1,29 @@
+{
+  "kind": "singleType",
+  "collectionName": "blog_abouts",
+  "info": {
+    "singularName": "blog-about",
+    "pluralName": "blog-abouts",
+    "displayName": "About Blog",
+    "description": "Our Blog"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required":true
+    },
+    "blocks": {
+      "type": "dynamiczone",
+      "components": [
+        "shared.media",
+        "shared.quote",
+        "shared.rich-text",
+        "shared.slider"
+      ]
+    }
+  }
+}
