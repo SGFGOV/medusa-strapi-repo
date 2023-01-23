@@ -74,7 +74,7 @@ Install and fire away
 
 ## Cavaets,
 
-the package uses axios retry with a default fixed retry interval of 400seconds for any 429 errors. 
+the package uses axios retry with a default fixed retry interval of 400seconds for any 429 errors. I'm happy to accept a PR which defines a better way of dealing with 429 errors
 
 
 ## Support us 
