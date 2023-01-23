@@ -10,7 +10,7 @@ const axios = require("axios");
 module.exports = {
   async afterUpdate(result, params, data) {
     let medusaReady = false;
-    while (!medusaReady) {
+    /* while (!medusaReady) {
       try {
         const response = await axios.head(
           `${process.env.MEDUSA_BACKEND_URL}/health`
@@ -20,7 +20,7 @@ module.exports = {
         console.log("awaiting medusa to start");
         return;
       }
-    }
+    }*/
     const respondViaPlugin =
       strapi.plugins["strapi-plugin-medusajs"].service("setup");
     return await respondViaPlugin.sendResult("productVariant", result.result);

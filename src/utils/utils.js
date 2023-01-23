@@ -224,6 +224,8 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived) {
           strapi,
           dataReceived[key]
         );
+      } else if (key == "medusa_id") {
+        dataReceived[key] = dataReceived[key].toString();
       }
     }
     try {
@@ -293,7 +295,9 @@ async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
 }
 
 async function createNestedEntity(uid, strapi, dataReceived) {
-  if (!dataReceived) {
+  return attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived);
+
+  /* if (!dataReceived) {
     return;
   }
   const keys = Object.keys(dataReceived);
@@ -309,7 +313,7 @@ async function createNestedEntity(uid, strapi, dataReceived) {
       } else if (dataReceived[key] instanceof Object) {
         const objectUid = findContentUid(key, strapi);
         createNestedEntity(objectUid, strapi, dataReceived[key]);
-      } else {
+      }
         try {
           const objectUid = findContentUid(key, strapi);
           const service = strapi.service(objectUid);
@@ -341,7 +345,7 @@ async function createNestedEntity(uid, strapi, dataReceived) {
     }
   }
 
-  return dataReceived;
+  return dataReceived;*/
 }
 
 async function translateStrapiIdsToMedusaIds(uid, strapi, dataToSend) {
