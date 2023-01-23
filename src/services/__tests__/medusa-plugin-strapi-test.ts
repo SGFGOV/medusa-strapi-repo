@@ -164,16 +164,18 @@ describe("StrapiService Tests", () => {
         const spy = jest.spyOn(service, "getType");
         describe("product  creation and update", () => {
             it("product-type-creation", async () => {
-                let typeResult = await service.createProductTypeInStrapi(
+                const typeResult = await service.createProductTypeInStrapi(
                     "dummy",
                     defaultAuthInterface
                 );
                 expect(typeResult).toBeDefined();
                 if (typeResult) {
-                    typeResult = await service.getEntitiesFromStrapi({
+                    const typeGetResult = await service.getEntitiesFromStrapi({
                         authInterface: defaultAuthInterface,
                         strapiEntityType: "product-types"
                     });
+                    expect(typeGetResult).toBeDefined();
+                    expect(typeGetResult.data.length > 0).toBeTruthy();
                 }
                 expect(spy).toHaveBeenCalled();
             });
@@ -185,9 +187,21 @@ describe("StrapiService Tests", () => {
                 );
                 expect(result).toBeDefined();
                 expect(result.status).toBe(200);
-                expect(result.medusa_id).toBeDefined();
-                expect(result).toMatchObject({ medusa_id: "exists" });
+                expect(result.data?.medusa_id).toBeDefined();
+                expect(result.data).toMatchObject({
+                    medusa_id: "exists",
+                    id: expect.any(Number)
+                });
                 expect(spy).toHaveBeenCalled();
+                if (result) {
+                    const productGetResult =
+                        await service.getEntitiesFromStrapi({
+                            authInterface: defaultAuthInterface,
+                            strapiEntityType: "products"
+                        });
+                    expect(productGetResult).toBeDefined();
+                    expect(productGetResult.data.length > 0).toBeTruthy();
+                }
             }, 600000);
 
             it("product update product ", async () => {
@@ -207,6 +221,17 @@ describe("StrapiService Tests", () => {
                 expect(result).toBeDefined();
                 expect(result.status).toBe(200);
                 expect(spy).toHaveBeenCalled();
+                if (result) {
+                    const productMetafieldsGetResult =
+                        await service.getEntitiesFromStrapi({
+                            authInterface: defaultAuthInterface,
+                            strapiEntityType: "product-metafields"
+                        });
+                    expect(productMetafieldsGetResult).toBeDefined();
+                    expect(
+                        productMetafieldsGetResult.data.length > 0
+                    ).toBeTruthy();
+                }
             });
             it("update metafields in strapi", async () => {
                 result = await service.updateProductMetafieldInStrapi(
@@ -231,6 +256,18 @@ describe("StrapiService Tests", () => {
                     data: { title: expect.any(String) },
                     medus_id: expect.any(String)
                 });*/
+
+                if (result) {
+                    const productVariantGetResult =
+                        await service.getEntitiesFromStrapi({
+                            authInterface: defaultAuthInterface,
+                            strapiEntityType: "product-variants"
+                        });
+                    expect(productVariantGetResult).toBeDefined();
+                    expect(
+                        productVariantGetResult.data.length > 0
+                    ).toBeTruthy();
+                }
 
                 result = await service.updateProductVariantInStrapi(
                     { id: "exists", title: "test-product-variant-2" },
@@ -258,10 +295,10 @@ describe("StrapiService Tests", () => {
                 const falseResult = await service.getEntitiesFromStrapi({
                     strapiEntityType: "product-variants",
                     authInterface: defaultAuthInterface,
-                    id: result.medusa_id
+                    id: result.data?.medusa_id
                 });
                 expect(falseResult.status).toBe(200);
-                expect(falseResult.data?.data.length).toBe(0);
+                expect(falseResult.data?.length).toBe(0);
             });
             it("clean up products ", async () => {
                 result = await service.deleteProductInStrapi(
@@ -272,10 +309,10 @@ describe("StrapiService Tests", () => {
                 let falseResult = await service.getEntitiesFromStrapi({
                     strapiEntityType: "products",
                     authInterface: defaultAuthInterface,
-                    id: result.medusa_id
+                    id: result.data?.medusa_id
                 });
                 expect(falseResult.status).toBe(200);
-                expect(falseResult.data?.data.length).toBe(0);
+                expect(falseResult.data?.length).toBe(0);
 
                 result = await service.deleteProductTypeInStrapi(
                     { id: "dummy" },
@@ -285,10 +322,10 @@ describe("StrapiService Tests", () => {
                 falseResult = await service.getEntitiesFromStrapi({
                     strapiEntityType: "product-types",
                     authInterface: defaultAuthInterface,
-                    id: result.medusa_id
+                    id: result.data?.medusa_id
                 });
                 expect(falseResult.status).toBe(200);
-                expect(falseResult.data?.data.length).toBe(0);
+                expect(falseResult.data?.length).toBe(0);
             });
         });
     });
@@ -327,8 +364,7 @@ describe("region checks", () => {
         expect(result).toBeDefined();
         expect(result.status).toBe(200);
         expect(result).toMatchObject({
-            medusa_id: "exists",
-            data: { name: "new-name" }
+            data: { name: "new-name", medusa_id: "exists" }
         });
         result = await service.getEntitiesFromStrapi({
             strapiEntityType: "regions",

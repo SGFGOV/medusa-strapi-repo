@@ -90,10 +90,9 @@ export type AdminGetResult = {
     status: number;
 };
 export type StrapiGetResult = {
-    data?: {
-        data: [];
-        meta: any;
-    };
+    data: [];
+    meta?: any;
+
     status: number;
     medusa_id?: string;
     id?: number;
@@ -103,6 +102,7 @@ export type StrapiResult = {
     medusa_id?: string;
     id?: number;
     data?: any;
+    meta?: Record<string, any>;
     status: number;
 };
 const IGNORE_THRESHOLD = 3; // seconds
@@ -334,14 +334,18 @@ class UpdateStrapiService extends TransactionBaseService {
             };
 
             const result = await this.getEntriesInStrapi(getEntityParams);
-            return { data: result?.data, status: result.status };
+            return {
+                data: result?.data,
+                status: result.status,
+                meta: result?.meta
+            };
         } catch (e) {
             this.logger.error(
                 `Unable to retrieve ${params.strapiEntityType}, ${
                     params.id ?? "any"
                 }`
             );
-            return { data: undefined, status: 404 };
+            return { data: undefined, status: 404, meta: undefined };
         }
     }
 
@@ -420,6 +424,11 @@ class UpdateStrapiService extends TransactionBaseService {
                     productToSend.variants
                 );
                 delete productToSend.variants;
+
+                productToSend["product-collection"] = _.cloneDeep(
+                    productToSend.collection
+                );
+                delete productToSend.collection;
 
                 const result = await this.createEntryInStrapi({
                     type: "products",
@@ -625,23 +634,27 @@ class UpdateStrapiService extends TransactionBaseService {
         data: { id: string; data: Record<string, unknown> },
         authInterface: AuthInterface
     ): Promise<StrapiResult> {
-        const typeExists = await this.checkType("metafields", authInterface);
+        const typeExists = await this.checkType(
+            "product-metafields",
+            authInterface
+        );
         if (!typeExists) {
             return { status: 400 };
         }
 
         const productInfo = await this.productService_.retrieve(data.id);
-        const dataToInsert: BaseEntity = {
+        const dataToUpdate: BaseEntity & { medusa_id: string } = {
             ..._.cloneDeep(data),
             created_at: productInfo.created_at,
-            updated_at: productInfo.updated_at
+            updated_at: productInfo.updated_at,
+            medusa_id: data.id
         };
-        delete dataToInsert.id;
+        delete dataToUpdate.id;
         return await this.updateEntryInStrapi({
             type: "product-metafields",
             id: data.id,
             authInterface,
-            data: dataToInsert,
+            data: dataToUpdate,
             method: "put"
         });
     }
@@ -1072,7 +1085,7 @@ class UpdateStrapiService extends TransactionBaseService {
             this.userTokens[authInterface.email].token,
             fetchedUser.id?.toString()
         );
-        return { data: result.data, status: result.status };
+        return { data: result.data.data ?? result.data, status: result.status };
     }
 
     /** 
@@ -1222,7 +1235,8 @@ class UpdateStrapiService extends TransactionBaseService {
     }
     async processStrapiEntry(command: StrapiSendParams): Promise<StrapiResult> {
         try {
-            return await this.strapiSendDataLayer(command);
+            const result = await this.strapiSendDataLayer(command);
+            return result;
         } catch (e) {
             this.logger.error(
                 "Unable to process strapi entry request: " + e.message
@@ -1232,7 +1246,7 @@ class UpdateStrapiService extends TransactionBaseService {
     }
 
     async doesEntryExistInStrapi(
-        type,
+        type: string,
         id: string,
 
         authInterface: AuthInterface
@@ -1257,10 +1271,15 @@ class UpdateStrapiService extends TransactionBaseService {
     async getEntriesInStrapi(
         command: StrapiSendParams
     ): Promise<StrapiGetResult> {
-        return await this.processStrapiEntry({
+        const result = await this.processStrapiEntry({
             ...command,
             method: "get"
         });
+        return {
+            data: result.data,
+            meta: result?.meta,
+            status: result.status
+        };
     }
 
     async updateEntryInStrapi(
@@ -1301,11 +1320,13 @@ class UpdateStrapiService extends TransactionBaseService {
 
         const userCreds = await this.strapiLoginSendDatalayer(authInterface);
         let dataToSend: BaseEntity & { medusa_id?: string };
-        if (data) {
+        if (data && data.id) {
             dataToSend = _.cloneDeep(data);
             dataToSend = this.translateIdsToMedusaIds(dataToSend);
             dataToSend["medusa_id"] = data.id;
             delete dataToSend.id;
+        } else {
+            dataToSend = data;
         }
 
         try {
@@ -1317,10 +1338,10 @@ class UpdateStrapiService extends TransactionBaseService {
                 { data: dataToSend }
             );
             return {
-                id: result.data.id,
-                medusa_id: result.data.medusa_id,
+                id: result.data.id ?? result.data.data?.id,
+                medusa_id: result.data.medusa_id ?? result.data.data?.medusa_id,
                 status: result.status,
-                data: result.data
+                data: result.data.data ?? result.data
             };
         } catch (e) {
             this.logger.error(e.message);
@@ -1384,7 +1405,9 @@ class UpdateStrapiService extends TransactionBaseService {
             // console.log("attempting action:"+result);
             if (result.status >= 200 && result.status < 300) {
                 this.logger.info(
-                    `Strapi Ok : ${method}, ${id}, ${type}, ${data}, :status:${result.status}`
+                    `Strapi Ok : method: ${method}, id:${id}, type:${type}, data:${JSON.stringify(
+                        data
+                    )}, :status:${result.status}`
                 );
             }
 

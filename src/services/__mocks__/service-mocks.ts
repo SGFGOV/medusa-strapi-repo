@@ -61,7 +61,12 @@ export const productService = {
                             id: "exists",
                             title: "Color"
                         }
-                    ]
+                    ],
+                    collection: {
+                        id: "exists",
+                        title: "test"
+                    },
+                    created_at: new Date().toISOString
                 });
             }
             return Promise.resolve(undefined);
@@ -71,7 +76,9 @@ export const productService = {
                 return Promise.resolve({
                     id: "exists",
                     type: { id: "dummy" },
-                    title: "test-product-2"
+                    title: "test-product-2",
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 });
             }
             return Promise.resolve(undefined);
@@ -106,7 +113,7 @@ export const productVariantService = {
             if (id === "exists") {
                 return Promise.resolve({
                     id: "exists",
-                    product: { id: "exists" },
+                    product: { id: "exists", title: "test-product" },
                     title: "test-product-variant",
                     inventory_quantity: 10,
                     allow_backorder: true,
@@ -126,7 +133,7 @@ export const productVariantService = {
             if (id === "exists") {
                 return Promise.resolve({
                     id: "exists",
-                    product: { id: "exists" },
+                    product: { id: "exists", title: "test-product" },
                     title: "test-product-variant-2",
                     inventory_quantity: 20
                 });
