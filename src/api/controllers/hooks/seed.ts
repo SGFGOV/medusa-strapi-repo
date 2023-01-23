@@ -180,7 +180,7 @@ export default async (req, res, next) => {
             shippingProfileConfig
         )) as StrapiEntity[];
 
-        let response: Record<string, StrapiEntity[]> = {
+        const response: Record<string, StrapiEntity[]> = {
             products: allProducts,
             regions: allRegions,
             paymentProviders: allPaymentProviders,
@@ -189,7 +189,7 @@ export default async (req, res, next) => {
             shippingProfiles: allShippingProfiles
         };
 
-        response = translateIdsToMedusaIds(response);
+        translateIdsToMedusaIds(response);
 
         res.status(200).send(response);
     } catch (error) {
@@ -202,7 +202,7 @@ function translateIdsToMedusaIds(
         | Record<string, StrapiEntity[]>
         | Record<string, StrapiEntity>
         | StrapiEntity
-): Record<string, StrapiEntity[]> {
+): void {
     const keys = Object.keys(dataToSend);
     for (const key of keys) {
         if (_.isArray(dataToSend[key])) {
@@ -216,7 +216,6 @@ function translateIdsToMedusaIds(
             delete dataToSend[key];
         }
     }
-    return dataToSend;
 }
 
 // eslint-disable-next-line valid-jsdoc
