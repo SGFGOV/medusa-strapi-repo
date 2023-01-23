@@ -206,8 +206,7 @@ function translateIdsToMedusaIds(
             for (const element of dataToSend[key]) {
                 this.translateIdsToMedusaIds(element);
             }
-        }
-        if (dataToSend[key] instanceof Object) {
+        } else if (dataToSend[key] instanceof Object) {
             this.translateIdsToMedusaIds(dataToSend[key]);
         } else if (key == "id") {
             dataToSend["medusa_id"] = dataToSend[key];
