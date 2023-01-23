@@ -18,10 +18,13 @@ axiosRetry(axios, {
             error.response.headers["x-retry-after"] &&
             error.response.headers["x-retry-after"] <= 60;
         let retryHeaderDelay = error.response.headers["x-retry-after"];
-        const rateLimitResetTime =
-            error.response.headers["x-ratelimit-reset"] ??
-            (Date.now() + 120000).toString();
+        const rateLimitResetTime = error.response.headers["x-ratelimit-reset"];
 
+        if (!retryHeaderDelay && !rateLimitResetTime) {
+            return (
+                axiosRetry.exponentialDelay(retryCount) * 1000
+            ); /** delay in seconds */
+        }
         if (!retryHeaderDelay) {
             const currentTime = Date.now();
             const timeDiffms =

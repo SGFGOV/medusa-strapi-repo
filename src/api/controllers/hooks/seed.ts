@@ -198,16 +198,19 @@ export default async (req, res, next) => {
 };
 
 function translateIdsToMedusaIds(
-    dataToSend: Record<string, StrapiEntity[]>
+    dataToSend:
+        | Record<string, StrapiEntity[]>
+        | Record<string, StrapiEntity>
+        | StrapiEntity
 ): Record<string, StrapiEntity[]> {
     const keys = Object.keys(dataToSend);
     for (const key of keys) {
         if (_.isArray(dataToSend[key])) {
             for (const element of dataToSend[key]) {
-                this.translateIdsToMedusaIds(element);
+                translateIdsToMedusaIds(element);
             }
         } else if (dataToSend[key] instanceof Object) {
-            this.translateIdsToMedusaIds(dataToSend[key]);
+            translateIdsToMedusaIds(dataToSend[key]);
         } else if (key == "id") {
             dataToSend["medusa_id"] = dataToSend[key];
             delete dataToSend[key];
