@@ -21,9 +21,9 @@ axiosRetry(axios, {
         const rateLimitResetTime = error.response.headers["x-ratelimit-reset"];
 
         if (!retryHeaderDelay && !rateLimitResetTime) {
-            return (
-                axiosRetry.exponentialDelay(retryCount) * 1000
-            ); /** delay in seconds */
+            /** @todo change from fixed back off to exponential backoff */
+            // axiosRetry.exponentialDelay(retryCount)*1000
+            return 400e3;
         }
         if (!retryHeaderDelay) {
             const currentTime = Date.now();
@@ -40,7 +40,7 @@ axiosRetry(axios, {
         console.log(`retrying after ${strapiRetryDelay}`);
         return strapiRetryDelay;
     },
-    shouldResetTimeout: true,
+    shouldResetTimeout: false,
     onRetry(retryCount, error: AxiosError) {
         console.info(
             `retring request ${retryCount}` +

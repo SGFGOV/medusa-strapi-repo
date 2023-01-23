@@ -70,6 +70,12 @@ const strapiOptions =
 
 ## Usage
 
+Install and fire away
+
+## Cavaets,
+
+the package uses axios retry with a default fixed retry interval of 400seconds for any 429 errors. 
+
 
 ## Support us 
 
