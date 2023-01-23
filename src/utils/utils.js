@@ -443,6 +443,11 @@ async function controllerUpdate(ctx, strapi, uid) {
 
 function createMedusaDefaultController(uid) {
   return createCoreController(uid, {
+    async find(ctx) {
+      // eslint-disable-next-line no-undef
+      return await strapi.entityService.findMany(uid, { fields: ["id"] });
+    },
+
     async findOne(ctx) {
       // eslint-disable-next-line no-undef
       return await controllerfindOne(ctx, strapi, uid);
