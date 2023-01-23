@@ -2,6 +2,8 @@ import {
     FulfillmentProviderService,
     PaymentProviderService,
     Product,
+    ProductCollection,
+    ProductCollectionService,
     Region,
     ShippingOption,
     ShippingOptionService,
@@ -36,7 +38,16 @@ export default async (req, res, next) => {
         const shippingOptionRepository = req.scope.resolve(
             "shippingOptionRepository"
         );
+
+        const productCollectionRepository = req.scope.resolve(
+            "productCollectionRepository"
+        );
+
         const allProductsCount = await productService.count();
+        const allProductCollectionCount = await getCount(
+            manager,
+            productCollectionRepository
+        );
         const allRegionCount = await getCount(manager, regionRepository);
         const allShippingProfileCount = await getCount(
             manager,
@@ -48,6 +59,9 @@ export default async (req, res, next) => {
         );
 
         const storeService = req.scope.resolve("storeService") as StoreService;
+        const productCollectionService = req.scope.resolve(
+            "productCollectionService"
+        ) as ProductCollectionService;
 
         const productFields: (keyof Product)[] = [
             "id",
@@ -134,7 +148,20 @@ export default async (req, res, next) => {
             "provider"
         ];
 
+        const productCollectionFields: (keyof ProductCollection)[] = [
+            "title",
+            "handle"
+        ];
+
+        const productCollectionRelations = ["product"];
         // Fetching all entries at once. Can be optimized
+        const productCollectionListConfig = {
+            skip: 0,
+            take: allProductCollectionCount,
+            select: productCollectionFields,
+            relations: productCollectionRelations
+        };
+
         const productListConfig = {
             skip: 0,
             take: allProductsCount,
@@ -160,6 +187,11 @@ export default async (req, res, next) => {
             relations: shippingProfileRelations
         };
 
+        const allProductCollections = (await productCollectionService.list(
+            {},
+            productCollectionListConfig
+        )) as StrapiEntity[];
+
         const allRegions = (await regionService.list(
             {},
             regionListConfig
@@ -181,6 +213,7 @@ export default async (req, res, next) => {
         )) as StrapiEntity[];
 
         const response: Record<string, StrapiEntity[]> = {
+            productCollections: allProductCollections,
             products: allProducts,
             regions: allRegions,
             paymentProviders: allPaymentProviders,
