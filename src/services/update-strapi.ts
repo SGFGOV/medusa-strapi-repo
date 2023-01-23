@@ -647,7 +647,7 @@ class UpdateStrapiService extends TransactionBaseService {
             ..._.cloneDeep(data),
             created_at: productInfo.created_at,
             updated_at: productInfo.updated_at,
-            medusa_id: data.id
+            medusa_id: data.id.toString()
         };
         delete dataToUpdate.id;
         return await this.updateEntryInStrapi({
