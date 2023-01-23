@@ -1303,6 +1303,11 @@ class UpdateStrapiService extends TransactionBaseService {
     translateIdsToMedusaIds(dataToSend: StrapiEntity): StrapiEntity {
         const keys = Object.keys(dataToSend);
         for (const key of keys) {
+            if (_.isArray(dataToSend[key])) {
+                for (const element of dataToSend[key]) {
+                    this.translateIdsToMedusaIds(element);
+                }
+            }
             if (dataToSend[key] instanceof Object) {
                 this.translateIdsToMedusaIds(dataToSend[key]);
             } else if (key == "id") {
@@ -1315,6 +1320,7 @@ class UpdateStrapiService extends TransactionBaseService {
 
     /* using cached tokens */
     /* @todo enable api based access */
+    /* automatically converts "id" into medusa "id"*/
     async strapiSendDataLayer(params: StrapiSendParams): Promise<StrapiResult> {
         const { method, type, id, data, authInterface } = params;
 
