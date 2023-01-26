@@ -2,6 +2,8 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { jest } from "@jest/globals";
+import express, { Application } from "express";
+import routes from "../../api/index";
 
 import { IdMap } from "medusa-test-utils";
 
@@ -52,21 +54,45 @@ export const productService = {
         .mockImplementationOnce((id) => {
             if (id === "exists") {
                 return Promise.resolve({
-                    id: "exists",
+                    id: IdMap.getId("exists"),
                     type: { id: "dummy" },
                     title: "test-product",
-                    variants: ["exists"],
+                    // variants: [{ id: "exists" }]
                     options: [
                         {
                             id: "exists",
                             title: "Color"
                         }
                     ],
+                    // collection_id: "exists",
                     collection: {
                         id: "exists",
-                        title: "test"
+                        handle: "test-collection",
+                        title: "test-collection-title"
                     },
-                    created_at: new Date().toISOString
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                });
+            } else if (id === "exists-2") {
+                return Promise.resolve({
+                    id: IdMap.getId("exists-2"),
+                    type: { id: "dummy" },
+                    title: "test-product",
+                    // variants: [{ id: "exists" }]
+                    options: [
+                        {
+                            id: "exists",
+                            title: "Color"
+                        }
+                    ],
+                    // collection_id: "exists",
+                    collection: {
+                        id: "exists",
+                        handle: "test-collection",
+                        title: "test-collection-title"
+                    },
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
                 });
             }
             return Promise.resolve(undefined);
@@ -74,9 +100,34 @@ export const productService = {
         .mockImplementation((id) => {
             if (id === "exists") {
                 return Promise.resolve({
-                    id: "exists",
+                    id: IdMap.getId("exists"),
                     type: { id: "dummy" },
                     title: "test-product-2",
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                    collection: {
+                        id: "exists",
+                        title: "test"
+                    }
+                });
+            } else if (id === "exists-2") {
+                return Promise.resolve({
+                    id: IdMap.getId("exists-2"),
+                    type: { id: "dummy" },
+                    title: "test-product",
+                    // variants: [{ id: "exists" }]
+                    options: [
+                        {
+                            id: "exists",
+                            title: "Color"
+                        }
+                    ],
+                    // collection_id: "exists",
+                    collection: {
+                        id: "exists",
+                        handle: "test-collection",
+                        title: "test-collection-title"
+                    },
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 });
@@ -90,6 +141,16 @@ export const productTypeService = {
         return Promise.resolve({
             value: "dummy",
             id: "dummy"
+        });
+    })
+};
+
+export const productCollectionService = {
+    retrieve: jest.fn((id) => {
+        return Promise.resolve({
+            title: "test-collection-title",
+            handle: "test-collection",
+            id: "exists"
         });
     })
 };
@@ -113,7 +174,10 @@ export const productVariantService = {
             if (id === "exists") {
                 return Promise.resolve({
                     id: "exists",
-                    product: { id: "exists", title: "test-product" },
+                    product: {
+                        id: IdMap.getId("exists"),
+                        title: "test-product"
+                    },
                     title: "test-product-variant",
                     inventory_quantity: 10,
                     allow_backorder: true,
@@ -133,7 +197,10 @@ export const productVariantService = {
             if (id === "exists") {
                 return Promise.resolve({
                     id: "exists",
-                    product: { id: "exists", title: "test-product" },
+                    product: {
+                        id: IdMap.getId("exists"),
+                        title: "test-product"
+                    },
                     title: "test-product-variant-2",
                     inventory_quantity: 20
                 });
@@ -387,4 +454,11 @@ function enableMockFunctions(): void {
 
     mock.onHead("/_health").reply(200);
     mock.onHead().reply(200);
+}
+
+export function mockServer(): Application {
+    const app = express();
+    app.use(express.json());
+    app.use("/api", routes);
+    return app;
 }

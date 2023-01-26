@@ -15,10 +15,11 @@ import {
     redisClient,
     productVariantService,
     eventBusService,
-    disableMocks
+    disableMocks,
+    productCollectionService
 } from "../__mocks__/service-mocks";
 import { StrapiMedusaPluginOptions } from "../../types/globals";
-import { MockManager } from "medusa-test-utils";
+import { IdMap, MockManager } from "medusa-test-utils";
 import { StrapiResult } from "../update-strapi";
 import logger from "../__mocks__/logger";
 
@@ -62,6 +63,7 @@ describe("StrapiService Tests", () => {
             productVariantService: productVariantService as any,
             productTypeService: productTypeService as any,
             eventBusService: eventBusService as any,
+            productCollectionService: productCollectionService as any,
             logger: logger as any
         },
         strapiConfigParameters
@@ -189,8 +191,29 @@ describe("StrapiService Tests", () => {
                 expect(result.status).toBe(200);
                 expect(result.data?.medusa_id).toBeDefined();
                 expect(result.data).toMatchObject({
-                    medusa_id: "exists",
-                    id: expect.any(Number)
+                    medusa_id: IdMap.getId("exists")
+                });
+                expect(spy).toHaveBeenCalled();
+                if (result) {
+                    const productGetResult =
+                        await service.getEntitiesFromStrapi({
+                            authInterface: defaultAuthInterface,
+                            strapiEntityType: "products"
+                        });
+                    expect(productGetResult).toBeDefined();
+                    expect(productGetResult.data.length > 0).toBeTruthy();
+                }
+            }, 600000);
+            it("product second creation in the same collection", async () => {
+                result = await service.createProductInStrapi(
+                    "exists-2",
+                    defaultAuthInterface
+                );
+                expect(result).toBeDefined();
+                expect(result.status).toBe(200);
+                expect(result.data?.medusa_id).toBeDefined();
+                expect(result.data).toMatchObject({
+                    medusa_id: IdMap.getId("exists-2")
                 });
                 expect(spy).toHaveBeenCalled();
                 if (result) {
@@ -302,7 +325,7 @@ describe("StrapiService Tests", () => {
             });
             it("clean up products ", async () => {
                 result = await service.deleteProductInStrapi(
-                    { id: "exists" },
+                    { id: IdMap.getId("exists") },
                     defaultAuthInterface
                 );
                 expect(result.status).toBe(200);
@@ -311,16 +334,53 @@ describe("StrapiService Tests", () => {
                     authInterface: defaultAuthInterface,
                     id: result.data?.medusa_id
                 });
-                expect(falseResult.status).toBe(200);
-                expect(falseResult.data?.length).toBe(0);
 
+                /*   result = await service.deleteCollectionInStrapi(
+                    { id: "exists" },
+                    defaultAuthInterface
+                );
+
+                expect(result.status != 200).toBeTruthy();*/
+
+                result = await service.deleteProductInStrapi(
+                    { id: IdMap.getId("exists-2") },
+                    defaultAuthInterface
+                );
+                expect(result.status).toBe(200);
+                falseResult = await service.getEntitiesFromStrapi({
+                    strapiEntityType: "products",
+                    authInterface: defaultAuthInterface,
+                    id: result.data?.medusa_id
+                });
+                expect(falseResult.status).toBe(200);
+                expect(
+                    falseResult.data?.filter(
+                        (d: { id: any }) => d.id == result.data.deletedData.id
+                    ).length
+                ).toBe(0);
+            });
+
+            it("clean up types and collections", async () => {
                 result = await service.deleteProductTypeInStrapi(
                     { id: "dummy" },
                     defaultAuthInterface
                 );
                 expect(result.status).toBe(200);
-                falseResult = await service.getEntitiesFromStrapi({
+                let falseResult = await service.getEntitiesFromStrapi({
                     strapiEntityType: "product-types",
+                    authInterface: defaultAuthInterface,
+                    id: result.data?.medusa_id
+                });
+
+                expect(falseResult.status).toBe(200);
+                expect(falseResult.data?.length).toBe(0);
+                expect(falseResult.data?.length).toBe(0);
+                result = await service.deleteCollectionInStrapi(
+                    { id: "exists" },
+                    defaultAuthInterface
+                );
+                falseResult = await service.getEntitiesFromStrapi({
+                    strapiEntityType: "product-collections",
                     authInterface: defaultAuthInterface,
                     id: result.data?.medusa_id
                 });

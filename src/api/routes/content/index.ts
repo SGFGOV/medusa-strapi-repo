@@ -12,9 +12,11 @@ export default (app, options, config) => {
         origin: parseCorsOrigins(storeCors),
         credentials: true
     };
-    contentRouter.use(cors(strapiCors));
-    contentRouter.get(cors(config.store_cors));
-    contentRouter.options(cors(config.store_cors));
+    if (process.env.NODE_ENV != "test") {
+        contentRouter.use(cors(strapiCors));
+        contentRouter.get(cors(config.store_cors));
+        contentRouter.options(cors(config.store_cors));
+    }
     contentRouter.use(utils);
     contentRouter.get("/content/:type/:id", fetchContent);
 

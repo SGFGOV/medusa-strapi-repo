@@ -58,6 +58,7 @@ import {
     BaseEntity,
     EventBusService,
     Product,
+    ProductCollectionService,
     ProductService,
     ProductTypeService,
     ProductVariantService,
@@ -131,6 +132,7 @@ export interface UpdateStrapiServiceParams {
     productVariantService: ProductVariantService;
     productTypeService: ProductTypeService;
     eventBusService: EventBusService;
+    productCollectionService: ProductCollectionService;
     logger: Logger;
 }
 
@@ -162,6 +164,7 @@ class UpdateStrapiService extends TransactionBaseService {
     static isHealthy: boolean;
     lastAdminLoginAttemptTime: number;
     isStarted: boolean;
+    productCollectionService: ProductCollectionService;
 
     constructor(
         container: UpdateStrapiServiceParams,
@@ -175,6 +178,7 @@ class UpdateStrapiService extends TransactionBaseService {
         this.productTypeService_ = container.productTypeService;
         this.regionService_ = container.regionService;
         this.eventBus_ = container.eventBusService;
+        this.productCollectionService = container.productCollectionService;
 
         this.options_ = options;
         this.algorithm = this.options_.encryption_algorithm || "aes-256-cbc"; // Using AES encryption
@@ -226,7 +230,8 @@ class UpdateStrapiService extends TransactionBaseService {
                 productTypeService: this.productTypeService_,
                 regionService: this.regionService_,
                 eventBusService: this.eventBus_,
-                redisClient: this.redis_
+                redisClient: this.redis_,
+                productCollectionService: this.productCollectionService
             },
             this.options_
         );
@@ -413,22 +418,23 @@ class UpdateStrapiService extends TransactionBaseService {
                     "metadata"
                 ]
             });
+
             if (product) {
                 const productToSend = _.cloneDeep(product);
                 productToSend["product-type"] = _.cloneDeep(productToSend.type);
                 delete productToSend.type;
-                productToSend["product-tag"] = _.cloneDeep(productToSend.tags);
+                productToSend["product-tags"] = _.cloneDeep(productToSend.tags);
                 delete productToSend.tags;
-                productToSend["product-option"] = _.cloneDeep(
+                productToSend["product-options"] = _.cloneDeep(
                     productToSend.options
                 );
                 delete productToSend.options;
-                productToSend["product-variant"] = _.cloneDeep(
+                productToSend["product-variants"] = _.cloneDeep(
                     productToSend.variants
                 );
                 delete productToSend.variants;
 
-                productToSend["product-collection"] = _.cloneDeep(
+                productToSend["product-collections"] = _.cloneDeep(
                     productToSend.collection
                 );
                 delete productToSend.collection;
@@ -443,6 +449,93 @@ class UpdateStrapiService extends TransactionBaseService {
             }
         } catch (error) {
             throw error;
+        }
+    }
+
+    async updateCollectionInStrapi(
+        data,
+        authInterface: AuthInterface
+    ): Promise<StrapiResult> {
+        const updateFields = ["handle", "title"];
+
+        // Update came directly from product collection service so only act on a couple
+        // of fields. When the update comes from the product we want to ensure
+        // references are set up correctly so we run through everything.
+        if (data.fields) {
+            const found =
+                data.fields.find((f) => updateFields.includes(f)) ||
+                this.verifyDataContainsFields(data, updateFields);
+            if (!found) {
+                return { status: 400 };
+            }
+        }
+
+        try {
+            const ignore = await this.shouldIgnore_(data.id, "strapi");
+            if (ignore) {
+                return { status: 400 };
+            }
+
+            const collection = await this.productCollectionService.retrieve(
+                data.id
+            );
+            this.logger.info(JSON.stringify(collection));
+
+            if (collection) {
+                // Update entry in Strapi
+                const response = await this.updateEntryInStrapi({
+                    type: "product-variants",
+                    id: collection.id,
+                    authInterface,
+                    data: collection,
+                    method: "put"
+                });
+                this.logger.info("Variant Strapi Id - ", response);
+                return response;
+            }
+
+            return { status: 400 };
+        } catch (error) {
+            this.logger.info("Failed to update product variant", data.id);
+            return { status: 400 };
+        }
+    }
+
+    async createCollectionInStrapi(
+        collectionId: string,
+        authInterface: AuthInterface
+    ): Promise<StrapiResult> {
+        const hasType = await this.getType("product-collections", authInterface)
+            .then(() => true)
+            .catch(() => false);
+
+        if (!hasType) {
+            return Promise.resolve({
+                status: 400
+            });
+        }
+        try {
+            const collection = await this.productCollectionService.retrieve(
+                collectionId
+            );
+
+            // this.logger.info(variant)
+            if (collection) {
+                const collectionToSend = _.cloneDeep(collection);
+
+                const result = await this.createEntryInStrapi({
+                    type: "product-collections",
+                    id: collectionId,
+                    authInterface,
+                    data: collectionToSend,
+                    method: "POST"
+                });
+                return result;
+            }
+        } catch (error) {
+            this.logger.error(
+                `unable to create collection ${collectionId} ${error.message}`
+            );
         }
     }
 
@@ -917,7 +1010,7 @@ class UpdateStrapiService extends TransactionBaseService {
 
     // Blocker - Delete Region API
     async deleteRegionInStrapi(data, authInterface): Promise<StrapiResult> {
-        const hasType = await this.getType("product-variants", authInterface)
+        const hasType = await this.getType("regions", authInterface)
             .then(() => true)
             .catch(() => {
                 // this.logger.info(err)
@@ -934,6 +1027,30 @@ class UpdateStrapiService extends TransactionBaseService {
 
         return await this.deleteEntryInStrapi({
             type: "regions",
+            id: data.id,
+            authInterface,
+            method: "delete"
+        });
+    }
+
+    async deleteCollectionInStrapi(data, authInterface): Promise<StrapiResult> {
+        const hasType = await this.getType("product-collections", authInterface)
+            .then(() => true)
+            .catch(() => {
+                // this.logger.info(err)
+                return false;
+            });
+        if (!hasType) {
+            return { status: 400 };
+        }
+
+        const ignore = await this.shouldIgnore_(data.id, "strapi");
+        if (ignore) {
+            return { status: 400 };
+        }
+
+        return await this.deleteEntryInStrapi({
+            type: "product-collections",
             id: data.id,
             authInterface,
             method: "delete"

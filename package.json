@@ -24,7 +24,7 @@
     "clean": "./node_modules/.bin/rimraf types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.x",

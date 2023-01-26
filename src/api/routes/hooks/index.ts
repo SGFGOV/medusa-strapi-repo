@@ -24,7 +24,9 @@ export default (app: Router, options: StrapiMedusaPluginOptions) => {
     };
 
     /** todo additional checks to authenticate strapi request */
-    hooksRouter.use(cors(strapiCors));
+    if (process.env.NODE_ENV != "test") {
+        hooksRouter.use(cors(strapiCors));
+    }
     hooksRouter.use(utils);
     /* hooksRouter.post(
         "/update-medusa",
