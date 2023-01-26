@@ -123,7 +123,7 @@
     "product-type": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::product-collection.product-collection",
+      "target": "api::product-type.product-type",
       "inversedBy": "products"
     },
     "product-tags": {

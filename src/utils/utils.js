@@ -219,11 +219,12 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived) {
         }
       } else if (dataReceived[key] instanceof Object) {
         const objectUid = findContentUid(key, strapi);
-        await attachOrCreateStrapiIdFromMedusaId(
+        const result = await attachOrCreateStrapiIdFromMedusaId(
           objectUid,
           strapi,
           dataReceived[key]
         );
+        dataReceived[key] = result.id;
       } else if (key == "medusa_id") {
         dataReceived[key] = dataReceived[key].toString();
       }
