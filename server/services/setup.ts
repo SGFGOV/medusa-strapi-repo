@@ -4,6 +4,7 @@ import _ from "lodash";
 import * as jwt from "jsonwebtoken";
 import { createUserWithAdminRole, hasAuthorRole } from "../bootstrap";
 import { MedusaUserParams } from "../types/interfaces";
+import { env } from "process";
 
 let strapi: any;
 
@@ -222,6 +223,10 @@ export async function sendSignalToMedusa(
     code = 200,
     data?: any
 ): Promise<AxiosResponse | undefined> {
+    if (process.env.NODE_ENV == "test") {
+        return;
+    }
+
     const medusaServer = `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
     }`;
@@ -244,7 +249,9 @@ export async function sendSignalToMedusa(
             signedMessage: signedMessage
         });
     } catch (error) {
-        strapi.log.error("unable to send message to medusa server");
+        strapi.log.error(
+            "unable to send message to medusa server" + (error as Error).message
+        );
     }
 }
 
@@ -283,6 +290,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
     const paymentProviders = seedData?.data?.paymentProviders;
     const fulfillmentProviders = seedData?.data?.fulfillmentProviders;
     const shippingProfiles = seedData?.data?.shippingProfiles;
+    const productCollections = seedData?.data?.productCollections;
     const stores = seedData?.data?.stores;
     try {
         const servicesToSync = {
@@ -292,6 +300,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
             "api::region.region": regions,
             "api::shipping-option.shipping-option": shippingOptions,
             "api::shipping-profile.shipping-profile": shippingProfiles,
+            "api::product-collection.product-collection": productCollections,
             "api::product.product": products,
             "api::store.store": stores
         };

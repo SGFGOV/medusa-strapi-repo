@@ -10,8 +10,8 @@ import pluginId from '../../pluginId';
 const HomePage: React.VoidFunctionComponent = () => {
   return (
     <div>
-      <h1>{pluginId}&apos;s HomePage</h1>
-      <p>Happy coding</p>
+      <h1>{pluginId}&apos;Strapi - Plugin for Medusa</h1>
+      <h3>Sorry no configurable parameters</h3>
     </div>
   );
 };
