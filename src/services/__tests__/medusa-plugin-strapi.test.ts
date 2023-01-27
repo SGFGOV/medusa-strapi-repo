@@ -204,6 +204,29 @@ describe("StrapiService Tests", () => {
                     expect(productGetResult.data.length > 0).toBeTruthy();
                 }
             }, 600000);
+            it("product recreation", async () => {
+                result = await service.createProductInStrapi(
+                    "exists",
+                    defaultAuthInterface
+                );
+                expect(result).toBeDefined();
+                expect(result.status).toBe(302);
+                expect(result.data?.medusa_id).toBeDefined();
+                expect(result.data).toMatchObject({
+                    medusa_id: IdMap.getId("exists")
+                });
+                expect(spy).toHaveBeenCalled();
+                if (result) {
+                    const productGetResult =
+                        await service.getEntitiesFromStrapi({
+                            authInterface: defaultAuthInterface,
+                            strapiEntityType: "products"
+                        });
+                    expect(productGetResult).toBeDefined();
+                    expect(productGetResult.data.length > 0).toBeTruthy();
+                }
+            }, 600000);
+
             it("product second creation in the same collection", async () => {
                 result = await service.createProductInStrapi(
                     "exists-2",

@@ -81,6 +81,7 @@ import {
 } from "../types/globals";
 import { EntityManager } from "typeorm";
 import _ from "lodash";
+import { cp } from "fs";
 
 export type StrapiEntity = BaseEntity & { medusa_id?: string };
 export type AdminResult = { data: any; status: number };
@@ -94,7 +95,7 @@ export type AdminGetResult = {
     status: number;
 };
 export type StrapiGetResult = {
-    data: [];
+    data: any[];
     meta?: any;
 
     status: number;
@@ -105,7 +106,7 @@ export type StrapiGetResult = {
 export type StrapiResult = {
     medusa_id?: string;
     id?: number;
-    data?: any;
+    data?: any | any[];
     meta?: Record<string, any>;
     status: number;
 };
@@ -1407,12 +1408,33 @@ class UpdateStrapiService extends TransactionBaseService {
     async createEntryInStrapi(
         command: StrapiSendParams
     ): Promise<StrapiResult> {
-        return await this.processStrapiEntry({
+        let result: StrapiGetResult;
+        try {
+            /** to check if the request field already exists */
+            result = await this.getEntriesInStrapi({
+                type: command.type,
+                method: "get",
+                id: command.data.id,
+                data: undefined,
+                authInterface: command.authInterface
+            });
+            if (result.data?.length > 0 && result.status == 200) {
+                return {
+                    status: result.status == 200 ? 302 : 400,
+                    data: result.data[0]
+                };
+            }
+        } catch (e) {
+            this.logger.info(e.message);
+        }
+
+        const createResponse = await this.processStrapiEntry({
             ...command,
             method: "post"
         });
-    }
 
+        return createResponse;
+    }
     async getEntriesInStrapi(
         command: StrapiSendParams
     ): Promise<StrapiGetResult> {
@@ -1421,7 +1443,7 @@ class UpdateStrapiService extends TransactionBaseService {
             method: "get"
         });
         return {
-            data: result.data,
+            data: _.isArray(result.data) ? [...result.data] : [result.data],
             meta: result?.meta,
             status: result.status
         };
