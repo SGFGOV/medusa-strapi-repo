@@ -573,10 +573,10 @@ class UpdateStrapiService extends TransactionBaseService {
                 );
                 delete variantToSend.prices;
 
-                const variantOptionValues = variantToSend.options;
-                for (const variantOption of variantOptionValues) {
+                /* const variantOptionValues = variantToSend.options;
+                 for (const variantOption of variantOptionValues) {
                     this.convertOptionValueToMedusaReference(variantOption);
-                }
+                }*/
 
                 variantToSend["product-option-value"] = _.cloneDeep(
                     variantToSend.options
@@ -599,7 +599,8 @@ class UpdateStrapiService extends TransactionBaseService {
         const keys = Object.keys(data);
         for (const key of keys) {
             if (key != "medusa_id" && key.includes("_id")) {
-                const api = `product-${key.split("_")[0]}`;
+                const medusaService = key.split("_")[0];
+                const api = `product-${medusaService}`;
                 const value = data[key];
 
                 data[api] = {
