@@ -419,6 +419,9 @@ class UpdateStrapiService extends TransactionBaseService {
                 ]
             });
 
+            /**
+             * Todo implement schema validator
+             */
             if (product) {
                 const productToSend = _.cloneDeep(product);
                 productToSend["product-type"] = _.cloneDeep(productToSend.type);
@@ -569,7 +572,13 @@ class UpdateStrapiService extends TransactionBaseService {
                     variantToSend.prices
                 );
                 delete variantToSend.prices;
-                variantToSend["product-option"] = _.cloneDeep(
+
+                const variantOptionValues = variantToSend.options;
+                for (const variantOption of variantOptionValues) {
+                    this.convertOptionValueToMedusaReference(variantOption);
+                }
+
+                variantToSend["product-option-value"] = _.cloneDeep(
                     variantToSend.options
                 );
 
@@ -584,6 +593,21 @@ class UpdateStrapiService extends TransactionBaseService {
         } catch (error) {
             throw error;
         }
+    }
+
+    convertOptionValueToMedusaReference(data): Record<string, any> {
+        const keys = Object.keys(data);
+        for (const key of keys) {
+            if (key != "medusa_id" && key.includes("_id")) {
+                const api = `product-${key.split("_")[0]}`;
+                const value = data[key];
+
+                data[api] = {
+                    medusa_id: value
+                };
+            }
+        }
+        return data;
     }
 
     async createRegionInStrapi(

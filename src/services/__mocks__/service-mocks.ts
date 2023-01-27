@@ -6,6 +6,7 @@ import express, { Application } from "express";
 import routes from "../../api/index";
 
 import { IdMap } from "medusa-test-utils";
+import { exists } from "fs";
 
 export const regionService = {
     retrieve: jest
@@ -181,7 +182,18 @@ export const productVariantService = {
                     title: "test-product-variant",
                     inventory_quantity: 10,
                     allow_backorder: true,
-                    manage_inventory: true
+                    manage_inventory: true,
+                    options: [
+                        {
+                            created_at: "2023-01-26T11:47:16.096Z",
+                            deleted_at: null,
+                            medusa_id: "exists",
+                            metadata: null,
+                            option_id: "exists",
+                            updated_at: "2023-01-26T11:47:16.096Z",
+                            value: "12"
+                        }
+                    ]
                     /* prices: [
                         {
                             region_id: "exists",
@@ -202,7 +214,19 @@ export const productVariantService = {
                         title: "test-product"
                     },
                     title: "test-product-variant-2",
-                    inventory_quantity: 20
+                    inventory_quantity: 20,
+                    options: [
+                        {
+                            created_at: "2023-01-26T11:47:16.096Z",
+                            deleted_at: null,
+                            medusa_id: "exists",
+                            metadata: null,
+                            option_id: "exists",
+                            updated_at: "2023-01-26T11:47:16.096Z",
+                            value: "12",
+                            variant_id: "exists"
+                        }
+                    ]
                 });
             }
             return Promise.resolve(undefined);
