@@ -19,6 +19,7 @@ export default (app, options, config) => {
     }
     contentRouter.use(utils);
     contentRouter.get("/content/:type/:id", fetchContent);
+    contentRouter.get("/content/:type/", fetchContent);
 
     return contentRouter;
 };

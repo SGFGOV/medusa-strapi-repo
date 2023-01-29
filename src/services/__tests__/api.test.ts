@@ -100,7 +100,7 @@ describe("StrapiService Tests", () => {
         });
     });
     beforeAll(async () => {
-       const registerUser =  await service.registerOrLoginDefaultMedusaUser();
+        const registerUser = await service.registerOrLoginDefaultMedusaUser();
         let result: StrapiResult;
         const typeResult = await service.createProductTypeInStrapi(
             "dummy",
@@ -130,10 +130,10 @@ describe("StrapiService Tests", () => {
                         const container = createContainer();
                         container.register(
                             "updateStrapiService",
-                            asFunction(() => service)
+                            asFunction(() => service).singleton()
                         );
                         app.use((req, _res, next) => {
-                            req["container"] = container.createScope();
+                            req["scope"] = container.createScope() as any;
                             next();
                         });
                         app.use("/strapi", strapiRoutes);
@@ -185,19 +185,19 @@ describe("StrapiService Tests", () => {
 
     /**
      * thi is work in progress
-     */
-    /*   it("GET  any /content", async () => {
-        const result = await supertest(app)
+     
+    it("GET  any /content", async () => {
+        const result =  supertest(app)
             .get("/strapi/content/products")
-            .set("Accept", "application/json");
-        expect(result.status).toBe(200);
+            .set("Accept", "application/json").expect(200);
+        
 
         expect(result?.body).toBeDefined();
         expect(result?.body.error).toBeUndefined();
         // Check the response type and length
         // Check the response data
     });
-
+    /*
     it("GET  any /content", async () => {
         const result = await supertest(app)
             .get(`/strapi/content/products/${IdMap.getId("exists")}`)
