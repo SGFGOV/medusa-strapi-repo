@@ -26,6 +26,7 @@ import { StrapiResult } from "../update-strapi";
 import logger from "../__mocks__/logger";
 import { Application } from "express";
 import strapiRoutes from "../../api/";
+import { asFunction, createContainer } from "awilix";
 
 // This sets the mock adapter on the default instance
 
@@ -99,7 +100,7 @@ describe("StrapiService Tests", () => {
         });
     });
     beforeAll(async () => {
-        await service.registerOrLoginDefaultMedusaUser();
+       const registerUser =  await service.registerOrLoginDefaultMedusaUser();
         let result: StrapiResult;
         const typeResult = await service.createProductTypeInStrapi(
             "dummy",
@@ -126,6 +127,15 @@ describe("StrapiService Tests", () => {
                     );
                     if (result) {
                         app = mockServer();
+                        const container = createContainer();
+                        container.register(
+                            "updateStrapiService",
+                            asFunction(() => service)
+                        );
+                        app.use((req, _res, next) => {
+                            req["container"] = container.createScope();
+                            next();
+                        });
                         app.use("/strapi", strapiRoutes);
                     }
                 }
@@ -176,7 +186,7 @@ describe("StrapiService Tests", () => {
     /**
      * thi is work in progress
      */
- /*   it("GET  any /content", async () => {
+    /*   it("GET  any /content", async () => {
         const result = await supertest(app)
             .get("/strapi/content/products")
             .set("Accept", "application/json");
