@@ -5,7 +5,6 @@ import * as jwt from "jsonwebtoken";
 import { createUserWithAdminRole, hasAuthorRole } from "../bootstrap";
 import { MedusaUserParams } from "../types/interfaces";
 
-
 let strapi: any;
 
 export function config(myStrapi: Strapi): void {
