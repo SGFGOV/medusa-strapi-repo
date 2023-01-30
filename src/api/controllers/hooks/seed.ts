@@ -11,7 +11,12 @@ import {
     ShippingProfileService,
     StoreService
 } from "@medusajs/medusa";
+import { ProductCollectionRepository } from "@medusajs/medusa/dist/repositories/product-collection";
+import { RegionRepository } from "@medusajs/medusa/dist/repositories/region";
+import { ShippingOptionRepository } from "@medusajs/medusa/dist/repositories/shipping-option";
+import { ShippingProfileRepository } from "@medusajs/medusa/dist/repositories/shipping-profile";
 import _ from "lodash";
+import { EntityManager, ObjectType, Repository } from "typeorm";
 import { StrapiEntity } from "../../../services/update-strapi";
 
 export default async (req, res, next) => {
@@ -256,7 +261,7 @@ function translateIdsToMedusaIds(
  * Return total number of entries for a repository
  * @return {*}
  */
-function getCount(manager, repository) {
-    const customRepository = manager.getCustomRepository(repository);
-    return customRepository.count();
+async function getCount(manager: EntityManager, repository: ObjectType<any>) {
+    const customRepository = manager.getCustomRepository(repository) as any;
+    return customRepository.count ? await customRepository.count() : 0;
 }

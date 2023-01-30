@@ -1181,7 +1181,7 @@ export class UpdateStrapiService extends TransactionBaseService {
             intervalElapsed || !UpdateStrapiService.isHealthy
                 ? await this.executeStrapiHealthCheck()
                 : UpdateStrapiService.isHealthy; /** sending last known health status */
-        
+
         return result;
     }
     /**

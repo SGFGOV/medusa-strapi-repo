@@ -9,6 +9,8 @@ import { IdMap } from "medusa-test-utils";
 import { exists } from "fs";
 
 export const regionService = {
+    count: jest.fn().mockImplementation(() => Promise.resolve(1)),
+    list: jest.fn().mockReturnValue(Promise.resolve()),
     retrieve: jest
         .fn()
         .mockImplementationOnce((id) => {
@@ -41,6 +43,7 @@ export const regionService = {
 };
 
 export const storeService = {
+    count: jest.fn().mockImplementation(() => Promise.resolve(1)),
     retrieveByStoreId: jest.fn((id) => {
         if (id === "exists") {
             return Promise.resolve({ id: "exists" });
@@ -50,6 +53,31 @@ export const storeService = {
 };
 
 export const productService = {
+    list: jest.fn(async () => {
+        return await Promise.all([
+            Promise.resolve({
+                id: IdMap.getId("exists"),
+                type: { id: "dummy" },
+                title: "test-product",
+                // variants: [{ id: "exists" }]
+                options: [
+                    {
+                        id: "exists",
+                        title: "Color"
+                    }
+                ],
+                // collection_id: "exists",
+                collection: {
+                    id: "exists",
+                    handle: "test-collection",
+                    title: "test-collection-title"
+                },
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            })
+        ]);
+    }),
+    count: jest.fn().mockImplementation(() => Promise.resolve(1)),
     retrieve: jest
         .fn()
         .mockImplementationOnce((id) => {

@@ -5,7 +5,7 @@ import { parseCorsOrigins } from "medusa-core-utils";
 import cors from "cors";
 import utils from "../../middleware/utils";
 import { StrapiMedusaPluginOptions } from "../../../types/globals";
-const strapiSignal = require("../../controllers/hooks/strapi-signal").default;
+import strapiSignal from "../../controllers/hooks/strapi-signal";
 
 const hooksRouter = Router();
 export default (app: Router, options: StrapiMedusaPluginOptions) => {
@@ -36,10 +36,7 @@ export default (app: Router, options: StrapiMedusaPluginOptions) => {
 
     /* hooksRouter.post("/seed", bodyParser.json(), middleware.wrap(seed));*/
 
-    hooksRouter.post(
-        "/strapi-signal",
-        bodyParser.json(),
-        middleware.wrap(strapiSignal)
-    );
+    hooksRouter.post("/strapi-signal", bodyParser.json());
+    hooksRouter.post("/strapi-signal", strapiSignal);
     return hooksRouter;
 };

@@ -8,6 +8,8 @@ import {
     beforeAll,
     afterAll
 } from "@jest/globals";
+
+import jwt from "jsonwebtoken";
 import supertest from "supertest";
 import {
     regionService,
@@ -21,11 +23,12 @@ import {
     mockServer
 } from "../__mocks__/service-mocks";
 import { StrapiMedusaPluginOptions } from "../../types/globals";
-import { IdMap, MockManager } from "medusa-test-utils";
+import { IdMap, MockManager, MockRepository } from "medusa-test-utils";
 import { StrapiResult } from "../update-strapi";
 import logger from "../__mocks__/logger";
 import { Application } from "express";
 import strapiRoutes from "../../api/";
+import { StrapiSignal } from "../../api/controllers/hooks/strapi-signal";
 import { asFunction, createContainer } from "awilix";
 
 // This sets the mock adapter on the default instance
@@ -129,6 +132,10 @@ describe("StrapiService Tests", () => {
                         app = mockServer();
                         const container = createContainer();
                         container.register(
+                            "manager",
+                            asFunction(() => MockManager).singleton()
+                        );
+                        container.register(
                             "updateStrapiService",
                             asFunction(() => service).singleton()
                         );
@@ -140,6 +147,125 @@ describe("StrapiService Tests", () => {
                             "logger",
                             asFunction(() => logger).singleton()
                         );
+                        container.register(
+                            "configModule",
+                            asFunction(() => {
+                                return {
+                                    projectConfig: {
+                                        jwt_secret: "test_secret"
+                                    }
+                                };
+                            }).singleton()
+                        );
+
+                        container.register(
+                            "productService",
+                            asFunction(
+                                () => service.productService_
+                            ).singleton()
+                        );
+                        container.register(
+                            "productVariantService",
+                            asFunction(
+                                () => service.productVariantService_
+                            ).singleton()
+                        );
+
+                        container.register(
+                            "regionService",
+                            asFunction(() => service.regionService_).singleton()
+                        );
+                        container.register(
+                            "paymentProviderService",
+                            asFunction(() => jest.fn()).singleton()
+                        );
+
+                        container.register(
+                            "fulfillmentProviderService",
+                            asFunction(() => jest.fn()).singleton()
+                        );
+
+                        container.register(
+                            "shippingProfileService",
+                            asFunction(() => jest.fn()).singleton()
+                        );
+                        container.register(
+                            "shippingOptionService",
+                            asFunction(() => jest.fn()).singleton()
+                        );
+
+                        container.register(
+                            "regionRepository",
+                            asFunction(() =>
+                                jest
+                                    .fn()
+                                    .mockReturnValue(
+                                        Promise.resolve(
+                                            MockRepository("regionRepository")
+                                        )
+                                    )
+                            ).singleton()
+                        );
+                        container.register(
+                            "shippingProfileRepository",
+                            asFunction(() =>
+                                jest
+                                    .fn()
+                                    .mockReturnValue(
+                                        Promise.resolve(
+                                            MockRepository(
+                                                "shippingProfileRepository"
+                                            )
+                                        )
+                                    )
+                            ).singleton()
+                        );
+                        container.register(
+                            "shippingOptionRepository",
+                            asFunction(() =>
+                                jest
+                                    .fn()
+                                    .mockReturnValue(
+                                        Promise.resolve(
+                                            MockRepository(
+                                                "shippingOptionRepository"
+                                            )
+                                        )
+                                    )
+                            ).singleton()
+                        );
+                        container.register(
+                            "productCollectionRepository",
+                            asFunction(() =>
+                                jest
+                                    .fn()
+                                    .mockReturnValue(
+                                        Promise.resolve(
+                                            MockRepository(
+                                                "productCollectionRepository"
+                                            )
+                                        )
+                                    )
+                            ).singleton()
+                        );
+                        container.register(
+                            "storeService",
+                            asFunction(() =>
+                                jest.fn().mockReturnValue(Promise.resolve())
+                            ).singleton()
+                        );
+                        container.register(
+                            "productCollectionService",
+                            asFunction(() =>
+                                jest
+                                    .fn()
+                                    .mockReturnValue(
+                                        Promise.resolve(
+                                            service.productCollectionService
+                                        )
+                                    )
+                            ).singleton()
+                        );
 
                         app.use((req, _res, next) => {
                             req["scope"] = container.createScope() as any;
@@ -149,7 +275,8 @@ describe("StrapiService Tests", () => {
                             "/",
                             strapiRoutes(app, strapiConfigParameters, {
                                 projectConfig: {
-                                    store_cors: "*"
+                                    store_cors: "*",
+                                    jwt_secret: "test_secret"
                                 }
                             } as any)
                         );
@@ -209,6 +336,23 @@ describe("StrapiService Tests", () => {
         expect(result?.body.error).toBeUndefined();
         // Check the response type and length
         // Check the response data
+    });
+    it("POST  hooks/seed", async () => {
+        const strapiSignal: StrapiSignal = {
+            message: "SEED",
+            code: 200,
+            data: undefined
+        };
+        const encoded = jwt.sign(strapiSignal, "test_secret");
+        const result = await supertest(app)
+            .post("/strapi/hooks/strapi-signal")
+            .send({ signedMessage: encoded })
+            .set("Accept", "application/json");
+
+        expect(result.status).toBe(200);
+        expect(result?.body).toBeDefined();
+        expect(result?.body.error).toBeUndefined();
+        // Check the response type and length
     });
     /**
      * thi is work in progress
