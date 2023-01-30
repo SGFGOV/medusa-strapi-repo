@@ -312,8 +312,7 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
                 await strapi.services[strapiApiServicesNames[i]].bootstrap(
                     strapiApiServicedDataRecievedFromMedusa[i]
                 );
-            }
-            {
+            } else {
                 strapi.log.info(
                     `Nothing to sync ${strapiApiServicesNames[i]}  no data recieved`
                 );
