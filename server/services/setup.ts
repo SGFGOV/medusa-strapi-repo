@@ -4,7 +4,7 @@ import _ from "lodash";
 import * as jwt from "jsonwebtoken";
 import { createUserWithAdminRole, hasAuthorRole } from "../bootstrap";
 import { MedusaUserParams } from "../types/interfaces";
-import { env } from "process";
+
 
 let strapi: any;
 
