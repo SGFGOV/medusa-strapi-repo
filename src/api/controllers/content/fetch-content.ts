@@ -8,10 +8,13 @@ export default async (req: Request, res: Response) => {
         "updateStrapiService"
     ) as UpdateStrapiService;
 
-    const authInterface: AuthInterface = {
+    let authInterface: AuthInterface = {
         email: process.env.STRAPI_MEDUSA_EMAIL,
         password: process.env.STRAPI_MEDUSA_PASSWORD
     };
+    if (!authInterface.email) {
+        authInterface = updateStrapiService.defaultAuthInterface;
+    }
 
     const strapiEntityType = req.params.type;
     const id = req.params.id;

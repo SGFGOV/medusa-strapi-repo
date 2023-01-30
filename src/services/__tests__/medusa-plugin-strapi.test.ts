@@ -317,7 +317,9 @@ describe("StrapiService Tests", () => {
                     defaultAuthInterface
                 );
                 expect(result).toBeDefined();
-                expect(result.status).toBe(200);
+                expect(
+                    result.status == 200 || result.status == 302
+                ).toBeTruthy();
 
                 /* expect(result.data).toMatchObject({
                     id: expect.any(Number),

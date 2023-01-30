@@ -132,11 +132,27 @@ describe("StrapiService Tests", () => {
                             "updateStrapiService",
                             asFunction(() => service).singleton()
                         );
+                        container.register(
+                            "eventBusService",
+                            asFunction(() => eventBusService).singleton()
+                        );
+                        container.register(
+                            "logger",
+                            asFunction(() => logger).singleton()
+                        );
+
                         app.use((req, _res, next) => {
                             req["scope"] = container.createScope() as any;
                             next();
                         });
-                        app.use("/strapi", strapiRoutes);
+                        app.use(
+                            "/",
+                            strapiRoutes(app, strapiConfigParameters, {
+                                projectConfig: {
+                                    store_cors: "*"
+                                }
+                            } as any)
+                        );
                     }
                 }
             }
@@ -183,20 +199,20 @@ describe("StrapiService Tests", () => {
         // Check the response data
     });
 
-    /**
-     * thi is work in progress
-     
     it("GET  any /content", async () => {
-        const result =  supertest(app)
+        const result = await supertest(app)
             .get("/strapi/content/products")
-            .set("Accept", "application/json").expect(200);
-        
+            .set("Accept", "application/json")
+            .expect(200);
 
         expect(result?.body).toBeDefined();
         expect(result?.body.error).toBeUndefined();
         // Check the response type and length
         // Check the response data
     });
+    /**
+     * thi is work in progress
+    
     /*
     it("GET  any /content", async () => {
         const result = await supertest(app)

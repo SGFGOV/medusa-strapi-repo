@@ -344,7 +344,9 @@ export const ShippingProfileModelMock = {
     })
 };
 
-export const eventBusService = {};
+export const eventBusService = {
+    emit: jest.fn().mockReturnValue(Promise.resolve())
+};
 export const logger = {
     info: jest.fn((message: any, optionalParams?: any[]) => {
         console.info(message);
@@ -483,6 +485,6 @@ function enableMockFunctions(): void {
 export function mockServer(): Application {
     const app = express();
     app.use(express.json());
-    app.use("/api", routes);
+
     return app;
 }
