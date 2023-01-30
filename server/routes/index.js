@@ -1,5 +1,5 @@
 module.exports = [
-  {
+  /*{
     method: 'GET',
     path: '/google',
     handler: 'google.googleSignIn',
@@ -30,7 +30,7 @@ module.exports = [
     config: {
       auth: false,
     },
-  },
+  },*/
   {
     method: 'GET',
     path: '/medusa',

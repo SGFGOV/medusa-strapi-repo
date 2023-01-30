@@ -7,7 +7,7 @@ const configValidation = () => {
   if (config['MEDUSA_SERVER'] && config['MEDUSA_ADMIN']) {
     return config
   }
-  throw new Error('GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET are required')
+  throw new Error('MEDUSA_SERVER and MEDUSA_ADMIN')
 }
 
 /**
@@ -38,7 +38,7 @@ async function medusaSingIn(ctx) {
      * 
     */
 
-    const userInfoEndpoint = `${config['MEDUSA_SERVER']}/auth/login`
+    const userInfoEndpoint = `${config['MEDUSA_SERVER']}/admin/auth/login`
     let userResponse;
     try {
     userResponse = await httpClient.get(userInfoEndpoint)
