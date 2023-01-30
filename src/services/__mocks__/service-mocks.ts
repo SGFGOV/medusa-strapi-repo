@@ -175,6 +175,7 @@ export const productTypeService = {
 };
 
 export const productCollectionService = {
+    list: jest.fn().mockReturnValue(Promise.resolve()),
     retrieve: jest.fn((id) => {
         return Promise.resolve({
             title: "test-collection-title",
@@ -197,6 +198,7 @@ export const redisClient = {
     }
 };
 export const productVariantService = {
+    list: jest.fn().mockReturnValue(Promise.resolve()),
     retrieve: jest
         .fn()
         .mockImplementationOnce((id) => {

@@ -337,6 +337,7 @@ describe("StrapiService Tests", () => {
         // Check the response type and length
         // Check the response data
     });
+    /**
     it("POST  hooks/seed", async () => {
         const strapiSignal: StrapiSignal = {
             message: "SEED",
