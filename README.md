@@ -72,9 +72,15 @@ const strapiOptions =
 
 Install and fire away
 
+## Known Issues
+
+1. the tests need to be made a lot more rigorous to catch edge cases
+
 ## Cavaets,
 
 the package uses axios retry with a default fixed retry interval of 400seconds for any 429 errors. I'm happy to accept a PR which defines a better way of dealing with 429 errors
+
+
 
 
 ## Support us 

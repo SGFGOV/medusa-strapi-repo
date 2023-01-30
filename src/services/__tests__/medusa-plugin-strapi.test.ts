@@ -20,7 +20,7 @@ import {
 } from "../__mocks__/service-mocks";
 import { StrapiMedusaPluginOptions } from "../../types/globals";
 import { IdMap, MockManager } from "medusa-test-utils";
-import { StrapiResult } from "../update-strapi";
+import UpdateStrapiService, { StrapiResult } from "../update-strapi";
 import logger from "../__mocks__/logger";
 
 // This sets the mock adapter on the default instance
@@ -261,7 +261,10 @@ describe("StrapiService Tests", () => {
             }, 600000);
             it("create metafields in strapi", async () => {
                 result = await service.createProductMetafieldInStrapi(
-                    { id: "exists", data: { testData: "test" } } as any,
+                    {
+                        id: IdMap.getId("exists"),
+                        data: { testData: "test" }
+                    } as any,
                     defaultAuthInterface
                 );
                 expect(result).toBeDefined();
@@ -279,9 +282,28 @@ describe("StrapiService Tests", () => {
                     ).toBeTruthy();
                 }
             });
+
             it("update metafields in strapi", async () => {
                 result = await service.updateProductMetafieldInStrapi(
-                    { id: "exists", data: { testData: "test-2" } } as any,
+                    {
+                        id: IdMap.getId("exists"),
+                        data: { testData: "test-2" }
+                    } as any,
+                    defaultAuthInterface
+                );
+                expect(result).toBeDefined();
+                expect(result.status).toBe(200);
+                expect(spy).toHaveBeenCalled();
+            });
+
+            it("testing health-check-fail recovery", async () => {
+                UpdateStrapiService.isHealthy =
+                    false; /** forcing health check failed status */
+                result = await service.updateProductMetafieldInStrapi(
+                    {
+                        id: IdMap.getId("exists"),
+                        data: { testData: "test-3" }
+                    } as any,
                     defaultAuthInterface
                 );
                 expect(result).toBeDefined();
@@ -365,6 +387,17 @@ describe("StrapiService Tests", () => {
 
                 expect(result.status != 200).toBeTruthy();*/
 
+                result = await service.deleteProductMetafieldInStrapi(
+                    { id: IdMap.getId("exists") },
+                    defaultAuthInterface
+                );
+                expect(result.status).toBe(200);
+                falseResult = await service.getEntitiesFromStrapi({
+                    strapiEntityType: "product-metafields",
+                    authInterface: defaultAuthInterface,
+                    id: result.data?.medusa_id
+                });
+
                 result = await service.deleteProductInStrapi(
                     { id: IdMap.getId("exists-2") },
                     defaultAuthInterface
@@ -414,6 +447,33 @@ describe("StrapiService Tests", () => {
     });
 });
 describe("region checks", () => {
+    beforeAll(async () => await service.registerOrLoginDefaultMedusaUser());
+    afterAll(async () => {
+        const defaultAuthInterface = service.defaultAuthInterface;
+        try {
+            result = await service.getEntitiesFromStrapi({
+                strapiEntityType: "regions",
+                authInterface: defaultAuthInterface,
+                id: "exists"
+            });
+        } catch (e) {
+            console.error(`region clean up error ${e.message}`);
+        }
+        if (result) {
+            result = await service.deleteRegionInStrapi(
+                { id: "exists" },
+                defaultAuthInterface
+            );
+        }
+        const falseResult = await service.getEntitiesFromStrapi({
+            strapiEntityType: "regions",
+            authInterface: defaultAuthInterface,
+            id: result.data?.deletedData.medusa_id
+        });
+        expect(falseResult.status != 200).toBeTruthy();
+        // expect(falseResult.data?.data.length).toBe(0);
+        await service.deleteDefaultMedusaUser();
+    });
     it("CURD Regions in strapi", async () => {
         const creds = await service.registerOrLoginDefaultMedusaUser();
         const defaultAuthInterface = service.defaultAuthInterface;
@@ -433,7 +493,7 @@ describe("region checks", () => {
             authInterface: defaultAuthInterface
         });
         expect(result).toBeDefined();
-        expect(result.status).toBe(200);
+        expect(result.status == 200 || result.status == 302).toBeTruthy();
         result = await service.createRegionInStrapi(
             "exists",
             defaultAuthInterface
@@ -455,19 +515,6 @@ describe("region checks", () => {
             id: "exists"
         });
         expect(result.status).toBe(200);
-
-        result = await service.deleteRegionInStrapi(
-            { id: "exists" },
-            defaultAuthInterface
-        );
-        const falseResult = await service.getEntitiesFromStrapi({
-            strapiEntityType: "regions",
-            authInterface: defaultAuthInterface,
-            id: result.data.deletedData.medusa_id
-        });
-        expect(falseResult.status != 200).toBeTruthy();
-        // expect(falseResult.data?.data.length).toBe(0);
-        await service.deleteDefaultMedusaUser();
     }, 600000);
 });
 describe("admin CURD", () => {

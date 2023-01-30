@@ -53,7 +53,7 @@ export const productService = {
     retrieve: jest
         .fn()
         .mockImplementationOnce((id) => {
-            if (id === "exists") {
+            if (id === "exists" || id == IdMap.getId("exists")) {
                 return Promise.resolve({
                     id: IdMap.getId("exists"),
                     type: { id: "dummy" },
@@ -74,7 +74,7 @@ export const productService = {
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                 });
-            } else if (id === "exists-2") {
+            } else if (id === "exists-2" || id == IdMap.getId("exists-2")) {
                 return Promise.resolve({
                     id: IdMap.getId("exists-2"),
                     type: { id: "dummy" },
@@ -99,7 +99,7 @@ export const productService = {
             return Promise.resolve(undefined);
         })
         .mockImplementation((id) => {
-            if (id === "exists") {
+            if (id === "exists" || id == IdMap.getId("exists")) {
                 return Promise.resolve({
                     id: IdMap.getId("exists"),
                     type: { id: "dummy" },
@@ -111,7 +111,7 @@ export const productService = {
                         title: "test"
                     }
                 });
-            } else if (id === "exists-2") {
+            } else if (id === "exists-2" || id == IdMap.getId("exists-2")) {
                 return Promise.resolve({
                     id: IdMap.getId("exists-2"),
                     type: { id: "dummy" },
@@ -172,7 +172,7 @@ export const productVariantService = {
     retrieve: jest
         .fn()
         .mockImplementationOnce((id) => {
-            if (id === "exists") {
+            if (id === "exists" || id == IdMap.getId("exists")) {
                 return Promise.resolve({
                     id: "exists",
                     product: {

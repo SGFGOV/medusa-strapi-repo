@@ -951,6 +951,34 @@ class UpdateStrapiService extends TransactionBaseService {
         }
     }
 
+    async deleteProductMetafieldInStrapi(
+        data: { id: string },
+        authInterface: AuthInterface
+    ): Promise<StrapiResult> {
+        const hasType = await this.getType("product-metafields", authInterface)
+            .then(() => true)
+            .catch((err) => {
+                this.logger.info(err);
+                return false;
+            });
+        if (!hasType) {
+            return Promise.resolve({
+                status: 400
+            });
+        }
+        const ignore = await this.shouldIgnore_(data.id, "strapi");
+        if (ignore) {
+            return { status: 400 };
+        }
+
+        return await this.deleteEntryInStrapi({
+            type: "product-metafields",
+            id: data.id,
+            authInterface,
+            method: "delete"
+        });
+    }
+
     async deleteProductInStrapi(
         data,
         authInterface: AuthInterface
@@ -1143,9 +1171,17 @@ class UpdateStrapiService extends TransactionBaseService {
             currentTime - (UpdateStrapiService.lastHealthCheckTime ?? 0);
         const intervalElapsed = timeDifference > timeInterval;
 
-        const result = intervalElapsed
-            ? await this.executeStrapiHealthCheck()
-            : UpdateStrapiService.isHealthy; /** sending last known health status */
+        if (!UpdateStrapiService.isHealthy) {
+            /** clearing tokens if the health check fails dirty */
+            this.userTokens = Object.assign(this.userTokens, {});
+            this.strapiSuperAdminAuthToken = undefined;
+        }
+
+        const result =
+            intervalElapsed || !UpdateStrapiService.isHealthy
+                ? await this.executeStrapiHealthCheck()
+                : UpdateStrapiService.isHealthy; /** sending last known health status */
+        
         return result;
     }
     /**
@@ -1870,7 +1906,11 @@ class UpdateStrapiService extends TransactionBaseService {
         const timeDiff = Math.floor(
             (currentLoginAttempt - (this.lastAdminLoginAttemptTime ?? 0)) / 1000
         );
-        if (strapiRetryDelay && timeDiff < strapiRetryDelay) {
+        if (
+            strapiRetryDelay &&
+            timeDiff < strapiRetryDelay &&
+            this.strapiSuperAdminAuthToken
+        ) {
             return {
                 data: {
                     user: this.userAdminProfile,
