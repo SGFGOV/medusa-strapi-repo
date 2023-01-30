@@ -138,7 +138,7 @@ export interface UpdateStrapiServiceParams {
 }
 
 @Service({ scope: "SINGLETON" })
-class UpdateStrapiService extends TransactionBaseService {
+export class UpdateStrapiService extends TransactionBaseService {
     protected manager_: EntityManager;
     protected transactionManager_: EntityManager;
     static lastHealthCheckTime = 0;
