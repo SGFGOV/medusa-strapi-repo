@@ -10,7 +10,7 @@ import strapiSignal from "../../controllers/hooks/strapi-signal";
 const hooksRouter = Router();
 export default (app: Router, options: StrapiMedusaPluginOptions) => {
     app.use("/strapi/hooks", hooksRouter);
-
+    hooksRouter.use(utils);
     const strapiUrl = `${options.strapi_protocol}://${options.strapi_host}:${options.strapi_port}`;
 
     // Authenticated routes
@@ -27,7 +27,7 @@ export default (app: Router, options: StrapiMedusaPluginOptions) => {
     if (process.env.NODE_ENV != "test") {
         hooksRouter.use(cors(strapiCors));
     }
-    hooksRouter.use(utils);
+    
     /* hooksRouter.post(
         "/update-medusa",
         bodyParser.json(),

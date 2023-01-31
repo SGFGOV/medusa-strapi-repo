@@ -158,7 +158,7 @@ export default async (req, res, next) => {
             "handle"
         ];
 
-        const productCollectionRelations = ["product"];
+        const productCollectionRelations = ["products"];
         // Fetching all entries at once. Can be optimized
         const productCollectionListConfig = {
             skip: 0,
@@ -252,6 +252,7 @@ function translateIdsToMedusaIds(
         } else if (key == "id") {
             dataToSend["medusa_id"] = dataToSend[key];
             delete dataToSend[key];
+            break;
         }
     }
 }
