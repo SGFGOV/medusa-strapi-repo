@@ -8,7 +8,6 @@ import {
     beforeAll,
     afterAll
 } from "@jest/globals";
-
 import jwt from "jsonwebtoken";
 import supertest from "supertest";
 import {
@@ -28,7 +27,7 @@ import { StrapiResult } from "../update-strapi";
 import logger from "../__mocks__/logger";
 import { Application } from "express";
 import strapiRoutes from "../../api/";
-import { StrapiSignal } from "../../api/controllers/hooks/strapi-signal";
+import { StrapiSignalInterface } from "../../api/controllers/hooks/strapi-signal";
 import { asFunction, createContainer } from "awilix";
 
 // This sets the mock adapter on the default instance
@@ -337,6 +336,7 @@ describe("StrapiService Tests", () => {
         // Check the response type and length
         // Check the response data
     });
+
     /**
     it("POST  hooks/seed", async () => {
         const strapiSignal: StrapiSignal = {

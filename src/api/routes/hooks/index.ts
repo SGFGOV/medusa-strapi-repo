@@ -27,7 +27,7 @@ export default (app: Router, options: StrapiMedusaPluginOptions) => {
     if (process.env.NODE_ENV != "test") {
         hooksRouter.use(cors(strapiCors));
     }
-    
+
     /* hooksRouter.post(
         "/update-medusa",
         bodyParser.json(),

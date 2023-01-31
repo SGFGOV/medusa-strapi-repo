@@ -6,7 +6,7 @@ import updateHandler from "./update-medusa";
 import * as jwt from "jsonwebtoken";
 import { EntityManager } from "typeorm";
 
-export interface StrapiSignal {
+export interface StrapiSignalInterface {
     message: string;
     code: number;
     data: any;
@@ -31,7 +31,7 @@ export default async (
         const decodedMessage = jwt.verify(
             message,
             medusaSecret
-        ) as StrapiSignal;
+        ) as StrapiSignalInterface;
 
         switch (decodedMessage.message) {
             case "SYNC COMPLETED":

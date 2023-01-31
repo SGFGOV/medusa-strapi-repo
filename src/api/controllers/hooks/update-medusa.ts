@@ -1,12 +1,16 @@
+import UpdateMedusaService from "services/update-medusa";
+
 export default async (req, res, next) => {
     try {
         const body = req.body;
-        const updateMedusaService = req.scope.resolve("updateMedusaService");
+        const updateMedusaService = req.scope.resolve(
+            "updateMedusaService"
+        ) as UpdateMedusaService;
 
         // find Strapi entry type from body of webhook
         const strapiType = body.type;
         // get the ID
-        let entryId;
+        let entryId: string;
 
         let updated = {};
         switch (strapiType) {

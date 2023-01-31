@@ -4,7 +4,9 @@ import {
     Product,
     ProductCollection,
     ProductCollectionService,
+    ProductService,
     Region,
+    RegionService,
     ShippingOption,
     ShippingOptionService,
     ShippingProfile,
@@ -12,18 +14,27 @@ import {
     StoreService
 } from "@medusajs/medusa";
 import { ProductCollectionRepository } from "@medusajs/medusa/dist/repositories/product-collection";
-import { RegionRepository } from "@medusajs/medusa/dist/repositories/region";
 import { ShippingOptionRepository } from "@medusajs/medusa/dist/repositories/shipping-option";
 import { ShippingProfileRepository } from "@medusajs/medusa/dist/repositories/shipping-profile";
+import { NextFunction, Request, Response } from "express";
+import { boolean, number, string } from "joi";
 import _ from "lodash";
-import { EntityManager, ObjectType, Repository } from "typeorm";
+import { EntityManager, ObjectType } from "typeorm";
 import { StrapiEntity } from "../../../services/update-strapi";
+import { StrapiSignalInterface } from "./strapi-signal";
 
-export default async (req, res, next) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const manager = req.scope.resolve("manager");
-        const productService = req.scope.resolve("productService");
-        const regionService = req.scope.resolve("regionService");
+        const pageLimit = 50;
+        const manager = req.scope.resolve("manager") as EntityManager;
+        const productService = req.scope.resolve(
+            "productService"
+        ) as ProductService;
+        const regionService = req.scope.resolve(
+            "regionService"
+        ) as RegionService;
+        const pageNumber =
+            (req.body as StrapiSignalInterface).data?.pageNumber ?? 1;
         const paymentProviderService = req.scope.resolve(
             "paymentProviderService"
         ) as PaymentProviderService;
@@ -36,32 +47,32 @@ export default async (req, res, next) => {
         const shippingOptionService = req.scope.resolve(
             "shippingOptionService"
         ) as ShippingOptionService;
-        const regionRepository = req.scope.resolve("regionRepository");
+        /* const regionRepository = req.scope.resolve("regionRepository");
         const shippingProfileRepository = req.scope.resolve(
             "shippingProfileRepository"
-        );
+        ) as typeof ShippingProfileRepository;
         const shippingOptionRepository = req.scope.resolve(
             "shippingOptionRepository"
-        );
+        ) as typeof ShippingOptionRepository;
 
         const productCollectionRepository = req.scope.resolve(
             "productCollectionRepository"
-        );
+        ) as typeof ProductCollectionRepository;
 
-        const allProductsCount = await productService.count();
-        const allProductCollectionCount = await getCount(
+        // const allProductsCount = await productService.count();
+        /* onst allProductCollectionCount = await getCount(
             manager,
             productCollectionRepository
-        );
-        const allRegionCount = await getCount(manager, regionRepository);
-        const allShippingProfileCount = await getCount(
+        );*/
+        // const allRegionCount = await getCount(manager, regionRepository);
+        /* const allShippingProfileCount = await getCount(
             manager,
             shippingProfileRepository
-        );
-        const allShippingOptionCount = await getCount(
+        );*/
+        /* const allShippingOptionCount = await getCount(
             manager,
             shippingOptionRepository
-        );
+        );*/
 
         const storeService = req.scope.resolve("storeService") as StoreService;
         const productCollectionService = req.scope.resolve(
@@ -161,86 +172,117 @@ export default async (req, res, next) => {
         const productCollectionRelations = ["products"];
         // Fetching all entries at once. Can be optimized
         const productCollectionListConfig = {
-            skip: 0,
-            take: allProductCollectionCount,
+            skip: (pageNumber - 1) * pageLimit,
+            take: pageLimit,
             select: productCollectionFields,
             relations: productCollectionRelations
         };
 
         const productListConfig = {
-            skip: 0,
-            take: allProductsCount,
+            skip: (pageNumber - 1) * pageLimit,
+            take: pageLimit,
             select: productFields,
             relations: productRelations
         };
         const regionListConfig = {
-            skip: 0,
-            take: allRegionCount,
+            skip: (pageNumber - 1) * pageLimit,
+            take: pageLimit,
             select: regionFields,
             relations: regionRelations
         };
         const shippingOptionsConfig = {
-            skip: 0,
-            take: allShippingOptionCount,
+            skip: (pageNumber - 1) * pageLimit,
+            take: pageLimit,
             select: shippingOptionFields,
             relations: shippingOptionRelations
         };
         const shippingProfileConfig = {
-            skip: 0,
-            take: allShippingProfileCount,
+            skip: (pageNumber - 1) * pageLimit,
+            take: pageLimit,
             select: shippingProfileFields,
             relations: shippingProfileRelations
         };
 
-        const allProductCollections = (await productCollectionService.list(
+        const pagedProductCollections = (await productCollectionService.list(
             {},
             productCollectionListConfig
         )) as StrapiEntity[];
 
-        const allRegions = (await regionService.list(
+        const pagedRegions = (await regionService.list(
             {},
             regionListConfig
         )) as StrapiEntity[];
-        const allProducts = (await productService.list(
+        const pagedProducts = (await productService.list(
             {},
             productListConfig
         )) as StrapiEntity[];
-        const allPaymentProviders = (await paymentProviderService.list()) as [];
-        const allFulfillmentProviders =
-            (await fulfillmentProviderService.list()) as [];
-        const allShippingOptions = (await shippingOptionService.list(
+        const pagedPaymentProviders = await paymentProviderService.list();
+        const pagedFulfillmentProviders =
+            await fulfillmentProviderService.list();
+        const pagedShippingOptions = await shippingOptionService.list(
             {},
             shippingOptionsConfig
-        )) as StrapiEntity[];
-        const allShippingProfiles = (await shippingProfileService.list(
+        );
+        const pagedShippingProfiles = await shippingProfileService.list(
             {},
             shippingProfileConfig
-        )) as StrapiEntity[];
+        );
 
         const response: Record<string, StrapiEntity[]> = {
-            productCollections: allProductCollections,
-            products: allProducts,
-            regions: allRegions,
-            paymentProviders: allPaymentProviders,
-            fulfillmentProviders: allFulfillmentProviders,
-            shippingOptions: allShippingOptions,
-            shippingProfiles: allShippingProfiles
+            productCollections: pagedProductCollections,
+            products: pagedProducts,
+            regions: pagedRegions,
+            paymentProviders: pagedPaymentProviders as any,
+            fulfillmentProviders: pagedFulfillmentProviders as any,
+            shippingOptions: pagedShippingOptions,
+            shippingProfiles: pagedShippingProfiles
         };
 
         translateIdsToMedusaIds(response);
+        const seedResponse: StrapiSeedInterface = {
+            meta: {
+                pageNumber,
+                pageLimit,
+                hasMore: {
+                    productCollections:
+                        pagedProductCollections.length == pageLimit,
+                    products: pagedProducts.length == pageLimit,
+                    regions: pagedRegions.length == pageLimit,
+                    paymentProviders: pagedPaymentProviders.length == pageLimit,
+                    fulfillmentProviders:
+                        pagedFulfillmentProviders.length == pageLimit,
+                    shippingOptions: pagedShippingOptions.length == pageLimit,
+                    shippingProfiles: pagedShippingProfiles.length == pageLimit
+                }
+            },
+            data: response
+        };
 
-        res.status(200).send(response);
+        res.status(200).send(seedResponse);
     } catch (error) {
         res.status(400).send(`Webhook error: ${error.message}`);
     }
 };
 
-function translateIdsToMedusaIds(
-    dataToSend:
-        | Record<string, StrapiEntity[]>
-        | Record<string, StrapiEntity>
-        | StrapiEntity
-): void {
+export type strapiSeedType =
+    | Record<string, StrapiEntity[]>
+    | Record<string, StrapiEntity>
+    | StrapiEntity;
+
+export interface StrapiSeedInterface {
+    meta: {
+        pageNumber: number;
+        pageLimit: number;
+        hasMore: Record<string, boolean>;
+    };
+    data: strapiSeedType;
+}
+export function translateIdsToMedusaIds(
+    dataToSend: strapiSeedType
+):
+    | Record<string, StrapiEntity[]>
+    | Record<string, StrapiEntity>
+    | StrapiEntity {
     const keys = Object.keys(dataToSend);
     for (const key of keys) {
         if (_.isArray(dataToSend[key])) {
@@ -255,6 +297,7 @@ function translateIdsToMedusaIds(
             break;
         }
     }
+    return dataToSend;
 }
 
 // eslint-disable-next-line valid-jsdoc
