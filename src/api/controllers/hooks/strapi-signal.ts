@@ -32,7 +32,7 @@ export default async (
             message,
             medusaSecret
         ) as StrapiSignalInterface;
-
+        req["decodedMessage"] = decodedMessage;
         switch (decodedMessage.message) {
             case "SYNC COMPLETED":
                 try {
@@ -59,7 +59,7 @@ export default async (
                 }
                 break;
             case "SEED": {
-                return seedHandler(req, res, next);
+                return seedHandler(req as any, res, next);
             }
 
             case "UPDATE MEDUSA": {

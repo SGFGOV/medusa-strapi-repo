@@ -23,7 +23,11 @@ import { EntityManager, ObjectType } from "typeorm";
 import { StrapiEntity } from "../../../services/update-strapi";
 import { StrapiSignalInterface } from "./strapi-signal";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (
+    req: Request & { decodedMessage: StrapiSignalInterface },
+    res: Response,
+    next: NextFunction
+) => {
     try {
         const pageLimit = 50;
         const manager = req.scope.resolve("manager") as EntityManager;
@@ -33,8 +37,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         const regionService = req.scope.resolve(
             "regionService"
         ) as RegionService;
-        const pageNumber =
-            (req.body as StrapiSignalInterface).data?.pageNumber ?? 1;
+        const pageNumber = req.decodedMessage?.data?.meta?.pageNumber ?? 1;
         const paymentProviderService = req.scope.resolve(
             "paymentProviderService"
         ) as PaymentProviderService;
