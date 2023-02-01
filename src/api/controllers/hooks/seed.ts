@@ -295,7 +295,6 @@ export function translateIdsToMedusaIds(
         } else if (key == "id") {
             dataToSend["medusa_id"] = dataToSend[key];
             delete dataToSend[key];
-            break;
         }
     }
     return dataToSend;
