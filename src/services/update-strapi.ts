@@ -198,7 +198,7 @@ export class UpdateStrapiService extends TransactionBaseService {
         };
         this.userTokens = {};
         this.executeStrapiHealthCheck().then(async (res) => {
-            if (res) {
+            if (res && this.options_.autostart) {
                 UpdateStrapiService.isHealthy = res;
                 let startupStatus;
                 try {
@@ -1291,7 +1291,9 @@ export class UpdateStrapiService extends TransactionBaseService {
                 timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/
             }
         );
-        this.logger.info("successfully initiated two way sync<-->medusa");
+        this.logger.info(
+            "successfully initiated two way syncs trapi<-->medusa"
+        );
         return result;
     }
 
@@ -1966,7 +1968,9 @@ export class UpdateStrapiService extends TransactionBaseService {
                     password: this.options_.strapi_default_user.password
                 });*/
                 if (response.status < 300) {
-                    this.logger.info("medusa-strapi-successfully-bootstrapped");
+                    this.logger.info(
+                        "medusa - strap -bootstrap confirmed ..please wait till sync completes"
+                    );
                     return response;
                 }
             } else {

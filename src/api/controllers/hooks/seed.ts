@@ -165,6 +165,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         ];
 
         const productCollectionFields: (keyof ProductCollection)[] = [
+            "id",
             "title",
             "handle"
         ];
