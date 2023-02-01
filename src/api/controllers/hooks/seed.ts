@@ -265,7 +265,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export type strapiSeedType =
+export type StrapiSeedType =
     | Record<string, StrapiEntity[]>
     | Record<string, StrapiEntity>
     | StrapiEntity;
@@ -276,10 +276,10 @@ export interface StrapiSeedInterface {
         pageLimit: number;
         hasMore: Record<string, boolean>;
     };
-    data: strapiSeedType;
+    data: StrapiSeedType;
 }
 export function translateIdsToMedusaIds(
-    dataToSend: strapiSeedType
+    dataToSend: StrapiSeedType
 ):
     | Record<string, StrapiEntity[]>
     | Record<string, StrapiEntity>
