@@ -198,7 +198,7 @@ export class UpdateStrapiService extends TransactionBaseService {
         };
         this.userTokens = {};
         this.executeStrapiHealthCheck().then(async (res) => {
-            if (res && this.options_.autostart) {
+            if (res && this.options_.auto_start) {
                 UpdateStrapiService.isHealthy = res;
                 let startupStatus;
                 try {

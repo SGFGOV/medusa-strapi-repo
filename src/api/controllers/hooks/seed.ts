@@ -140,7 +140,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             "currency"
         ];
         const shippingProfileRelations = [
-            "products",
+            // "products", /** disabling for now, as its been removed from strapi relations, bootstrap takes too long */
             "shipping_options",
             "shipping_options.profile",
             "shipping_options.requirements",
