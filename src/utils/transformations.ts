@@ -20,6 +20,7 @@ export async function transformMedusaToStrapiProduct(
     }
     if (productToSend.profile) {
         productToSend["shipping-profiles"] = _.cloneDeep(productToSend.profile);
+        delete productToSend.profile;
     }
     delete productToSend.collection;
     return productToSend;

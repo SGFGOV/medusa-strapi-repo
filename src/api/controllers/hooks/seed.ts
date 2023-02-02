@@ -101,9 +101,9 @@ export default async (
         ];
 
         const productRelations = [
-            "variants",
+            /* "variants",
             "variants.prices",
-            "variants.options",
+            "variants.options"*/
             "images",
             "options",
             "tags",
