@@ -55,7 +55,7 @@ export default async (
 
         const storeFields: (keyof Store)[] = ["id", "name"];
 
-        const storeRelations = ["currency"];
+        const storeRelations = ["currencies"];
 
         const productFields: (keyof Product)[] = [
             "id",
@@ -276,6 +276,9 @@ export function translateIdsToMedusaIds(
     | Record<string, StrapiEntity[]>
     | Record<string, StrapiEntity>
     | StrapiEntity {
+    if (!dataToSend) {
+        return dataToSend;
+    }
     const keys = Object.keys(dataToSend);
     for (const key of keys) {
         if (_.isArray(dataToSend[key])) {
