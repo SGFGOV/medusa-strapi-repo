@@ -1,5 +1,5 @@
 import { Product } from "@medusajs/medusa";
-
+import * as _ from "lodash";
 export async function transformMedusaToStrapiProduct(
     product: Product
 ): Promise<Product> {

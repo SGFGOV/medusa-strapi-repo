@@ -18,4 +18,3 @@ export async function shouldIgnore_(
     const key = `${id}_ignore_${side}`;
     return await client.get(key);
 }
-

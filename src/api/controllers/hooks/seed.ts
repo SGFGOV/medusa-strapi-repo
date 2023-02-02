@@ -11,16 +11,13 @@ import {
     ShippingOptionService,
     ShippingProfile,
     ShippingProfileService,
+    Store,
     StoreService
 } from "@medusajs/medusa";
-import { ProductCollectionRepository } from "@medusajs/medusa/dist/repositories/product-collection";
-import { ShippingOptionRepository } from "@medusajs/medusa/dist/repositories/shipping-option";
-import { ShippingProfileRepository } from "@medusajs/medusa/dist/repositories/shipping-profile";
 import { NextFunction, Request, Response } from "express";
-import { boolean, number, string } from "joi";
 import _ from "lodash";
 import { EntityManager, ObjectType } from "typeorm";
-import { transformMedusaToStrapiProduct } from "utils/transformations";
+import { transformMedusaToStrapiProduct } from "../../../utils/transformations";
 import { StrapiEntity } from "../../../services/update-strapi";
 import { StrapiSignalInterface } from "./strapi-signal";
 
@@ -31,7 +28,6 @@ export default async (
 ) => {
     try {
         const pageLimit = 50;
-        const manager = req.scope.resolve("manager") as EntityManager;
         const productService = req.scope.resolve(
             "productService"
         ) as ProductService;
@@ -51,37 +47,15 @@ export default async (
         const shippingOptionService = req.scope.resolve(
             "shippingOptionService"
         ) as ShippingOptionService;
-        /* const regionRepository = req.scope.resolve("regionRepository");
-        const shippingProfileRepository = req.scope.resolve(
-            "shippingProfileRepository"
-        ) as typeof ShippingProfileRepository;
-        const shippingOptionRepository = req.scope.resolve(
-            "shippingOptionRepository"
-        ) as typeof ShippingOptionRepository;
-
-        const productCollectionRepository = req.scope.resolve(
-            "productCollectionRepository"
-        ) as typeof ProductCollectionRepository;
-
-        // const allProductsCount = await productService.count();
-        /* onst allProductCollectionCount = await getCount(
-            manager,
-            productCollectionRepository
-        );*/
-        // const allRegionCount = await getCount(manager, regionRepository);
-        /* const allShippingProfileCount = await getCount(
-            manager,
-            shippingProfileRepository
-        );*/
-        /* const allShippingOptionCount = await getCount(
-            manager,
-            shippingOptionRepository
-        );*/
 
         const storeService = req.scope.resolve("storeService") as StoreService;
         const productCollectionService = req.scope.resolve(
             "productCollectionService"
         ) as ProductCollectionService;
+
+        const storeFields: (keyof Store)[] = ["id", "name"];
+
+        const storeRelations = ["currency"];
 
         const productFields: (keyof Product)[] = [
             "id",
@@ -208,6 +182,13 @@ export default async (
             relations: shippingProfileRelations
         };
 
+        const storeConfig = {
+            skip: (pageNumber - 1) * pageLimit,
+            take: pageLimit,
+            select: storeFields,
+            relations: storeRelations
+        };
+
         const pagedProductCollections = (await productCollectionService.list(
             {},
             productCollectionListConfig
@@ -237,6 +218,8 @@ export default async (
             shippingProfileConfig
         );
 
+        const pagedStores = await storeService.retrieve(storeConfig);
+
         const response: Record<string, StrapiEntity[]> = {
             productCollections: pagedProductCollections,
             products: transformedPagedProducts,
@@ -244,7 +227,8 @@ export default async (
             paymentProviders: pagedPaymentProviders as any,
             fulfillmentProviders: pagedFulfillmentProviders as any,
             shippingOptions: pagedShippingOptions,
-            shippingProfiles: pagedShippingProfiles
+            shippingProfiles: pagedShippingProfiles,
+            stores: Array.isArray(pagedStores) ? pagedStores : [pagedStores]
         };
 
         translateIdsToMedusaIds(response);
