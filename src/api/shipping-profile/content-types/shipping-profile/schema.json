@@ -43,12 +43,6 @@
       "relation": "manyToMany",
       "target": "api::shipping-option.shipping-option",
       "mappedBy": "shipping-profiles"
-    },
-    "products": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::product.product",
-      "inversedBy": "shipping-profiles"
     }
   }
 }

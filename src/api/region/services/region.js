@@ -34,13 +34,11 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
             continue;
           }
           try {
-            const regionStrapiId = await createNestedEntity(
-              uid,
-              strapi,
-              region
-            );
-            if (regionStrapiId) {
-              strapi.log.info(`Region created : ${regionStrapiId}`);
+            const regionStrapi = await createNestedEntity(uid, strapi, region);
+            if (regionStrapi.id) {
+              strapi.log.info(
+                `Region created : ${regionStrapi.id} ${regionStrapi.name}`
+              );
             }
           } catch (e) {
             strapi.log.error(`unable to sync region ${uid} ${region}`);

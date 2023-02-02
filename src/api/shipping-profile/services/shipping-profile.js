@@ -38,15 +38,20 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
             const shippingOptionStrapiEntity = await createNestedEntity(
               uid,
               strapi,
-              shipping_profile
+              shipping_profile,
+              (data) => {
+                strapi.log.debug(`synced:${JSON.stringify(data)}`);
+              }
             );
             if (shippingOptionStrapiEntity) {
               strapi.log.info("Shipping Option created");
             }
           } catch (e) {
             strapi.log.error(
-              `unable to sync shipping option ${uid} ${shipping_profile}`
+              `unable to sync shipping option ${uid} ${shipping_profile} because : ${e.message}`
             );
+            handleError(strapi, e);
+            return false;
           }
         }
       }

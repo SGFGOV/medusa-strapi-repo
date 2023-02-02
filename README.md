@@ -144,7 +144,7 @@ You can read about other environment settings that strapi provides [here](https:
 
 For the full list of routes currently supported by the API
 ```
-use th command npx strapi routes:list
+use the command npx strapi routes:list
 ```
 
 
@@ -156,6 +156,7 @@ use th command npx strapi routes:list
 4. Need to convert to typescript
 5. Service tests don't check apis that use media types, though api tests cover it all.
 6. Testing currently limited to APIs not plugins
+7. Product-option title isn't a required field. We will need to access the product option repository and determine the corresponding title. Happy to accept a PR,with tests
 
 ## Support us 
 

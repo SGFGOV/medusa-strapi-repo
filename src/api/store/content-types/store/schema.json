@@ -24,19 +24,18 @@
       "required": true
     },
     "display_name": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "medusa_id": {
       "type": "uid"
     },
     "store_terms": {
-      "type": "richtext",
-      "required": true
+      "type": "richtext"
+      
     },
     "store_privacy_policy": {
-      "type": "richtext",
-      "required": true
+      "type": "richtext"
+      
     },
     "return-policy": {
       "type": "richtext"
@@ -47,12 +46,12 @@
       "minLength": 0
     },
     "last-updated": {
-      "type": "date",
-      "required": true
+      "type": "date"
+      
     },
     "logo": {
-      "type": "string",
-      "requred": true
+      "type": "string"
+      
     },
     "products": {
       "type": "relation",
