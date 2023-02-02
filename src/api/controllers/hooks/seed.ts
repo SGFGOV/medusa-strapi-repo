@@ -20,6 +20,7 @@ import { NextFunction, Request, Response } from "express";
 import { boolean, number, string } from "joi";
 import _ from "lodash";
 import { EntityManager, ObjectType } from "typeorm";
+import { transformMedusaToStrapiProduct } from "utils/transformations";
 import { StrapiEntity } from "../../../services/update-strapi";
 import { StrapiSignalInterface } from "./strapi-signal";
 
@@ -220,6 +221,10 @@ export default async (
             {},
             productListConfig
         )) as StrapiEntity[];
+        const productsToTransform = pagedProducts.map(async (product) => {
+            return await transformMedusaToStrapiProduct(product as Product);
+        });
+        const transformedPagedProducts = await Promise.all(productsToTransform);
         const pagedPaymentProviders = await paymentProviderService.list();
         const pagedFulfillmentProviders =
             await fulfillmentProviderService.list();
@@ -234,7 +239,7 @@ export default async (
 
         const response: Record<string, StrapiEntity[]> = {
             productCollections: pagedProductCollections,
-            products: pagedProducts,
+            products: transformedPagedProducts,
             regions: pagedRegions,
             paymentProviders: pagedPaymentProviders as any,
             fulfillmentProviders: pagedFulfillmentProviders as any,
