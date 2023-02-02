@@ -231,7 +231,7 @@ export default async (
             stores: Array.isArray(pagedStores) ? pagedStores : [pagedStores]
         };
 
-        translateIdsToMedusaIds(response);
+        await translateIdsToMedusaIds(response);
         const seedResponse: StrapiSeedInterface = {
             meta: {
                 pageNumber,
@@ -270,12 +270,11 @@ export interface StrapiSeedInterface {
     };
     data: StrapiSeedType;
 }
-export function translateIdsToMedusaIds(
+export async function translateIdsToMedusaIds(
     dataToSend: StrapiSeedType
-):
-    | Record<string, StrapiEntity[]>
-    | Record<string, StrapiEntity>
-    | StrapiEntity {
+): Promise<
+    StrapiEntity | Record<string, StrapiEntity> | Record<string, StrapiEntity[]>
+> {
     if (!dataToSend) {
         return dataToSend;
     }
@@ -283,10 +282,10 @@ export function translateIdsToMedusaIds(
     for (const key of keys) {
         if (_.isArray(dataToSend[key])) {
             for (const element of dataToSend[key]) {
-                translateIdsToMedusaIds(element);
+                await translateIdsToMedusaIds(element);
             }
         } else if (dataToSend[key] instanceof Object) {
-            translateIdsToMedusaIds(dataToSend[key]);
+            await translateIdsToMedusaIds(dataToSend[key]);
         } else if (key == "id") {
             dataToSend["medusa_id"] = dataToSend[key];
             delete dataToSend[key];

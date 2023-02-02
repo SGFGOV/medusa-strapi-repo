@@ -59,7 +59,8 @@ describe("StrapiService Tests", () => {
         strapi_port: "1337",
         strapi_secret: "test",
         strapi_public_key: undefined,
-        strapi_ignore_threshold: 0
+        strapi_ignore_threshold: 0,
+        auto_start: true
     };
 
     service = new StrapiService(
