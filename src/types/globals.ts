@@ -15,7 +15,7 @@ export interface StrapiMedusaPluginOptions {
     strapi_ignore_threshold: number;
     enable_marketplace?: boolean;
     auto_start?: boolean;
-    max_page_size?:number;
+    max_page_size?: number;
 }
 
 export type userCreds = {
