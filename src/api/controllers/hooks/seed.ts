@@ -18,8 +18,10 @@ import { NextFunction, Request, Response } from "express";
 import _ from "lodash";
 import { EntityManager, ObjectType } from "typeorm";
 import { transformMedusaToStrapiProduct } from "../../../utils/transformations";
-import { StrapiEntity } from "../../../services/update-strapi";
+import { StrapiEntity,UpdateStrapiService } from "../../../services/update-strapi";
 import { StrapiSignalInterface } from "./strapi-signal";
+import { Logger } from "@medusajs/medusa/dist/types/global";
+
 
 export default async (
     req: Request & { decodedMessage: StrapiSignalInterface },
@@ -27,14 +29,20 @@ export default async (
     next: NextFunction
 ) => {
     try {
-        const pageLimit = 50;
+        
+        const logger = req.scope.resolve("logger") as Logger;
+
+        const updateStrapiService = req.scope.resolve("updateStrapiService") as UpdateStrapiService
+        const pageLimit = updateStrapiService.options_.max_page_size??50;
         const productService = req.scope.resolve(
             "productService"
         ) as ProductService;
         const regionService = req.scope.resolve(
             "regionService"
         ) as RegionService;
+
         const pageNumber = req.decodedMessage?.data?.meta?.pageNumber ?? 1;
+        logger.info(`received request for page ${pageNumber} from Strapi`);
         const paymentProviderService = req.scope.resolve(
             "paymentProviderService"
         ) as PaymentProviderService;

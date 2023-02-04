@@ -59,6 +59,7 @@ export default async (
                 }
                 break;
             case "SEED": {
+                logger.debug("strapi seed request received");
                 return seedHandler(req as any, res, next);
             }
 
