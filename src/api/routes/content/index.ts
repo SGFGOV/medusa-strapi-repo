@@ -10,9 +10,13 @@ export default (app, options, config: ConfigModule) => {
     app.use("/strapi", contentRouter);
     const storeCors =
         config.projectConfig.store_cors || "http://localhost:8000";
-    const admin = config.projectConfig.store_cors || "http://localhost:8000";
+    const adminCors =
+        config.projectConfig.admin_cors || "http://localhost:8000";
     const strapiCors = {
-        origin: [...parseCorsOrigins(storeCors), ...parseCorsOrigins(admin)],
+        origin: [
+            ...parseCorsOrigins(storeCors),
+            ...parseCorsOrigins(adminCors)
+        ],
         credentials: true
     };
     if (process.env.NODE_ENV != "test") {

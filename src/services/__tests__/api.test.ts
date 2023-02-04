@@ -276,7 +276,8 @@ describe("StrapiService Tests", () => {
                             strapiRoutes(app, strapiConfigParameters, {
                                 projectConfig: {
                                     store_cors: "*",
-                                    jwt_secret: "test_secret"
+                                    jwt_secret: "test_secret",
+                                    admin_cors: "*"
                                 }
                             } as any)
                         );
