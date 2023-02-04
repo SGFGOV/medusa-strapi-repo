@@ -7,7 +7,7 @@ import utils from "../../middleware/utils";
 import { ConfigModule } from "@medusajs/medusa/dist/types/global";
 const contentRouter = Router();
 export default (app, options, config: ConfigModule) => {
-    app.use("/strapi", contentRouter);
+    app.use("/strapi.content", contentRouter);
     const storeCors =
         config.projectConfig.store_cors || "http://localhost:8000";
     const adminCors =
@@ -25,8 +25,8 @@ export default (app, options, config: ConfigModule) => {
         contentRouter.options(cors(config.projectConfig.store_cors));
     }
     contentRouter.use(utils);
-    contentRouter.get("/content/:type/:id", fetchContent);
-    contentRouter.get("/content/:type/", fetchContent);
+    contentRouter.get("/:type/:id", fetchContent);
+    contentRouter.get(":type/", fetchContent);
 
     return contentRouter;
 };
