@@ -40,7 +40,7 @@ export default (
         const authorizationHeader = req.headers["authorization"];
         res.redirect(strapiUrl);
         const signedCookie = jwt.sign(authorizationHeader, jwtSecret);
-        res.cookie("__medusa", signedCookie);
+        res.cookie("__medusa_session", signedCookie);
     });
 
     return adminRouter;
