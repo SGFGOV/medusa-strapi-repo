@@ -19,7 +19,6 @@ export default (
     const strapiUrl = `${options.strapi_protocol}://${options.strapi_host}:${options.strapi_port}`;
 
     // Authenticated routes
-    
 
     // Calls all middleware that has been registered to run after authentication.
 
@@ -32,11 +31,11 @@ export default (
     /** todo additional checks to authenticate strapi request */
     if (process.env.NODE_ENV != "test") {
         adminRouter.use(cors(adminCors));
-        adminRouter.use(authenticate());
     }
     const jwtSecret = config.projectConfig.jwt_secret;
     adminRouter.options("/strapi/admin", cors(adminCors));
     adminRouter.get("/strapi/admin", cors(adminCors));
+    adminRouter.get("/strapi/admin/", authenticate());
     adminRouter.get("/strapi/admin", (req: Request, res: Response) => {
         const authorizationHeader = req.headers["authorization"];
         res.redirect(strapiUrl);
