@@ -53,6 +53,7 @@ export default (
     adminRouter.delete("/login", cors(adminCors));
     adminRouter.delete("/login", (req: Request, res: Response) => {
         res.clearCookie("__medusa_session");
+        res.sendStatus(200);
     });
 
     return adminRouter;
