@@ -72,6 +72,7 @@ module.exports = ({ env }) => ({
     config: {
       MEDUSA_SERVER: env("MEDUSA_BACKEND_URL", "http://localhost:9000"),
       MEDUSA_ADMIN: env("MEDUSA_BACKEND_ADMIN", "http://localhost:7000"),
+      MEDUSA_STRAPI_SECRET: env("MEDUSA_STRAPI_SECRET", "no_secret")
     },
   },
 

@@ -33,10 +33,16 @@ module.exports = ({ env }) => (
     {
       name: "strapi::security",
       config: {
+        frameguard: false,
         contentSecurityPolicy: {
           useDefaults: true,
           directives: {
-            "connect-src": ["'self'", "https:", "http:"],
+            "connect-src": [
+              "'self'",
+              "https:",
+              "http:",
+              `${env("MEDUSA_BACKEND_ADMIN", "http://localhost:7000")}`,
+            ],
             "img-src": [
               "'self'",
               "data:",
@@ -57,8 +63,14 @@ module.exports = ({ env }) => (
                 "AWS_REGION"
               )}.amazonaws.com`,
             ],
-            upgradeInsecureRequests: null,
+            "frame-ancestors": [
+              `${env("MEDUSA_BACKEND_ADMIN", "http://localhost:7000")}`,
+            ],
+            "frame-src": [
+              `${env("MEDUSA_BACKEND_ADMIN", "http://localhost:7000")}`,
+            ],
           },
+          upgradeInsecureRequests: null,
         },
       },
     },
@@ -94,7 +106,7 @@ module.exports = ({ env }) => (
           maxFileSize: 250 * 1024 * 1024, // multipart data, modify here limit of uploaded file size
         },
       },
-    },  
+    },
 
     "strapi::session",
     "strapi::favicon",
