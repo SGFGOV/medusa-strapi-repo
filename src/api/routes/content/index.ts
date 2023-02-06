@@ -26,7 +26,7 @@ export default (app, options, config: ConfigModule) => {
     }
     contentRouter.use(utils);
     contentRouter.get("/:type/:id", fetchContent);
-    contentRouter.get(":type/", fetchContent);
+    contentRouter.get("/:type", fetchContent);
 
     return contentRouter;
 };

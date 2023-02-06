@@ -33,14 +33,18 @@ export default (
         adminRouter.use(cors(adminCors));
     }
     const jwtSecret = config.projectConfig.jwt_secret;
-    adminRouter.options("/strapi/admin", cors(adminCors));
-    adminRouter.get("/strapi/admin", cors(adminCors));
-    adminRouter.get("/strapi/admin/", authenticate());
-    adminRouter.get("/strapi/admin", (req: Request, res: Response) => {
+    adminRouter.options("/login", cors(adminCors));
+    adminRouter.get("/login", cors(adminCors));
+    adminRouter.get("/login", authenticate());
+    adminRouter.get("/login", (req: Request, res: Response) => {
         const authorizationHeader = req.headers["authorization"];
         res.redirect(strapiUrl);
         const signedCookie = jwt.sign(authorizationHeader, jwtSecret);
         res.cookie("__medusa_session", signedCookie);
+    });
+
+    adminRouter.delete("/login", (req: Request, res: Response) => {
+        res.clearCookie("__medusa_session");
     });
 
     return adminRouter;
