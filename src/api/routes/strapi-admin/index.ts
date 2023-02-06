@@ -8,6 +8,7 @@ import cors from "cors";
 import authenticate from "@medusajs/medusa/dist/api/middlewares/authenticate";
 import { StrapiMedusaPluginOptions } from "../../../types/globals";
 import { ConfigModule } from "@medusajs/medusa/dist/types/global";
+import { UserService } from "@medusajs/medusa";
 
 const adminRouter = Router();
 export default (
@@ -36,13 +37,15 @@ export default (
     adminRouter.options("/login", cors(adminCors));
     adminRouter.get("/login", cors(adminCors));
     adminRouter.get("/login", authenticate());
-    adminRouter.get("/login", (req: Request, res: Response) => {
-        const authorizationHeader = req.headers["authorization"];
-        res.redirect(strapiUrl);
-        const signedCookie = jwt.sign(authorizationHeader, jwtSecret);
+    adminRouter.get("/login", async (req: Request, res: Response) => {
+        const userService = req.scope.resolve("userService") as UserService;
+        const user = await userService.retrieve(req.user.userId);
+        delete user.password_hash;
+        const signedCookie = jwt.sign(user, jwtSecret);
         res.cookie("__medusa_session", signedCookie);
     });
 
+    adminRouter.delete("/login", cors(adminCors));
     adminRouter.delete("/login", (req: Request, res: Response) => {
         res.clearCookie("__medusa_session");
     });
