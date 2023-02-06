@@ -39,10 +39,15 @@ export default (
     adminRouter.get("/login", authenticate());
     adminRouter.get("/login", async (req: Request, res: Response) => {
         const userService = req.scope.resolve("userService") as UserService;
-        const user = await userService.retrieve(req.user.userId);
-        delete user.password_hash;
-        const signedCookie = jwt.sign(JSON.stringify(user), jwtSecret);
-        res.cookie("__medusa_session", signedCookie);
+        try {
+            const user = await userService.retrieve(req.user.userId);
+            delete user.password_hash;
+            const signedCookie = jwt.sign(JSON.stringify(user), jwtSecret);
+            res.cookie("__medusa_session", signedCookie);
+            res.sendStatus(200);
+        } catch (error) {
+            res.sendStatus(500).send(JSON.stringify(error));
+        }
     });
 
     adminRouter.delete("/login", cors(adminCors));
