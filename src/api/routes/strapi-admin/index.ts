@@ -41,7 +41,7 @@ export default (
         const userService = req.scope.resolve("userService") as UserService;
         const user = await userService.retrieve(req.user.userId);
         delete user.password_hash;
-        const signedCookie = jwt.sign(user, jwtSecret);
+        const signedCookie = jwt.sign(JSON.stringify(user), jwtSecret);
         res.cookie("__medusa_session", signedCookie);
     });
 
