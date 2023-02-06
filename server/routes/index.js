@@ -1,5 +1,5 @@
 module.exports = [
-  /*{
+  /* {
     method: 'GET',
     path: '/google',
     handler: 'google.googleSignIn',
@@ -32,22 +32,22 @@ module.exports = [
     },
   },*/
   {
-    method: 'GET',
-    path: '/medusa',
-    handler: 'medusa.medusaSingIn',
+    method: "GET",
+    path: "/medusa",
+    handler: "medusa.medusaSingIn",
     config: {
       auth: false,
     },
   },
-  
+
   {
-    method: 'GET',
-    path: '/sso-roles',
-    handler: 'role.find'
+    method: "GET",
+    path: "/sso-roles",
+    handler: "role.find",
   },
   {
-    method: 'PUT',
-    path: '/sso-roles',
-    handler: 'role.update'
-  }
+    method: "PUT",
+    path: "/sso-roles",
+    handler: "role.update",
+  },
 ];

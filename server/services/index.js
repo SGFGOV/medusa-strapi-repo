@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const oauth = require('./oauth')
-const role = require('./role')
+const oauth = require("./oauth");
+const role = require("./role");
 
 module.exports = {
   oauth,
-  role
+  role,
 };
