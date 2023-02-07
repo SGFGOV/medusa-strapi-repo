@@ -1,5 +1,5 @@
 import { Strapi } from "@strapi/strapi";
-import { default as axios, AxiosResponse } from "axios";
+import { default as axios } from "axios";
 import _ from "lodash";
 import * as jwt from "jsonwebtoken";
 import { createUserWithAdminRole, hasAuthorRole } from "../bootstrap";
@@ -9,6 +9,20 @@ let strapi: any;
 
 export function config(myStrapi: Strapi): void {
     strapi = myStrapi;
+}
+
+export type StrapiSeedType =
+    | Record<string, { medusa_id?: string }[]>
+    | Record<string, { medusa_id?: string }>
+    | { medusa_id?: string };
+
+export interface StrapiSeedInterface {
+    meta: {
+        pageNumber: number;
+        pageLimit: number;
+        hasMore: Record<string, boolean>;
+    };
+    data: Record<string, StrapiSeedType[]>;
 }
 
 export async function hasMedusaRole(): Promise<number | undefined> {
@@ -211,19 +225,24 @@ export async function createMedusaUser(
     }
 }
 
-export interface strapiSignal {
+export interface StrapiSignal {
     message: string;
     code: number;
     data: any;
+}
+export interface MedusaData {
+    status: number;
+    data: any;
+    error?: Error;
 }
 
 export async function sendSignalToMedusa(
     message = "Ok",
     code = 200,
-    data?: any
-): Promise<AxiosResponse | undefined> {
+    data?: Record<string, any>
+): Promise<MedusaData | undefined> {
     if (process.env.NODE_ENV == "test") {
-        return;
+        // return;
     }
 
     const medusaServer = `${
@@ -244,12 +263,18 @@ export async function sendSignalToMedusa(
             messageData,
             process.env.MEDUSA_STRAPI_SECRET || "no-secret"
         );
-        return await axios.post(strapiSignalHook, {
+        const result = await axios.post(strapiSignalHook, {
             signedMessage: signedMessage
         });
+        return {
+            status: result.status,
+            data: result.data
+        };
     } catch (error) {
         strapi.log.error(
-            "unable to send message to medusa server" + (error as Error).message
+            `unable to send message to medusa server  ${
+                (error as Error).message
+            }`
         );
     }
 }
@@ -264,79 +289,122 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
 
     await checkMedusaReady(medusaServer);
 
-    let seedData: AxiosResponse | undefined;
+    let seedData: StrapiSeedInterface;
+    let pageNumber;
     try {
         strapi.log.info(
-            "attempting to sync connect with medusa server on ",
-            medusaSeedHookUrl
+            `attempting to sync connect with medusa server on ${medusaSeedHookUrl}`
         );
-        seedData = await sendSignalToMedusa("SEED");
-
-        // await axios.post(medusaSeedHookUrl, {}, {});
+        const signalData = await sendSignalToMedusa("SEED");
+        seedData = signalData?.data as StrapiSeedInterface;
+        pageNumber = seedData?.meta.pageNumber;
     } catch (e) {
-        // console.log(e);
-
         strapi.log.info(
-            "Unable to Fetch Seed Data from Medusa server. Check data recieved",
-            JSON.stringify(e)
+            "Unable to Fetch Seed Data from Medusa server.Please check configuartion" +
+                `${JSON.stringify(e)}`
         );
         return false;
     }
     // IMPORTANT: Order of seed must be maintained. Please don't change the order
-    const products = seedData?.data?.products;
-    const regions = seedData?.data?.regions;
-    const shippingOptions = seedData?.data?.shippingOptions;
-    const paymentProviders = seedData?.data?.paymentProviders;
-    const fulfillmentProviders = seedData?.data?.fulfillmentProviders;
-    const shippingProfiles = seedData?.data?.shippingProfiles;
-    const productCollections = seedData?.data?.productCollections;
-    const stores = seedData?.data?.stores;
-    try {
-        const servicesToSync = {
-            "api::fulfillment-provider.fulfillment-provider":
-                fulfillmentProviders,
-            "api::payment-provider.payment-provider": paymentProviders,
-            "api::region.region": regions,
-            "api::shipping-option.shipping-option": shippingOptions,
-            "api::shipping-profile.shipping-profile": shippingProfiles,
-            "api::product-collection.product-collection": productCollections,
-            "api::product.product": products,
-            "api::store.store": stores
-        };
-        const strapiApiServicedDataRecievedFromMedusa =
-            Object.values(servicesToSync);
-        const strapiApiServicesNames = Object.keys(servicesToSync);
-        for (let i = 0; i < strapiApiServicesNames.length; i++) {
-            if (strapiApiServicedDataRecievedFromMedusa[i]) {
-                await strapi.services[strapiApiServicesNames[i]].bootstrap(
-                    strapiApiServicedDataRecievedFromMedusa[i]
-                );
-            } else {
-                strapi.log.info(
-                    `Nothing to sync ${strapiApiServicesNames[i]}  no data recieved`
-                );
+    if (!seedData) {
+        return false;
+    }
+    let continueSeed;
+    do {
+        continueSeed = false;
+        const products = seedData?.data?.products;
+        const regions = seedData?.data?.regions;
+        const shippingOptions = seedData?.data?.shippingOptions;
+        const paymentProviders = seedData?.data?.paymentProviders;
+        const fulfillmentProviders = seedData?.data?.fulfillmentProviders;
+        const shippingProfiles = seedData?.data?.shippingProfiles;
+        const productCollections = seedData?.data?.productCollections;
+        const stores = seedData?.data?.stores;
+        try {
+            const servicesToSync = {
+                "api::fulfillment-provider.fulfillment-provider":
+                    fulfillmentProviders,
+                "api::payment-provider.payment-provider": paymentProviders,
+                "api::region.region": regions,
+                "api::shipping-option.shipping-option": shippingOptions,
+                "api::shipping-profile.shipping-profile": shippingProfiles,
+                "api::product-collection.product-collection":
+                    productCollections,
+                "api::product.product": products,
+                "api::store.store": stores
+            };
+            const strapiApiServicedDataRecievedFromMedusa =
+                Object.values(servicesToSync);
+            const strapiApiServicesNames = Object.keys(servicesToSync);
+            for (let i = 0; i < strapiApiServicesNames.length; i++) {
+                if (
+                    strapiApiServicedDataRecievedFromMedusa[i] &&
+                    strapiApiServicedDataRecievedFromMedusa[i]?.length > 0
+                ) {
+                    try {
+                        await strapi.services[
+                            strapiApiServicesNames[i]
+                        ].bootstrap(strapiApiServicedDataRecievedFromMedusa[i]);
+                    } catch (e) {
+                        strapi.log.info(
+                            "unable to bootstrapi",
+                            JSON.stringify(e)
+                        );
+                    }
+                } else {
+                    strapi.log.info(
+                        `Nothing to sync ${strapiApiServicesNames[i]}  no data` +
+                            ` recieved in page ${pageNumber}`
+                    );
+                }
+            }
+        } catch (e) {
+            strapi.log.info(
+                "Unable to Sync with to Medusa server. Please check data recieved",
+                JSON.stringify(e)
+            );
+            return false;
+        }
+        if (seedData) {
+            const dataSets = Object.keys(seedData.data);
+
+            for (let j = 0; j < dataSets.length; j++) {
+                /** fetching more pages */
+                if (seedData.meta.hasMore[dataSets[j]]) {
+                    continueSeed = true;
+                    try {
+                        strapi.log.info(
+                            `Continuing to sync: Page ${pageNumber + 1} `,
+                            medusaSeedHookUrl
+                        );
+                        seedData = (
+                            await sendSignalToMedusa("SEED", 200, {
+                                meta: { pageNumber: pageNumber + 1 }
+                            })
+                        )?.data as StrapiSeedInterface;
+                        pageNumber = seedData?.meta.pageNumber;
+                    } catch (e) {
+                        strapi.log.info(
+                            "Unable to Sync with to Medusa server. Please check data recieved",
+                            JSON.stringify(e)
+                        );
+                        return false;
+                    }
+                    break;
+                }
             }
         }
-        strapi.log.info("SYNC FINISHED");
-        const result =
-            (await sendSignalToMedusa("SYNC COMPLETED"))?.status == 200;
-        return result;
-    } catch (e) {
-        // console.log(e);
+    } while (continueSeed);
 
-        strapi.log.info(
-            "Unable to Sync with to Medusa server. Please check data recieved",
-            JSON.stringify(e)
-        );
-        return false;
-        // process.exit(1)
-    }
+    strapi.log.info("SYNC FINISHED");
+    const result = (await sendSignalToMedusa("SYNC COMPLETED"))?.status == 200;
+    return result;
 }
 
 export async function sendResult(
     type: string,
     result: any
-): Promise<AxiosResponse | undefined> {
+): Promise<MedusaData | undefined> {
     const postRequestResult = await sendSignalToMedusa("UPDATE MEDUSA", 200, {
         type,
         data: result
