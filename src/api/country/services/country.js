@@ -1,15 +1,17 @@
-'use strict';
+"use strict";
+const handleError = require("../../../utils/utils").handleError;
+const getFields = require("../../../utils/utils").getFields;
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
 
-const { createCoreService } = require('@strapi/strapi').factories;
-
-module.exports = createCoreService('api::country.country', ({ strapi }) => ({
+const { createCoreService } = require("@strapi/strapi").factories;
+const uid = "api::country.country";
+module.exports = createCoreService(uid, ({ strapi }) => ({
+  /*
   async handleOneToManyRelation(countries, parent) {
-
     const countriesStrapiIds = [];
 
     try {
@@ -18,36 +20,50 @@ module.exports = createCoreService('api::country.country', ({ strapi }) => ({
           country.medusa_id = country.id.toString();
           delete country.id;
 
-          if (parent === 'region') {
-            delete country.region_id
+          if (parent === "region") {
+            delete country.region_id;
           }
 
-          const found = await strapi.db.query('api::country.country').findOne({
-            medusa_id: country.medusa_id
+          const found = await strapi.services[uid].findOne({
+            medusa_id: country.medusa_id,
           });
           if (found) {
             countriesStrapiIds.push({ id: found.id });
             continue;
           }
 
-          const create = await strapi.entityService.create('api::country.country', { data: country });
+          const create = await strapi.entityService.create(uid, {
+            data: country,
+          });
           countriesStrapiIds.push({ id: create.id });
         }
       }
       return countriesStrapiIds;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      throw new Error('Delegated creation failed');
+      handleError(strapi, e);
+      throw new Error("Delegated creation failed");
     }
-
   },
-  async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
+  /* async findOne(params = {}) {
+    const fields = getFields(__filename, __dirname);
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
     }
-    return (await strapi.entityService.findMany('api::country.country', {
-      fields,filters
-    }))[0];
-  }
+    return (
+      await strapi.entityService.findMany(uid, {
+        fields,
+        filters,
+      })
+    )[0];
+  },*/
+  /* async delete(strapi_id, params = {}) {
+    return await strapi.entityService.delete(uid, strapi_id, params);
+  },*/
 }));

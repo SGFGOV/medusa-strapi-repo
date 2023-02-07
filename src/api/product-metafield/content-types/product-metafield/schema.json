@@ -4,19 +4,23 @@
   "info": {
     "singularName": "product-metafield",
     "pluralName": "product-metafields",
-    "displayName": "Product Metfield",
+    "displayName": "Product Metafield",
     "description": ""
   },
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "value": {
       "type": "json"
@@ -24,9 +28,11 @@
     "metadata": {
       "type": "json"
     },
-    "products": {
-      "via": "product_metafields",
-      "collection": "product"
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product",
+      "mappedBy": "product-metafield"
     }
   }
 }

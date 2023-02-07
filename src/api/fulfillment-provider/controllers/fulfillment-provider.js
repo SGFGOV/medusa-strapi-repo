@@ -1,9 +1,6 @@
-'use strict';
+"use strict";
+const createMedusaDefaultController =
+  require("../../../utils/utils").createMedusaDefaultController;
 
-/**
- *  fulfillment-provider controller
- */
-
-const { createCoreController } = require('@strapi/strapi').factories;
-
-module.exports = createCoreController('api::fulfillment-provider.fulfillment-provider');
+const uid = "api::fulfillment-provider.fulfillment-provider";
+module.exports = createMedusaDefaultController(uid);

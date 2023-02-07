@@ -5,29 +5,39 @@
     "singularName": "product-document",
     "pluralName": "product-documents",
     "displayName": "Product Document",
-    "description": ""
+    "description": "Used to store product related Document files"
   },
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
-    "value": {
-      "type": "media",
-      "multiple":true
+    "filename":
+    {
+      "type":"string",
+      "required":true
+    },
+    "files": {
+      "type": "media"
     },
     "metadata": {
       "type": "json"
     },
-    "products": {
-      "via": "product_documents",
-      "collection": "product"
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "product-documents"
     }
   }
 }

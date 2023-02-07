@@ -10,13 +10,17 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "name": {
       "type": "string",
@@ -32,27 +36,35 @@
     "metadata": {
       "type": "json"
     },
-    "fulfillment_providers": {
-      "via": "regions",
-      "collection": "fulfillment-provider",
-      "dominant": true
+    "fulfillment-providers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::fulfillment-provider.fulfillment-provider",
+      "inversedBy": "regions"
     },
-    "payment_providers": {
-      "via": "regions",
-      "collection": "payment-provider",
-      "dominant": true
+    "payment-provider": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::payment-provider.payment-provider",
+      "inversedBy": "regions"
     },
     "currency": {
-      "model": "currency",
-      "via": "regions"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::currency.currency",
+      "inversedBy": "regions"
     },
     "countries": {
-      "via": "region",
-      "collection": "country"
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::country.country",
+      "mappedBy": "region"
     },
-    "shipping_options": {
-      "via": "region",
-      "collection": "shipping-option"
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "mappedBy": "regions"
     }
   }
 }

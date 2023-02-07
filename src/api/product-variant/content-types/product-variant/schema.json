@@ -10,33 +10,33 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "title": {
       "type": "string",
       "required": true
     },
     "sku": {
-      "type": "string",
-      "unique": true
+      "type": "uid"
     },
     "barcode": {
-      "type": "string",
-      "unique": true
+      "type": "uid"
     },
     "ean": {
-      "type": "string",
-      "unique": true
+      "type": "uid"
     },
     "upc": {
-      "type": "string",
-      "unique": true
+      "type": "uid"
     },
     "variant_rank": {
       "type": "integer",
@@ -85,16 +85,22 @@
       "type": "json"
     },
     "product": {
-      "via": "product_variants",
-      "model": "product"
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "product-variants"
     },
-    "money_amounts": {
-      "via": "product_variant",
-      "collection": "money-amount"
+    "money-amount": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::money-amount.money-amount",
+      "inversedBy": "product-variants"
     },
-    "product_option_values": {
-      "via": "product_variant",
-      "collection": "product-option-value"
+    "product-option-value": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product-option-value.product-option-value",
+      "inversedBy": "product-variants"
     }
   }
 }

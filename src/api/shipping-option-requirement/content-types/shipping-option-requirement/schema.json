@@ -10,13 +10,17 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "requirement_type": {
       "type": "enumeration",
@@ -28,9 +32,11 @@
     "amount": {
       "type": "decimal"
     },
-    "shipping_option": {
-      "via": "shipping_option_requirements",
-      "model": "shipping-option"
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "mappedBy": "shipping-option-requirements"
     }
   }
 }

@@ -5,29 +5,45 @@
     "singularName": "product-media",
     "pluralName": "product-medias",
     "displayName": "Product Media",
-    "description": ""
+    "description": "To store product related multimedia files"
   },
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
       "type": "uid",
-      "required": true
+      "required":true
     },
-    "value": {
+    "filename":
+    {
+      "type":"string",
+      "required":true
+    },
+    "files": {
       "type": "media",
-      "multiple":true
+      "multiple": true
+    },
+    "media_url": {
+      "type": "text",
+      "multiple": true
     },
     "metadata": {
       "type": "json"
     },
-    "products": {
-      "via": "product_medias",
-      "collection": "product"
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "product-medias"
     }
   }
 }

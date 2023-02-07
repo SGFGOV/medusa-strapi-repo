@@ -10,35 +10,54 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": false
+    }
+  },
   "attributes": {
-    },
-    "id": {
-      "type": "integer",
-      "required": true
-    },
     "name": {
       "type": "string",
       "required": true
     },
     "display_name": {
-      "type": "string",
-      "required": true
-    },
-    "region": {
-      "via": "countries",
-      "model": "region"
+      "type": "string"
     },
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
-    "logo":{
-      "type":"string",
-      "requred":true
+    "store_terms": {
+      "type": "richtext"
+      
+    },
+    "store_privacy_policy": {
+      "type": "richtext"
+      
+    },
+    "return-policy": {
+      "type": "richtext"
+    },
+    "fssai-license": {
+      "type": "string",
+      "maxLength": 14,
+      "minLength": 0
+    },
+    "last-updated": {
+      "type": "date"
+      
+    },
+    "logo": {
+      "type": "string"
+      
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "products"
     }
-    
+  }
 }
-

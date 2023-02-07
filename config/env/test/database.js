@@ -1,10 +1,17 @@
-module.exports = ({ env }) => ({
+const fs = require("fs");
+module.exports = ({ env }) => {
+  const tmpDbFile = env("DATABASE_FILENAME", ".tmp/test.db");
+  if (fs.existsSync(tmpDbFile)) {
+    fs.unlinkSync(tmpDbFile);
+  }
+  return {
     connection: {
-      client: 'sqlite',
+      client: "sqlite",
       connection: {
-        filename: env('DATABASE_FILENAME', '.tmp/test.db'),
+        filename: tmpDbFile,
       },
       useNullAsDefault: true,
-      debug: false
+      debug: false,
     },
-  });
+  };
+};

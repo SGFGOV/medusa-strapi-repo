@@ -10,13 +10,17 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "value": {
       "type": "string"
@@ -24,13 +28,17 @@
     "metadata": {
       "type": "json"
     },
-    "product_variant": {
-      "via": "product_option_values",
-      "model": "product-variant"
+    "product-variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variant.product-variant",
+      "mappedBy": "product-option-value"
     },
-    "product_option": {
-      "via": "product_option_values",
-      "model": "product-option"
+    "product-option": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-option.product-option",
+      "mappedBy": "product-option-values"
     }
   }
 }

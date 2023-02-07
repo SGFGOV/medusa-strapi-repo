@@ -1,99 +1,76 @@
-'use strict';
+"use strict";
+
+const { createNestedEntity } = require("../../../utils/utils");
+
+const handleError = require("../../../utils/utils").handleError;
+const getStrapiDataByMedusaId =
+  require("../../../utils/utils").getStrapiDataByMedusaId;
 
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-async function createOrUpdateProductAfterDelegation(product,strapi=strapi, action = "create", forceUpdateRelation = false) {
-  const { 'options': product_options, 'variants': product_variants, 'tags': product_tags, 'profile': shipping_profile, 'type': product_type, 'collection': product_collection, images, ...payload } = product;
-  if (product_options) {
-    payload.product_options = await strapi.service('api::product-option.product-option').handleOneToManyRelation(product_options, forceUpdateRelation);
-  }
+const uid = "api::product.product";
 
-  if (product_variants) {
-    payload.product_variants = await strapi.service('api::product-variant.product-variant').handleOneToManyRelation(product_variants, 'product', forceUpdateRelation);
-  }
+const { createCoreService } = require("@strapi/strapi").factories;
 
-  //
-  if (product_tags) {
-    payload.product_tags = await strapi.service('api::product-tag.product-tag').handleManyToManyRelation(product_tags);
-  }
+module.exports = createCoreService(uid, ({ strapi }) => ({
+  async syncProduct(product) {
+    if (!product.medusa_id) {
+      product.medusa_id = product.id.toString();
+      delete product.id;
+    }
 
-  //
-  if (shipping_profile) {
-    payload.shipping_profile = await strapi.service('api::shipping-profile.shipping-profile').handleManyToOneRelation(shipping_profile);
-  }
+    const medusa_id = product.medusa_id;
+    const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, [
+      "id",
+      "medusa_id",
+    ]);
 
-  //
-  if (product_type) {
-    payload.product_type = await strapi.service('api::product-type.product-type').handleManyToOneRelation(product_type);
-  }
-
-  //
-  if (product_collection) {
-    payload.product_collection = await strapi.service('api::product-collection.product-collection').handleManyToOneRelation(product_collection);
-  }
-
-  //
-  if (images) {
-    payload.images = await strapi.service('api::image.image').handleManyToManyRelation(images);
-  }
-
-  if (action === 'update') {
-    const update = await strapi.db.query('api::product.product').update({ 
-      where: { medusa_id: product.medusa_id },
-      data: payload
-     });
-    return update.id;
-  }
-
-  const create = await strapi.entityService.create('api::product.product', { data: payload });
-  return create.id;
-}
-
-const { createCoreService } = require('@strapi/strapi').factories;
-
-module.exports = createCoreService('api::product.product', ({ strapi }) => ({
+    if (found) {
+      return found.id;
+    }
+    try {
+      const productEntity = await createNestedEntity(uid, strapi, product);
+      return productEntity;
+    } catch (e) {
+      strapi.log.error(`unable to sync product ${uid} ${product}`);
+    }
+  },
   async bootstrap(data) {
-    strapi.log.debug('Syncing Products...');
+    strapi.log.debug("Syncing Products...");
     try {
       if (data && data.length) {
-        for (let i = 0;i<data.length;i++) {
-          const product = data[i]
-          if (!product.medusa_id) {
-            product.medusa_id = product.id.toString();
-            delete product.id
-          }
-          strapi.log.debug(`Syncing Products ${i} of ${data.length}...${product.title} `);
-          const found = await strapi.db.query('api::product.product').findOne({ 
-            medusa_id: product.medusa_id 
-           });
-          if (found) {
-            continue;
-          }
-
-          const productStrapiId = await createOrUpdateProductAfterDelegation(product,strapi);
-          if(productStrapiId)
-          {
-            strapi.log.debug(`Syncing Products after delegation ${i} of ${data.length}...${product.title} `);
+        for (let i = 0; i < data.length; i++) {
+          const product = data[i];
+          strapi.log.debug(
+            `Syncing Products ${i} of ${data.length}...${product.title} `
+          );
+          const productStrapiId = await strapi.services[uid].syncProduct(
+            product
+          );
+          if (productStrapiId) {
+            strapi.log.debug(
+              `Syncing Products after delegation ${i} of ${data.length}...${product.title} `
+            );
           }
         }
       }
-      strapi.log.info('Products Synced');
+      strapi.log.info("Products Synced");
       return true;
     } catch (e) {
-      strapi.log.error(JSON.stringify(e));
-      return false
+      handleError(strapi, e);
+      return false;
     }
   },
-  async createWithRelations(product) {
+  /* async createWithRelations(product) {
     try {
       product.medusa_id = product.id.toString();
       delete product.id;
 
-      return await createOrUpdateProductAfterDelegation(product,strapi);
+      return await createOrUpdateProductAfterDelegation(product, strapi);
     } catch (e) {
-      console.log('Some error occurred while creating product \n', e);
+      handleError(strapi, e);
       return false;
     }
   },
@@ -103,20 +80,41 @@ module.exports = createCoreService('api::product.product', ({ strapi }) => ({
       product.medusa_id = product.id.toString();
       delete product.id;
 
-      return await createOrUpdateProductAfterDelegation(product,strapi, 'update', true);
+      return await createOrUpdateProductAfterDelegation(
+        product,
+        strapi,
+        "update",
+        true
+      );
     } catch (e) {
-      console.log('Some error occurred while updating product \n', e);
+      handleError(strapi, e);
       return false;
     }
   },
-  async findOne(params = {}) {
-    const fields = ["id"]
-    const filters = {
-      ...params
+  ?*async findOne(params = {}) {
+    const fields = getFields(__filename, __dirname);
+    let filters = {};
+    if (params.medusa_id) {
+      filters = {
+        ...params,
+      };
+    } else if (params.product_id) {
+      filters = {
+        medusa_id: params.product_id,
+      };
+    } else {
+      filters = {
+        medusa_id: params,
+      };
     }
-    return (await strapi.entityService.findMany('api::product.product', {
-      fields,filters
-    }))[0];
-  }
-  
+    return (
+      await strapi.entityService.findMany(uid, {
+        fields,
+        filters,
+      })
+    )[0];
+  },*/
+  async delete(strapi_id, params = {}) {
+    return await strapi.entityService.delete(uid, strapi_id, params);
+  },
 }));

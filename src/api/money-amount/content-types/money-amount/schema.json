@@ -10,24 +10,36 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
     "medusa_id": {
-      "type": "uid",
-      "required": true
+      "type": "uid"
     },
     "amount": {
       "type": "biginteger",
       "required": true
     },
+    "currency_code": {
+      "type": "uid",
+      "required": true,
+      "maxLength": 3,
+      "minLength": 3
+    },
     "sale_amount": {
       "type": "biginteger"
     },
-    "product_variant": {
-      "via": "money_amounts",
-      "model": "product-variant"
+    "product-variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product-variant.product-variant",
+      "mappedBy": "money-amount"
     }
   }
 }

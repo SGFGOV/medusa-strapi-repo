@@ -10,14 +10,23 @@
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": false
+    "draftAndPublish": true,
+    "comment": ""
   },
-  "pluginOptions": {},
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
   "attributes": {
+    "medusa_id": {
+      "type": "uid"
+    },
     "code": {
-      "type": "string",
+      "type": "uid",
       "required": true,
-      "unique": true
+      "maxLength": 3,
+      "minLength": 3
     },
     "symbol": {
       "type": "string",
@@ -32,8 +41,10 @@
       "required": true
     },
     "regions": {
-      "via": "currency",
-      "collection": "region"
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::region.region",
+      "mappedBy": "currency"
     }
   }
 }
