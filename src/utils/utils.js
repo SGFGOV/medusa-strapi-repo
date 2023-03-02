@@ -463,7 +463,9 @@ async function controllerUpdate(ctx, strapi, uid) {
 
     if (entityId) {
       return (ctx.body = {
-        data: await strapi.services[uid].update(entityId, ctx.request.body),
+        data: await strapi.services[uid].update(entityId, {
+          data: ctx.request.body,
+        }),
       });
     } else {
       return ctx.notFound(ctx);
