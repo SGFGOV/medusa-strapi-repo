@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stores",
+  "info": {
+    "singularName": "store",
+    "pluralName": "stores",
+    "displayName": "Store",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": false
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "medusa_id": {
+      "type": "uid"
+    },
+    "store_terms": {
+      "type": "richtext"
+      
+    },
+    "store_privacy_policy": {
+      "type": "richtext"
+      
+    },
+    "return-policy": {
+      "type": "richtext"
+    },
+    "fssai-license": {
+      "type": "string",
+      "maxLength": 14,
+      "minLength": 0
+    },
+    "last-updated": {
+      "type": "date"
+      
+    },
+    "logo": {
+      "type": "string"
+      
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "products"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_option_requirements",
+  "info": {
+    "singularName": "shipping-option-requirement",
+    "pluralName": "shipping-option-requirements",
+    "displayName": "Shipping Option Requirement",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
+  "attributes": {
+    "medusa_id": {
+      "type": "uid"
+    },
+    "requirement_type": {
+      "type": "enumeration",
+      "enum": [
+        "min_subtotal",
+        "max_subtotal"
+      ]
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "mappedBy": "shipping-option-requirements"
+    }
+  }
+}

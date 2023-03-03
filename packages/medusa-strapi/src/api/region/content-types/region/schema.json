@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "regions",
+  "info": {
+    "singularName": "region",
+    "pluralName": "regions",
+    "displayName": "Region",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
+  "attributes": {
+    "medusa_id": {
+      "type": "uid"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "tax_rate": {
+      "type": "decimal",
+      "required": true
+    },
+    "tax_code": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "fulfillment-providers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::fulfillment-provider.fulfillment-provider",
+      "inversedBy": "regions"
+    },
+    "payment-provider": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::payment-provider.payment-provider",
+      "inversedBy": "regions"
+    },
+    "currency": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::currency.currency",
+      "inversedBy": "regions"
+    },
+    "countries": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::country.country",
+      "mappedBy": "region"
+    },
+    "shipping-options": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option.shipping-option",
+      "mappedBy": "regions"
+    }
+  }
+}

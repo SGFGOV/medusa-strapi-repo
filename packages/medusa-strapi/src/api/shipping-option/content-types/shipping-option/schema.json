@@ -1,0 +1,81 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_options",
+  "info": {
+    "singularName": "shipping-option",
+    "pluralName": "shipping-options",
+    "displayName": "Shipping Option",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
+  "attributes": {
+    "medusa_id": {
+      "type": "uid"
+    },
+    "name": {
+      "type": "string"
+    },
+    "price_type": {
+      "type": "enumeration",
+      "enum": [
+        "flat_rate",
+        "calculated"
+      ],
+      "required": true
+    },
+    "amount": {
+      "type": "decimal",
+      "required": false
+    },
+    "is_return": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "admin_only": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "data": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "shipping-option-requirements": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-option-requirement.shipping-option-requirement",
+      "inversedBy": "shipping-options"
+    },
+    "regions": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::region.region",
+      "inversedBy": "shipping-options"
+    },
+    "shipping-profiles": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::shipping-profile.shipping-profile",
+      "inversedBy": "shipping-options"
+    },
+    "fulfillment-providers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::fulfillment-provider.fulfillment-provider",
+      "inversedBy": "shipping-options"
+    }
+  }
+}
