@@ -24,23 +24,23 @@ let service: StrapiService;
 let result: StrapiResult;
 const testTimeOut = 300e3;
 jest.setTimeout(testTimeOut);
-const strapiProtocol = process.env.STRAPI_PROTOCOL ?? 'localhost';
-const strapiPort = process.env.STRAPI_PORT ?? '1332';
-const strapiHost = process.env.STRAPI_HOST ?? 'localhost';
+const strapiProtocol = process.env.STRAPI_PROTOCOL ?? '172.31.34.235';
+const strapiPort = process.env.STRAPI_PORT ?? '1337';
+const strapiHost = process.env.STRAPI_HOST ?? '172.31.34.235';
 export const strapiPath = `${strapiProtocol}://${strapiHost}:${strapiPort}`;
 
 describe('StrapiService Tests', () => {
 	jest.setTimeout(testTimeOut);
 	try {
-		axios.head(`${strapiProtocol}://${strapiHost}:${strapiPort}`).then(
+		axios.head(`${strapiPath}/_health`).then(
 			() => disableMocks(),
 			() => {
 				enableMocks();
-				console.log("you need a working strapi entity to try all the tests")
+				console.log('you need a working strapi entity to try all the tests');
 			}
 		);
 	} catch (error) {
-		enableMocks();
+		//enableMocks();
 	}
 	const strapiConfigParameters: StrapiMedusaPluginOptions = {
 		encryption_algorithm: 'aes-256-cbc',

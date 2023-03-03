@@ -534,7 +534,7 @@ function enableMockFunctions(): void {
 		profile: { id: 1, name: 'John Smith', email: 'John.smith@test.com' },
 	});
 
-	mock.onHead('/_health').reply(200);
+	//mock.onHead('/_health').reply(200);
 	mock.onHead().reply(200);
 }
 
