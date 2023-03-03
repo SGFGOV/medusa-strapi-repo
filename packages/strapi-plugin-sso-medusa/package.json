@@ -1,7 +1,7 @@
 {
-  "name": "strapi-plugin-sso",
+  "name": "strapi-plugin-sso-medusa",
   "version": "0.1.5",
-  "description": "Plug-in for single sign-on with Strapi!",
+  "description": "Plug-in for single sign-on with Strapi using medusa",
   "strapi": {
     "displayName": "Single Sign On",
     "name": "strapi-plugin-sso",
