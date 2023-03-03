@@ -243,3 +243,5 @@ dist
 **/*.js
 **/*.d.ts
 **/*.js.map
+
+!babel.config.j

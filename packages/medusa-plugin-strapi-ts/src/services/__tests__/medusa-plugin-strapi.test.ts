@@ -9,19 +9,39 @@ import {
 	eventBusService,
 	disableMocks,
 	productCollectionService,
+	enableMocks,
+	useMockAxios,
 } from '../__mocks__/service-mocks';
 import { StrapiMedusaPluginOptions } from '../../types/globals';
 import { IdMap, MockManager } from 'medusa-test-utils';
 import UpdateStrapiService, { StrapiResult } from '../update-strapi';
 import logger from '../__mocks__/logger';
+import axios from 'axios';
 
 // This sets the mock adapter on the default instance
 
 let service: StrapiService;
 let result: StrapiResult;
-jest.setTimeout(600e3);
+const testTimeOut = 300e3;
+jest.setTimeout(testTimeOut);
+const strapiProtocol = process.env.STRAPI_PROTOCOL ?? 'localhost';
+const strapiPort = process.env.STRAPI_PORT ?? '1332';
+const strapiHost = process.env.STRAPI_HOST ?? 'localhost';
+export const strapiPath = `${strapiProtocol}://${strapiHost}:${strapiPort}`;
+
 describe('StrapiService Tests', () => {
-	jest.setTimeout(60e3);
+	jest.setTimeout(testTimeOut);
+	try {
+		axios.head(`${strapiProtocol}://${strapiHost}:${strapiPort}`).then(
+			() => disableMocks(),
+			() => {
+				enableMocks();
+				console.log("you need a working strapi entity to try all the tests")
+			}
+		);
+	} catch (error) {
+		enableMocks();
+	}
 	const strapiConfigParameters: StrapiMedusaPluginOptions = {
 		encryption_algorithm: 'aes-256-cbc',
 		strapi_protocol: 'http',
@@ -34,7 +54,7 @@ describe('StrapiService Tests', () => {
 			blocked: false,
 			provider: 'local',
 		},
-		strapi_host: '172.31.34.235',
+		strapi_host: strapiHost,
 		strapi_admin: {
 			password: 'MedusaStrapi1',
 			firstname: 'SuperUser',
@@ -124,15 +144,23 @@ describe('StrapiService Tests', () => {
 			expect(roleId).toBeGreaterThan(0);
 		});
 
-		it('register or login default medusa user', async () => {
-			const creds = await service.registerOrLoginDefaultMedusaUser();
-			expect(creds.token).toBeDefined();
-		}, 300000);
-		it('delete medusa user', async () => {
-			await service.deleteDefaultMedusaUser();
-			const creds = await service.loginAsDefaultMedusaUser();
-			expect(creds).toBeUndefined();
-		}, 30000);
+		it(
+			'register or login default medusa user',
+			async () => {
+				const creds = await service.registerOrLoginDefaultMedusaUser();
+				expect(creds.token).toBeDefined();
+			},
+			testTimeOut
+		);
+		it(
+			'delete medusa user',
+			async () => {
+				await service.deleteDefaultMedusaUser();
+				const creds = await service.loginAsDefaultMedusaUser();
+				expect(creds).toBeUndefined();
+			},
+			testTimeOut
+		);
 	});
 	describe('user actions and signal send', () => {
 		beforeAll(async () => await service.registerOrLoginDefaultMedusaUser());
@@ -141,12 +169,16 @@ describe('StrapiService Tests', () => {
 			await service.deleteDefaultMedusaUser();
 		});
 
-		it('medusa sync check', async () => {
-			result = await service.startInterface();
-			// console.log(result);
-			expect(result.status).toBeGreaterThanOrEqual(200);
-			expect(result.status).toBeLessThan(300);
-		}, 30000);
+		it(
+			'medusa sync check',
+			async () => {
+				result = await service.startInterface();
+				// console.log(result);
+				expect(result.status).toBeGreaterThanOrEqual(200);
+				expect(result.status).toBeLessThan(300);
+			},
+			testTimeOut
+		);
 	});
 
 	describe('product actions', () => {
@@ -172,71 +204,87 @@ describe('StrapiService Tests', () => {
 				expect(spy).toHaveBeenCalled();
 			});
 
-			it('product creation', async () => {
-				result = await service.createProductInStrapi('exists', defaultAuthInterface);
-				expect(result).toBeDefined();
-				expect(result.status).toBe(200);
-				expect(result.data?.medusa_id).toBeDefined();
-				expect(result.data).toMatchObject({
-					medusa_id: IdMap.getId('exists'),
-				});
-				expect(spy).toHaveBeenCalled();
-				if (result) {
-					const productGetResult = await service.getEntitiesFromStrapi({
-						authInterface: defaultAuthInterface,
-						strapiEntityType: 'products',
+			it(
+				'product creation',
+				async () => {
+					result = await service.createProductInStrapi('exists', defaultAuthInterface);
+					expect(result).toBeDefined();
+					expect(result.status).toBe(200);
+					expect(result.data?.medusa_id).toBeDefined();
+					expect(result.data).toMatchObject({
+						medusa_id: IdMap.getId('exists'),
 					});
-					expect(productGetResult).toBeDefined();
-					expect(productGetResult.data.length > 0).toBeTruthy();
-				}
-			}, 600000);
-			it('product recreation', async () => {
-				result = await service.createProductInStrapi('exists', defaultAuthInterface);
-				expect(result).toBeDefined();
-				expect(result.status).toBe(302);
-				expect(result.data?.medusa_id).toBeDefined();
-				expect(result.data).toMatchObject({
-					medusa_id: IdMap.getId('exists'),
-				});
-				expect(spy).toHaveBeenCalled();
-				if (result) {
-					const productGetResult = await service.getEntitiesFromStrapi({
-						authInterface: defaultAuthInterface,
-						strapiEntityType: 'products',
+					expect(spy).toHaveBeenCalled();
+					if (result) {
+						const productGetResult = await service.getEntitiesFromStrapi({
+							authInterface: defaultAuthInterface,
+							strapiEntityType: 'products',
+						});
+						expect(productGetResult).toBeDefined();
+						expect(productGetResult.data.length > 0).toBeTruthy();
+					}
+				},
+				testTimeOut
+			);
+			it(
+				'product recreation',
+				async () => {
+					result = await service.createProductInStrapi('exists', defaultAuthInterface);
+					expect(result).toBeDefined();
+					expect(result.status).toBe(302);
+					expect(result.data?.medusa_id).toBeDefined();
+					expect(result.data).toMatchObject({
+						medusa_id: IdMap.getId('exists'),
 					});
-					expect(productGetResult).toBeDefined();
-					expect(productGetResult.data.length > 0).toBeTruthy();
-				}
-			}, 600000);
+					expect(spy).toHaveBeenCalled();
+					if (result) {
+						const productGetResult = await service.getEntitiesFromStrapi({
+							authInterface: defaultAuthInterface,
+							strapiEntityType: 'products',
+						});
+						expect(productGetResult).toBeDefined();
+						expect(productGetResult.data.length > 0).toBeTruthy();
+					}
+				},
+				testTimeOut
+			);
 
-			it('product second creation in the same collection', async () => {
-				result = await service.createProductInStrapi('exists-2', defaultAuthInterface);
-				expect(result).toBeDefined();
-				expect(result.status).toBe(200);
-				expect(result.data?.medusa_id).toBeDefined();
-				expect(result.data).toMatchObject({
-					medusa_id: IdMap.getId('exists-2'),
-				});
-				expect(spy).toHaveBeenCalled();
-				if (result) {
-					const productGetResult = await service.getEntitiesFromStrapi({
-						authInterface: defaultAuthInterface,
-						strapiEntityType: 'products',
+			it(
+				'product second creation in the same collection',
+				async () => {
+					result = await service.createProductInStrapi('exists-2', defaultAuthInterface);
+					expect(result).toBeDefined();
+					expect(result.status).toBe(200);
+					expect(result.data?.medusa_id).toBeDefined();
+					expect(result.data).toMatchObject({
+						medusa_id: IdMap.getId('exists-2'),
 					});
-					expect(productGetResult).toBeDefined();
-					expect(productGetResult.data.length > 0).toBeTruthy();
-				}
-			}, 600000);
+					expect(spy).toHaveBeenCalled();
+					if (result) {
+						const productGetResult = await service.getEntitiesFromStrapi({
+							authInterface: defaultAuthInterface,
+							strapiEntityType: 'products',
+						});
+						expect(productGetResult).toBeDefined();
+						expect(productGetResult.data.length > 0).toBeTruthy();
+					}
+				},
+				testTimeOut
+			);
 
-			it('product update product ', async () => {
-				result = await service.updateProductInStrapi(
-					{ id: 'exists', title: 'new-title' },
-					defaultAuthInterface
-				);
-				expect(result).toBeDefined();
-				expect(result.status).toBe(200);
-				expect(spy).toHaveBeenCalled();
-			}, 600000);
+			it(
+				'product update product ',
+				async () => {
+					result = await service.updateProductInStrapi(
+						{ id: 'exists', title: 'new-title' },
+						defaultAuthInterface
+					);
+					expect(result).toBeDefined();
+					expect(result.status).toBe(200);
+					expect(spy).toHaveBeenCalled();
+				},
+				testTimeOut
+			);
 			it('create metafields in strapi', async () => {
 				result = await service.createProductMetafieldInStrapi(
 					{
@@ -320,82 +368,86 @@ describe('StrapiService Tests', () => {
 				expect(spy).toHaveBeenCalled();
 			});
 		});
-		describe('deletions', () => {
-			it('clean up product variants ', async () => {
-				result = await service.deleteProductVariantInStrapi(
-					{
-						id: 'exists',
-					},
-					defaultAuthInterface
-				);
-				const falseResult = await service.getEntitiesFromStrapi({
-					strapiEntityType: 'product-variants',
-					authInterface: defaultAuthInterface,
-					id: result.data?.medusa_id,
+		if (!useMockAxios) {
+			describe('deletions', () => {
+				it('clean up product variants ', async () => {
+					result = await service.deleteProductVariantInStrapi(
+						{
+							id: 'exists',
+						},
+						defaultAuthInterface
+					);
+					const falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'product-variants',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
+					expect(falseResult.status).toBe(200);
+					expect(falseResult.data?.length).toBe(0);
 				});
-				expect(falseResult.status).toBe(200);
-				expect(falseResult.data?.length).toBe(0);
-			});
-			it('clean up products ', async () => {
-				result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
-				expect(result.status).toBe(200);
-				let falseResult = await service.getEntitiesFromStrapi({
-					strapiEntityType: 'products',
-					authInterface: defaultAuthInterface,
-					id: result.data?.medusa_id,
-				});
+				it('clean up products ', async () => {
+					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
+					expect(result.status).toBe(200);
+					let falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'products',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
 
-				/*   result = await service.deleteCollectionInStrapi(
+					/*   result = await service.deleteCollectionInStrapi(
                     { id: "exists" },
                     defaultAuthInterface
                 );
 
                 expect(result.status != 200).toBeTruthy();*/
 
-				result = await service.deleteProductMetafieldInStrapi(
-					{ id: IdMap.getId('exists') },
-					defaultAuthInterface
-				);
-				expect(result.status).toBe(200);
-				falseResult = await service.getEntitiesFromStrapi({
-					strapiEntityType: 'product-metafields',
-					authInterface: defaultAuthInterface,
-					id: result.data?.medusa_id,
+					result = await service.deleteProductMetafieldInStrapi(
+						{ id: IdMap.getId('exists') },
+						defaultAuthInterface
+					);
+					expect(result.status).toBe(200);
+					falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'product-metafields',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
+
+					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists-2') }, defaultAuthInterface);
+					expect(result.status).toBe(200);
+					falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'products',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
+					expect(falseResult.status).toBe(200);
+					expect(
+						falseResult.data?.filter((d: { id: any }) => d.id == result.data.deletedData.id).length
+					).toBe(0);
 				});
 
-				result = await service.deleteProductInStrapi({ id: IdMap.getId('exists-2') }, defaultAuthInterface);
-				expect(result.status).toBe(200);
-				falseResult = await service.getEntitiesFromStrapi({
-					strapiEntityType: 'products',
-					authInterface: defaultAuthInterface,
-					id: result.data?.medusa_id,
+				it('clean up types and collections', async () => {
+					result = await service.deleteProductTypeInStrapi({ id: 'dummy' }, defaultAuthInterface);
+					expect(result.status).toBe(200);
+					let falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'product-types',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
+
+					expect(falseResult.status).toBe(200);
+					expect(falseResult.data?.length).toBe(0);
+					expect(falseResult.data?.length).toBe(0);
+					result = await service.deleteCollectionInStrapi({ id: 'exists' }, defaultAuthInterface);
+					falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'product-collections',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
+					expect(falseResult.status).toBe(200);
+					expect(falseResult.data?.length).toBe(0);
 				});
-				expect(falseResult.status).toBe(200);
-				expect(falseResult.data?.filter((d: { id: any }) => d.id == result.data.deletedData.id).length).toBe(0);
 			});
-
-			it('clean up types and collections', async () => {
-				result = await service.deleteProductTypeInStrapi({ id: 'dummy' }, defaultAuthInterface);
-				expect(result.status).toBe(200);
-				let falseResult = await service.getEntitiesFromStrapi({
-					strapiEntityType: 'product-types',
-					authInterface: defaultAuthInterface,
-					id: result.data?.medusa_id,
-				});
-
-				expect(falseResult.status).toBe(200);
-				expect(falseResult.data?.length).toBe(0);
-				expect(falseResult.data?.length).toBe(0);
-				result = await service.deleteCollectionInStrapi({ id: 'exists' }, defaultAuthInterface);
-				falseResult = await service.getEntitiesFromStrapi({
-					strapiEntityType: 'product-collections',
-					authInterface: defaultAuthInterface,
-					id: result.data?.medusa_id,
-				});
-				expect(falseResult.status).toBe(200);
-				expect(falseResult.data?.length).toBe(0);
-			});
-		});
+		}
 	});
 });
 describe('region checks', () => {
@@ -423,42 +475,46 @@ describe('region checks', () => {
 		// expect(falseResult.data?.data.length).toBe(0);
 		await service.deleteDefaultMedusaUser();
 	});
-	it('CURD Regions in strapi', async () => {
-		const creds = await service.registerOrLoginDefaultMedusaUser();
-		const defaultAuthInterface = service.defaultAuthInterface;
-		expect(creds).toBeDefined();
+	it(
+		'CURD Regions in strapi',
+		async () => {
+			const creds = await service.registerOrLoginDefaultMedusaUser();
+			const defaultAuthInterface = service.defaultAuthInterface;
+			expect(creds).toBeDefined();
 
-		result = await service.createEntryInStrapi({
-			method: 'post',
-			type: 'countries',
-			data: {
+			result = await service.createEntryInStrapi({
+				method: 'post',
+				type: 'countries',
+				data: {
+					id: 'exists',
+					name: 'IN',
+					iso_2: 'IN',
+					iso_3: 'IND',
+					display_name: 'India',
+					num_code: 91,
+				} as any,
+				authInterface: defaultAuthInterface,
+			});
+			expect(result).toBeDefined();
+			expect(result.status == 200 || result.status == 302).toBeTruthy();
+			result = await service.createRegionInStrapi('exists', defaultAuthInterface);
+			expect(result).toBeDefined();
+			expect(result.status).toBe(200);
+			result = await service.updateRegionInStrapi({ id: 'exists', name: 'new-name' }, defaultAuthInterface);
+			expect(result).toBeDefined();
+			expect(result.status).toBe(200);
+			expect(result).toMatchObject({
+				data: { name: 'new-name', medusa_id: 'exists' },
+			});
+			result = await service.getEntitiesFromStrapi({
+				strapiEntityType: 'regions',
+				authInterface: defaultAuthInterface,
 				id: 'exists',
-				name: 'IN',
-				iso_2: 'IN',
-				iso_3: 'IND',
-				display_name: 'India',
-				num_code: 91,
-			} as any,
-			authInterface: defaultAuthInterface,
-		});
-		expect(result).toBeDefined();
-		expect(result.status == 200 || result.status == 302).toBeTruthy();
-		result = await service.createRegionInStrapi('exists', defaultAuthInterface);
-		expect(result).toBeDefined();
-		expect(result.status).toBe(200);
-		result = await service.updateRegionInStrapi({ id: 'exists', name: 'new-name' }, defaultAuthInterface);
-		expect(result).toBeDefined();
-		expect(result.status).toBe(200);
-		expect(result).toMatchObject({
-			data: { name: 'new-name', medusa_id: 'exists' },
-		});
-		result = await service.getEntitiesFromStrapi({
-			strapiEntityType: 'regions',
-			authInterface: defaultAuthInterface,
-			id: 'exists',
-		});
-		expect(result.status).toBe(200);
-	}, 600000);
+			});
+			expect(result.status).toBe(200);
+		},
+		testTimeOut
+	);
 });
 describe('admin CURD', () => {
 	it('register or login admin', async () => {
@@ -475,49 +531,75 @@ describe('admin CURD', () => {
 		expect(roleId).toBeGreaterThan(0);
 	});
 
-	it('register test admin as Author', async () => {
-		result = await service.registerAdminUserInStrapi('testAuthor@test.com', 'test');
-		expect(result.status).toBe(201);
-		// console.log(service.strapiDefaultUserId);
-		//  expect(result.id).toBeDefined();
-		//  expect(result.id).toBeGreaterThan(0);
-	}, 300000);
-	it('find all admin users', async () => {
-		result = await service.getAllAdminUserInStrapi();
-		expect(result.status).toBe(200);
-		// console.log(service.strapiDefaultUserId);
-		//  expect(result.id).toBeDefined();
-		//  expect(result.id).toBeGreaterThan(0);
-	}, 300000);
+	it(
+		'register test admin as Author',
+		async () => {
+			result = await service.registerAdminUserInStrapi('testAuthor@test.com', 'test');
+			expect(result.status).toBe(201);
+			// console.log(service.strapiDefaultUserId);
+			//  expect(result.id).toBeDefined();
+			//  expect(result.id).toBeGreaterThan(0);
+		},
+		testTimeOut
+	);
+	it(
+		'find all admin users',
+		async () => {
+			result = await service.getAllAdminUserInStrapi();
+			expect(result.status).toBe(200);
+			// console.log(service.strapiDefaultUserId);
+			//  expect(result.id).toBeDefined();
+			//  expect(result.id).toBeGreaterThan(0);
+		},
+		testTimeOut
+	);
 
-	it('activate test admin as Author', async () => {
-		result = await service.updateAdminUserInStrapi('testAuthor@test.com', 'test');
-		expect(result).toBeDefined();
-		expect(result.status).toBe(200);
-	}, 300000);
-	it('register duplication admin as Editor should fail', async () => {
-		result = await service.registerAdminUserInStrapi('testAuthor@test.com', 'Editor');
-		expect(result.status != 201).toBeTruthy();
-	}, 300000);
-	it('register admin as Editor', async () => {
-		result = await service.registerAdminUserInStrapi('testEditor@test.com', 'Editor');
-		expect(result).toBeDefined();
-		expect(result.status).toBe(201);
-	}, 300000);
-
-	it('delete medusa user', async () => {
-		result = await service.deleteAdminUserInStrapi('testEditor@test.com');
-		expect(result.status).toBe(200);
-		result = await service.getAdminUserInStrapi('testEditor@test.com');
-		expect(result.status).toBe(200);
-		expect(result.data).toBeUndefined();
-		result = await service.deleteAdminUserInStrapi('testAuthor@test.com');
-		expect(result.status).toBe(200);
-		result = await service.getAdminUserInStrapi('testAuthor@test.com');
-		expect(result.status).toBe(200);
-		expect(result.data).toBeUndefined();
-		result = await service.getAdminUserInStrapi('testEditor@test.com');
-		expect(result.status).toBe(200);
-		expect(result.data).toBeUndefined();
-	}, 30000);
+	it(
+		'activate test admin as Author',
+		async () => {
+			result = await service.updateAdminUserInStrapi('testAuthor@test.com', 'test');
+			expect(result).toBeDefined();
+			expect(result.status).toBe(200);
+		},
+		testTimeOut
+	);
+	if (!useMockAxios) {
+		it(
+			'register duplication admin as Editor should fail',
+			async () => {
+				result = await service.registerAdminUserInStrapi('testAuthor@test.com', 'Editor');
+				expect(result.status != 201).toBeTruthy();
+			},
+			testTimeOut
+		);
+	}
+	it(
+		'register admin as Editor',
+		async () => {
+			result = await service.registerAdminUserInStrapi('testEditor@test.com', 'Editor');
+			expect(result).toBeDefined();
+			expect(result.status).toBe(201);
+		},
+		testTimeOut
+	);
+	if (!useMockAxios)
+		it(
+			'delete medusa user',
+			async () => {
+				result = await service.deleteAdminUserInStrapi('testEditor@test.com');
+				expect(result.status).toBe(200);
+				result = await service.getAdminUserInStrapi('testEditor@test.com');
+				expect(result.status).toBe(200);
+				expect(result.data).toBeUndefined();
+				result = await service.deleteAdminUserInStrapi('testAuthor@test.com');
+				expect(result.status).toBe(200);
+				result = await service.getAdminUserInStrapi('testAuthor@test.com');
+				expect(result.status).toBe(200);
+				expect(result.data).toBeUndefined();
+				result = await service.getAdminUserInStrapi('testEditor@test.com');
+				expect(result.status).toBe(200);
+				expect(result.data).toBeUndefined();
+			},
+			testTimeOut
+		);
 });

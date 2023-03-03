@@ -42,7 +42,7 @@ describe('StrapiService Tests', () => {
 			blocked: false,
 			provider: 'local',
 		},
-		strapi_host: '172.31.34.235',
+		strapi_host: '127.0.0.1',
 		strapi_admin: {
 			password: 'MedusaStrapi1',
 			firstname: 'SuperUser',

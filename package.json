@@ -17,7 +17,7 @@
     "clean": "./node_modules/.bin/lerna run --parallel clean",
     "release": "./node_modules/.bin/lerna publish",
     "watch": "./node_modules/.bin/lerna run watch",
-    "test": "./node_modules/.bin/lerna run test",
+    "test": "./node_modules/.bin/lerna run test ",
     "test:local": "./node_modules/.bin/lerna run test:local",
     "lint": "./node_modules/.bin/eslint 'packages/**' --fix"
   },

@@ -31,7 +31,6 @@ module.exports = {
       '**/.version*',
       '**/*.md',
       '**/*.json',
-      '**/*.js',
       '**/*.js.map',
       '**/*.d.ts',
       '**/*.d.ts.map',

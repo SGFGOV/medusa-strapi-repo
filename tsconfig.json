@@ -3,6 +3,7 @@
 		"module": "CommonJS",
 		"declaration": true,
 		"jsx": "react",
+		"allowJs": false,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,

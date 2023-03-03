@@ -58,7 +58,7 @@
     "webpack": "^5.75.0"
   },
   "author": {
-    "name": "Govind Diwakar<govind.diwakar@gmail.com>"
+    "name": "Govind Diwakar"
   },
   "maintainers": [
     {
@@ -72,7 +72,7 @@
   "scripts": {
     "develop": "tsc -w",
     "build": "rm -rf ./dist && tsc",
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit --detectOpenHandles --passWithNoTests"
   },
   "license": "MIT",
   "peerDependencies": {

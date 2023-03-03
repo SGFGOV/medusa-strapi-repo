@@ -429,7 +429,7 @@ export const attachRealInstance = {
 	},
 };
 
-let useMockAxios = true;
+export let useMockAxios = true;
 let mock;
 export function enableMocks(): any {
 	useMockAxios = true;
@@ -441,14 +441,29 @@ export function disableMocks(): any {
 
 function enableMockFunctions(): void {
 	const mock = useMockAxios ? new MockAdapter(axios) : attachRealInstance;
-	mock.onPut().reply(200);
-	mock.onDelete().reply(200);
-	mock.onGet('/api/products').reply(200, {
+	mock.onPost('/api/products').reply(200, {
+		medusa_id: 'exists',
+		id: 1,
+	});
+	mock.onPut().reply(200, { id: 1 });
+	mock.onDelete().reply(200, { id: 1 });
+	mock.onGet('/api/products').reply(200, [
+		{
+			medusa_id: 'exists',
+			id: 1,
+			title: 'test',
+		},
+	]);
+	mock.onGet('/api/products/:id').reply(200, {
 		medusa_id: 'exists',
 		id: 1,
 		title: 'test',
 	});
-	mock.onPost('/api/products').reply(200, {
+	mock.onGet(/\/api\/roles/g).reply(200, {
+		id: 1,
+		name: 'Author',
+	});
+	/*mock.onPost('/api/products').reply(200, {
 		medusa_id: 'exists',
 		id: 1,
 		title: 'test',
@@ -459,14 +474,25 @@ function enableMockFunctions(): void {
 		title: 'test-2',
 	});
 	mock.onDelete('/api/products').reply(200, {});
-
-	mock.onGet('/api/roles').reply(200, {
-		id: '2',
+	*/
+	mock.onGet('/admin/roles').reply(200, {
+		id: '1',
 		name: 'Author',
 	});
+	mock.onGet('/admin/users').reply(200, [
+		{
+			id: '1',
+			name: 'John Smith',
+		},
+	]);
+	mock.onGet('/admin/users?').reply(200, {
+		id: '1',
+		name: 'John Smith',
+	});
+	mock.onPost('/admin/register-admin').reply(400);
 
 	mock.onGet('/api/products/exists').reply(200);
-	mock.onPost('http://172.31.34.235:1337/admin/login').reply(200, {
+	mock.onPost(/[\/admin\/login]/g).reply(200, {
 		data: {
 			token: 'jsgfkjdsgsdgsjdgl2343535235',
 			user: {
