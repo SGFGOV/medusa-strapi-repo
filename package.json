@@ -9,7 +9,7 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ]
+    ] 
   },
   "scripts": {
     "build": "./node_modules/.bin/lerna run --parallel build",

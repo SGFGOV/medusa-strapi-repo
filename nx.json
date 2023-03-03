@@ -9,7 +9,7 @@
         ]
       }
     }
-  },
+  }, 
   "targetDefaults": {
     "build": {
       "dependsOn": [
