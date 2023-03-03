@@ -1,0 +1,53 @@
+{
+  "name": "@sgftech/medusa-tools",
+  "private": true,
+  "version": "0.0.0",
+    "description": "Monorepo for all Strapi components to sync with medusa",
+  "engines": {
+    "node": ">14.17.3"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/lerna run --parallel build",
+    "bootstrap": "./node_modules/.bin/lerna bootstrap",
+    "clean": "./node_modules/.bin/lerna run --parallel clean",
+    "release": "./node_modules/.bin/lerna publish",
+    "watch": "./node_modules/.bin/lerna run watch",
+    "test": "./node_modules/.bin/lerna run test",
+    "test:local": "./node_modules/.bin/lerna run test:local",
+    "lint": "./node_modules/.bin/eslint 'packages/**' --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrien2p/medusa-plugins.git"
+  },
+  "author": "Govind Diwakar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adrien2p/medusa-plugins/issues"
+  },
+  "homepage": "https://github.com/adrien2p/medusa-plugins#readme",
+  "dependencies": {
+    "rimraf": "^3.0.1"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.5.0",
+    "tslint": "~6.1.0",
+    "typescript": "^4.5.5"
+  },
+  "resolutions": {
+    "@medusajs/medusa":"npm:@sgftech/medusa"
+  }
+}
