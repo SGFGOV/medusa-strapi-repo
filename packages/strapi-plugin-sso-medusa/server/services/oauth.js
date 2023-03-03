@@ -1,67 +1,71 @@
-const {getService} = require("@strapi/admin/server/utils");
-const strapiUtils = require('@strapi/utils');
-const generator = require('generate-password');
+const { getService } = require("@strapi/admin/server/utils");
+const strapiUtils = require("@strapi/utils");
+const generator = require("generate-password");
 
-module.exports = ({strapi}) => ({
+module.exports = ({ strapi }) => ({
   async createUser(email, lastname, firstname, locale, roles = []) {
-    const createdUser = await getService('user').create({
-      firstname: firstname ? firstname : 'unset',
-      lastname: lastname ? lastname : '',
+    const createdUser = await getService("user").create({
+      firstname: firstname ? firstname : "unset",
+      lastname: lastname ? lastname : "",
       email,
       roles,
       preferedLanguage: locale,
     });
 
-    return await getService('user').register({
+    return await getService("user").register({
       registrationToken: createdUser.registrationToken,
       userInfo: {
-        firstname: firstname ? firstname : 'unset',
-        lastname: lastname ? lastname : 'user',
+        firstname: firstname ? firstname : "unset",
+        lastname: lastname ? lastname : "user",
         password: generator.generate({
           length: 12,
           numbers: true,
           lowercase: true,
           uppercase: true,
           exclude: '()+_-=}{[]|:;"/?.><,`~',
-          strict: true
+          strict: true,
         }),
-      }
+      },
     });
   },
   addGmailAlias(baseEmail, baseAlias) {
     if (!baseAlias) {
-      return baseEmail
+      return baseEmail;
     }
-    const alias = baseAlias.replace('/+/g', '')
-    const beforePosition = baseEmail.indexOf('@')
-    const origin = baseEmail.substring(0, beforePosition)
-    const domain = baseEmail.substring(beforePosition)
-    return `${origin}+${alias}${domain}`
+    const alias = baseAlias.replace("/+/g", "");
+    const beforePosition = baseEmail.indexOf("@");
+    const origin = baseEmail.substring(0, beforePosition);
+    const domain = baseEmail.substring(beforePosition);
+    return `${origin}+${alias}${domain}`;
   },
   localeFindByHeader(headers) {
-    if (headers['accept-language'] && headers['accept-language'].includes('ja')) {
-      return 'ja'
+    if (
+      headers["accept-language"] &&
+      headers["accept-language"].includes("ja")
+    ) {
+      return "ja";
     } else {
-      return 'en'
+      return "en";
     }
   },
   async triggerWebHook(user) {
-    const {ENTRY_CREATE} = strapiUtils.webhook.webhookEvents;
-    const modelDef = strapi.getModel('admin::user');
-    const sanitizedEntity = await strapiUtils.sanitize.sanitizers.defaultSanitizeOutput(
-      modelDef,
-      user
-    );
+    const { ENTRY_CREATE } = strapiUtils.webhook.webhookEvents;
+    const modelDef = strapi.getModel("admin::user");
+    const sanitizedEntity =
+      await strapiUtils.sanitize.sanitizers.defaultSanitizeOutput(
+        modelDef,
+        user
+      );
     strapi.eventHub.emit(ENTRY_CREATE, {
       model: modelDef.modelName,
       entry: sanitizedEntity,
     });
   },
   triggerSignInSuccess(user) {
-    delete user['password']
-    strapi.eventHub.emit('admin.auth.success', {
+    delete user["password"];
+    strapi.eventHub.emit("admin.auth.success", {
       user,
-      provider: 'strapi-plugin-sso'
+      provider: "strapi-plugin-sso",
     });
   },
   // Sign In Success
@@ -96,5 +100,5 @@ module.exports = ({strapi}) => ({
 <p>${message}</p>
 </body>
 </html>`;
-  }
+  },
 });
