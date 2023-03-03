@@ -1,0 +1,10 @@
+.idea
+node_modules
+.DS_store
+.env*
+src
+coverage
+index.ts
+*.tgz
+tsconfig.tsbuildinfo
+*.log
