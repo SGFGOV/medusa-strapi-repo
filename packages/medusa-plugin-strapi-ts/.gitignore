@@ -134,3 +134,6 @@ dist
 *.tgz
 
 
+**/*.js
+**/*.d.ts
+**/*.js.map

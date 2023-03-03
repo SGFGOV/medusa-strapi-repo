@@ -15,6 +15,17 @@ module.exports = {
     jest: true,
   },
   ignorePatterns: [
+    '**/*.txt',
+    '**/dist/*',
+    '**/*.yml',
+    '**/*.jpg',
+    '**/*.ico',
+    '**/*.sh',
+      '**/*.lock',
+      '**/*.png',
+      '**/*.gif',
+      '**/*.html',
+      '**/LICENSE',
       '.eslintrc.js',
       '**/.prettier*',
       '**/.version*',
@@ -24,12 +35,14 @@ module.exports = {
       '**/*.js.map',
       '**/*.d.ts',
       '**/*.d.ts.map',
+      '**/*.pdf',
   ],
   overrides: [
     {
       files: ["*"],
       "rules": {
-        "prefer-rest-params": "off"
+        "prefer-rest-params": "off",
+        "@typescript-eslint/no-empty-function":"off"
       }
     },
   ],
