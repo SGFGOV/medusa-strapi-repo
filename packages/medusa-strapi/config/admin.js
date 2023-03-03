@@ -1,4 +1,4 @@
-const sgftechSaasFormStrategy = require("@sgftech/passport-saasform");
+//const sgftechSaasFormStrategy = require("@sgftech/passport-saasform");
 
 module.exports = ({ env }) => ({
   auth: {
@@ -16,7 +16,7 @@ module.exports = ({ env }) => ({
       },
     },
     providers: [
-      {
+    /*  {
         uid: "saasform",
         displayName: "SGF-Login",
         icon: "",
@@ -39,7 +39,7 @@ module.exports = ({ env }) => ({
               });
             }
           ),
-      },
+      },*/
     ],
   },
   apiToken: {

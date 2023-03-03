@@ -22,8 +22,6 @@
     "@aws-sdk/util-format-url": "^3.78.0",
     "@notum-cz/strapi-plugin-content-versioning": "^0.4.7",
     "@offset-dev/strapi-calendar": "^0.0.9",
-    "@sgftech/passport-saasform": "^0.0.20",
-    "@sgftech/strapi-plugin-sso": "file:../private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.10.tgz",
     "@strapi/design-system": "^1.4.1",
     "@strapi/icons": "^1.4.1",
     "@strapi/logger": "4.5.6",
@@ -62,6 +60,7 @@
     "strapi-plugin-multi-country-select": "^1.1.0",
     "strapi-plugin-multi-select": "^1.1.0",
     "strapi-plugin-sitemap": "^2.0.8",
+    "strapi-plugin-sso-medusa": "^0.1.10",
     "style-loader": "^3.3.1",
     "yarn": "^1.22.19"
   },
