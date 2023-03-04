@@ -1147,18 +1147,29 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	async executeSync(token: string): Promise<AxiosResponse> {
 		await this.waitForHealth();
-		const result = await axios.post(
-			`${this.strapi_url}/strapi-plugin-medusajs/synchronise-medusa-tables`,
-			{},
-			{
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-				timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/,
-			}
-		);
-		this.logger.info('successfully initiated two way syncs trapi<-->medusa');
-		return result;
+		try {
+			const result = await axios.post(
+				`${this.strapi_url}/strapi-plugin-medusajs/synchronise-medusa-tables`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+					timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/,
+				}
+			);
+			this.logger.info('successfully initiated two way syncs trapi<-->medusa');
+			return result;
+		} catch (error) {
+			this._axiosError(
+				error,
+				undefined,
+				undefined,
+				undefined,
+				undefined,
+				`${this.strapi_url}/strapi-plugin-medusajs/synchronise-medusa-tables`
+			);
+		}
 	}
 
 	/**
@@ -1191,7 +1202,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const { email } = authInterface;
 
 		const currentTime = Date.now();
-		const lastRetrived = this.userTokens[email];
+		const lastRetrived = this.userTokens[email.toLowerCase()];
 		if (lastRetrived) {
 			if (!strapiRetryDelay) {
 				strapiRetryDelay = 180e3;
@@ -1202,15 +1213,20 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return lastRetrived;
 			}
 		}
-		const res = await this.executeLoginAsStrapiUser(authInterface);
-		if (res?.data.jwt) {
-			this.userTokens[email] = {
-				token: res.data.jwt /** caching the jwt token */,
-				time: Date.now(),
-				user: res.data.user,
-			};
-			this.logger.info(`${email} ` + 'successfully logged in to Strapi');
-			return this.userTokens[email];
+		try {
+			const res = await this.executeLoginAsStrapiUser(authInterface);
+			if (res?.data.jwt) {
+				this.userTokens[email.toLowerCase()] = {
+					token: res.data.jwt /** caching the jwt token */,
+					time: Date.now(),
+					user: res.data.user,
+				};
+				this.logger.info(`${email} ` + 'successfully logged in to Strapi');
+				return this.userTokens[email.toLowerCase()];
+			}
+		} catch (error) {
+			this.logger.error(`${email} ` + 'successfully error loggin in in to Strapi');
+			this._axiosError(error);
 		}
 	}
 
@@ -1223,10 +1239,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		await this.waitForHealth();
 		try {
 			const authData = {
-				identifier: authInterface.email,
+				identifier: authInterface.email.toLowerCase(),
 				password: authInterface.password,
 			};
-
+			this.logger.info(`firing: ${this.strapi_url}/api/auth/local`);
 			const response = await axios.post(`${this.strapi_url}/api/auth/local`, authData);
 			// } catch (e) {
 			/* if (e.response.status == 429) {
@@ -1251,7 +1267,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			// console.log("login result"+res);
 			return response;
 		} catch (error) {
-			this._axiosError(error);
+			this._axiosError(error, undefined, undefined, undefined, undefined, `${this.strapi_url}/api/auth/local`);
 			throw new Error(
 				`\n Error  ${authInterface.email} while trying to login to strapi\n` + (error as Error).message
 			);
@@ -1388,6 +1404,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const { method, type, id, data, authInterface } = params;
 
 		const userCreds = await this.strapiLoginSendDatalayer(authInterface);
+		if (!userCreds) {
+			this.logger.error(`no such user:${authInterface.email}`);
+			return { status: 400 };
+		}
 		let dataToSend: BaseEntity & { medusa_id?: string };
 		if (data && data.id) {
 			dataToSend = _.cloneDeep(data);
@@ -1444,7 +1464,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		} else {
 			endPoint = `${this.strapi_url}/api/${type}`;
 		}
-		this.logger.info(endPoint);
+		this.logger.info(`User endpoint: ${endPoint}`);
 		const basicConfig = {
 			method: method,
 			url: endPoint,
@@ -1463,6 +1483,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			  };
 
 		try {
+			this.logger.info(`User Endpoint firing: ${endPoint}`);
 			const result = await axios(config);
 			this.logger.info(`User Endpoint fired: ${endPoint}`);
 			// console.log("attempting action:"+result);
@@ -1476,10 +1497,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return result;
 		} catch (error) {
-			this._axiosError(error, id, type, data, method);
+			this._axiosError(error, id, type, data, method, endPoint);
 		}
 	}
-	_axiosError(error: any, id?: string, type?: string, data?: any, method?: Method): void {
+	_axiosError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string): void {
+		if (endPoint) {
+			this.logger.info(`Endpoint Attempted: ${endPoint}`);
+		}
 		const theError = `${(error as Error).message} `;
 		this.logger.error(
 			`AxiosError ${error?.response?.status} ${
@@ -1524,9 +1548,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 		}
 		const q = query ? `?${query}` : '';
+		const finalUrl = `${this.strapi_url}/admin/${path.join('/')}${q}`;
 		const basicConfig = {
 			method: method,
-			url: `${this.strapi_url}/admin/${path.join('/')}${q}`,
+			url: finalUrl,
 			headers,
 		};
 		this.logger.info(`Admin Endpoint fired: ${basicConfig.url}`);
@@ -1553,8 +1578,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return result;
 		} catch (error) {
 			this.logger.error('Admin endpoint error');
-			this._axiosError(error, id, type, data, method);
+			this._axiosError(error, id, type, data, method, basicConfig.url);
 		}
+		``;
 	}
 
 	async executeRegisterMedusaUser(auth: MedusaUserType): Promise<AxiosResponse | undefined> {
@@ -1727,8 +1753,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 		this.lastAdminLoginAttemptTime = currentLoginAttempt;
 		await this.waitForHealth();
+		const adminUrl = `${this.strapi_url}/admin/login`;
 		try {
-			const response = await axios.post(`${this.strapi_url}/admin/login`, auth, {
+			const response = await axios.post(adminUrl, auth, {
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -1749,7 +1776,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		} catch (error) {
 			// Handle error.
 			this.logger.info('An error occurred' + 'while logging into admin:');
-			this._axiosError(error);
+			this._axiosError(error, undefined, undefined, undefined, undefined, `${this.strapi_url}/admin/login`);
 
 			throw error;
 		}

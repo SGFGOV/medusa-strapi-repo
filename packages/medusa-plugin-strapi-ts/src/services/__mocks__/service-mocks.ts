@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { jest } from '@jest/globals';
 import express, { Application } from 'express';
-import routes from '../../api/index';
 
 import { IdMap } from 'medusa-test-utils';
-import { exists } from 'fs';
+import { testUserEmail } from '../__tests__/medusa-plugin-strapi.test';
 
 export const regionService = {
 	count: jest.fn().mockImplementation(() => Promise.resolve(1)),
@@ -14,11 +12,11 @@ export const regionService = {
 	retrieve: jest
 		.fn()
 		.mockImplementationOnce((id) => {
-			if (id === 'exists') {
+			if (id === IdMap.getId('exists')) {
 				return Promise.resolve({
-					id: 'exists',
+					id: IdMap.getId('exists'),
 					name: 'Test Region',
-					// countries: [filters:{ id: "exists" }],
+					// countries: [filters:{ id: IdMap.getId(IdMap.getId('exists')) }],
 					tax_rate: 0.25,
 					// payment_providers: ["default_provider", "unregistered"],
 					// fulfillment_providers: ["test_shipper"],
@@ -28,11 +26,11 @@ export const regionService = {
 			return Promise.resolve(undefined);
 		})
 		.mockImplementation((id) => {
-			if (id === 'exists') {
+			if (id === IdMap.getId('exists')) {
 				return Promise.resolve({
-					id: 'exists',
+					id: IdMap.getId('exists'),
 					name: 'new-name',
-					// countries: [filters:{ id: "exists" }],
+					// countries: [filters:{ id: IdMap.getId(IdMap.getId('exists')) }],
 					tax_rate: 0.25,
 					// payment_providers: ["default_provider", "unregistered"],
 					// fulfillment_providers: ["test_shipper"],
@@ -45,8 +43,8 @@ export const regionService = {
 export const storeService = {
 	count: jest.fn().mockImplementation(() => Promise.resolve(1)),
 	retrieveByStoreId: jest.fn((id) => {
-		if (id === 'exists') {
-			return Promise.resolve({ id: 'exists' });
+		if (id === IdMap.getId('exists')) {
+			return Promise.resolve({ id: IdMap.getId('exists') });
 		}
 		return Promise.resolve(undefined);
 	}),
@@ -56,19 +54,19 @@ export const productService = {
 	list: jest.fn(async () => {
 		return await Promise.all([
 			Promise.resolve({
-				id: IdMap.getId('exists'),
+				id: IdMap.getId(IdMap.getId('exists')),
 				type: { id: 'dummy' },
 				title: 'test-product',
-				// variants: [{ id: "exists" }]
+				// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
 				options: [
 					{
-						id: 'exists',
+						id: IdMap.getId('exists'),
 						title: 'Color',
 					},
 				],
-				// collection_id: "exists",
+				// collection_id: IdMap.getId(IdMap.getId('exists')),
 				collection: {
-					id: 'exists',
+					id: IdMap.getId('exists'),
 					handle: 'test-collection',
 					title: 'test-collection-title',
 				},
@@ -81,21 +79,21 @@ export const productService = {
 	retrieve: jest
 		.fn()
 		.mockImplementationOnce((id) => {
-			if (id === 'exists' || id == IdMap.getId('exists')) {
+			if (id === IdMap.getId('exists') || id == IdMap.getId(IdMap.getId('exists'))) {
 				return Promise.resolve({
-					id: IdMap.getId('exists'),
+					id: IdMap.getId(IdMap.getId('exists')),
 					type: { id: 'dummy' },
 					title: 'test-product',
-					// variants: [{ id: "exists" }]
+					// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
 					options: [
 						{
-							id: 'exists',
+							id: IdMap.getId('exists'),
 							title: 'Color',
 						},
 					],
-					// collection_id: "exists",
+					// collection_id: IdMap.getId(IdMap.getId('exists')),
 					collection: {
-						id: 'exists',
+						id: IdMap.getId('exists'),
 						handle: 'test-collection',
 						title: 'test-collection-title',
 					},
@@ -107,16 +105,16 @@ export const productService = {
 					id: IdMap.getId('exists-2'),
 					type: { id: 'dummy' },
 					title: 'test-product',
-					// variants: [{ id: "exists" }]
+					// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
 					options: [
 						{
-							id: 'exists',
+							id: IdMap.getId('exists'),
 							title: 'Color',
 						},
 					],
-					// collection_id: "exists",
+					// collection_id: IdMap.getId(IdMap.getId('exists')),
 					collection: {
-						id: 'exists',
+						id: IdMap.getId('exists'),
 						handle: 'test-collection',
 						title: 'test-collection-title',
 					},
@@ -127,15 +125,15 @@ export const productService = {
 			return Promise.resolve(undefined);
 		})
 		.mockImplementation((id) => {
-			if (id === 'exists' || id == IdMap.getId('exists')) {
+			if (id === IdMap.getId('exists') || id == IdMap.getId(IdMap.getId('exists'))) {
 				return Promise.resolve({
-					id: IdMap.getId('exists'),
+					id: IdMap.getId(IdMap.getId('exists')),
 					type: { id: 'dummy' },
 					title: 'test-product-2',
 					created_at: new Date().toISOString(),
 					updated_at: new Date().toISOString(),
 					collection: {
-						id: 'exists',
+						id: IdMap.getId('exists'),
 						title: 'test',
 					},
 				});
@@ -144,16 +142,16 @@ export const productService = {
 					id: IdMap.getId('exists-2'),
 					type: { id: 'dummy' },
 					title: 'test-product',
-					// variants: [{ id: "exists" }]
+					// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
 					options: [
 						{
-							id: 'exists',
+							id: IdMap.getId('exists'),
 							title: 'Color',
 						},
 					],
 					// collection_id: "exists",
 					collection: {
-						id: 'exists',
+						id: IdMap.getId(IdMap.getId('exists')),
 						handle: 'test-collection',
 						title: 'test-collection-title',
 					},
@@ -180,7 +178,7 @@ export const productCollectionService = {
 		return Promise.resolve({
 			title: 'test-collection-title',
 			handle: 'test-collection',
-			id: 'exists',
+			id: IdMap.getId('exists'),
 		});
 	}),
 };
@@ -202,11 +200,11 @@ export const productVariantService = {
 	retrieve: jest
 		.fn()
 		.mockImplementationOnce((id) => {
-			if (id === 'exists' || id == IdMap.getId('exists')) {
+			if (id === IdMap.getId('exists') || id == IdMap.getId(IdMap.getId('exists'))) {
 				return Promise.resolve({
-					id: 'exists',
+					id: IdMap.getId('exists'),
 					product: {
-						id: IdMap.getId('exists'),
+						id: IdMap.getId(IdMap.getId('exists')),
 						title: 'test-product',
 					},
 					title: 'test-product-variant',
@@ -217,30 +215,30 @@ export const productVariantService = {
 						{
 							created_at: '2023-01-26T11:47:16.096Z',
 							deleted_at: null,
-							medusa_id: 'exists',
+							medusa_id: IdMap.getId('exists'),
 							metadata: null,
-							option_id: 'exists',
+							option_id: IdMap.getId('exists'),
 							updated_at: '2023-01-26T11:47:16.096Z',
 							value: '12',
 						},
 					],
 					/* prices: [
-                        {
-                            region_id: "exists",
-                            currency_code: "inr",
-                            amount: 950
-                        }
-                    ]*/
+						{
+							region_id: "exists",
+							currency_code: "inr",
+							amount: 950
+						}
+					]*/
 				});
 			}
 			return Promise.resolve(undefined);
 		})
 		.mockImplementation((id) => {
-			if (id === 'exists') {
+			if (id === IdMap.getId('exists')) {
 				return Promise.resolve({
-					id: 'exists',
+					id: IdMap.getId('exists'),
 					product: {
-						id: IdMap.getId('exists'),
+						id: IdMap.getId(IdMap.getId('exists')),
 						title: 'test-product',
 					},
 					title: 'test-product-variant-2',
@@ -249,12 +247,12 @@ export const productVariantService = {
 						{
 							created_at: '2023-01-26T11:47:16.096Z',
 							deleted_at: null,
-							medusa_id: 'exists',
+							medusa_id: IdMap.getId('exists'),
 							metadata: null,
-							option_id: 'exists',
+							option_id: IdMap.getId('exists'),
 							updated_at: '2023-01-26T11:47:16.096Z',
 							value: '12',
-							variant_id: 'exists',
+							variant_id: IdMap.getId('exists'),
 						},
 					],
 				});
@@ -429,57 +427,86 @@ export const attachRealInstance = {
 	},
 };
 
-export let useMockAxios = true;
-let mock;
-export function enableMocks(): any {
-	useMockAxios = true;
-	return enableMockFunctions();
+let useMockAxios = true;
+let mock: MockAdapter;
+export function getMockAdapter(): MockAdapter {
+	return mock;
 }
-export function disableMocks(): any {
-	return attachRealInstance;
+export function isMockEnabled() {
+	return useMockAxios;
+}
+export function enableMocks(axios): void {
+	useMockAxios = true;
+	enableMockFunctions(axios);
+}
+export function disableMocks(): void {
+	useMockAxios = false;
 }
 
-function enableMockFunctions(): void {
-	const mock = useMockAxios ? new MockAdapter(axios) : attachRealInstance;
-	mock.onPost('/api/products').reply(200, {
-		medusa_id: 'exists',
+function enableCrudMocks(mock: MockAdapter, expressionSingle, expressionPlural, data) {
+	mock.onGet(expressionPlural).reply(200, [data]);
+	mock.onGet(expressionSingle).reply(200, data);
+	mock.onPut(expressionSingle).reply(200, data);
+
+	mock.onPost(expressionPlural).reply(200, [data]);
+	mock.onDelete(expressionSingle).reply(200, data);
+}
+
+function enableMockFunctions(axios): void {
+	const mock = new MockAdapter(axios);
+	enableCrudMocks(mock, /api\/products\/.*/gm, /api\/products/gm, {
+		medusa_id: IdMap.getId('exists'),
 		id: 1,
 	});
-	mock.onPut().reply(200, { id: 1 });
-	mock.onDelete().reply(200, { id: 1 });
-	mock.onGet('/api/products').reply(200, [
-		{
-			medusa_id: 'exists',
-			id: 1,
-			title: 'test',
-		},
-	]);
-	mock.onGet('/api/products/:id').reply(200, {
-		medusa_id: 'exists',
+	enableCrudMocks(mock, /api\/users\/.*/gm, /api\/users/gm, {
+		medusa_id: IdMap.getId('exists'),
+		id: 1,
+	});
+
+	enableCrudMocks(mock, /api\/regions\/.*/gm, /api\/regions/gm, {
+		medusa_id: IdMap.getId('exists'),
+		id: 1,
+	});
+
+	enableCrudMocks(mock, /api\/product[s-](.*[s])\/.*/, /api\/product-.*s$/gm, {
+		medusa_id: IdMap.getId('exists'),
 		id: 1,
 		title: 'test',
 	});
+
 	mock.onGet(/\/api\/roles/g).reply(200, {
-		id: 1,
-		name: 'Author',
+		data: [
+			{
+				id: 1,
+				name: 'Author',
+			},
+			{
+				id: 1,
+				name: 'Editor',
+			},
+		],
 	});
-	/*mock.onPost('/api/products').reply(200, {
-		medusa_id: 'exists',
-		id: 1,
-		title: 'test',
+	mock.onGet(/\/admin\/roles/g).reply(200, {
+		data: [
+			{
+				id: 1,
+				name: 'Author',
+			},
+			{
+				id: 2,
+				name: 'Editor',
+			},
+		],
 	});
-	mock.onPut('/api/products').reply(200, {
-		medusa_id: 'exists',
-		id: 1,
-		title: 'test-2',
+	mock.onGet('/admin/users?filters[email]=testauthor%40test.com&fields[0]=email').reply(200, {
+		data: { results: [{ id: 1 }] },
 	});
-	mock.onDelete('/api/products').reply(200, {});
-	*/
-	mock.onGet('/admin/roles').reply(200, {
+
+	enableCrudMocks(mock, /\/admin\/users/gm, /\/admin\/users/gm, {
 		id: '1',
-		name: 'Author',
+		name: 'John Smith',
 	});
-	mock.onGet('/admin/users').reply(200, [
+	/*mock.onGet('/admin/users').reply(200, [
 		{
 			id: '1',
 			name: 'John Smith',
@@ -488,11 +515,10 @@ function enableMockFunctions(): void {
 	mock.onGet('/admin/users?').reply(200, {
 		id: '1',
 		name: 'John Smith',
-	});
-	mock.onPost('/admin/register-admin').reply(400);
+	});*/
+	mock.onPost(/\/admin\/register-admin/gm).reply(400);
 
-	mock.onGet('/api/products/exists').reply(200);
-	mock.onPost(/[\/admin\/login]/g).reply(200, {
+	mock.onPost(/\/admin\/login/gm).reply(200, {
 		data: {
 			token: 'jsgfkjdsgsdgsjdgl2343535235',
 			user: {
@@ -510,20 +536,25 @@ function enableMockFunctions(): void {
 		},
 	});
 
-	mock.onPost('/api/auth/local/register').reply(200, {
+	mock.onPost(/.*?\/strapi-plugin-medusajs\/create-medusa-user/gm).reply(200, {
 		jwt: 'jsgfkjdsgsdgsjdgl2343535235',
-		user: { id: 1, name: 'John Smith', email: 'John.smith@test.com' },
+		user: { id: 1, name: 'John Smith', email: testUserEmail },
 	});
-	mock.onPost('/api/auth/local').reply(200, {
-		jwt: 'jsgfkjdsgsdgsjdgl2343535235',
-		user: { id: 1, name: 'John Smith', email: 'John.smith@test.com' },
-	});
+	mock.onPost(/.*?\/strapi-plugin-medusajs\/synchronise-medusa-tables/gm).reply(200);
 
+	mock.onPost(/\/api\/auth\/local\/register/gm).reply(200, {
+		jwt: 'jsgfkjdsgsdgsjdgl2343535235',
+		user: { id: 1, name: 'John Smith', email: testUserEmail },
+	});
+	mock.onPost(/\/api\/auth\/local/gm).reply(200, {
+		jwt: 'jsgfkjdsgsdgsjdgl2343535235',
+		user: { id: 1, name: 'John Smith', email: testUserEmail },
+	});
 	const authUrl = '/api/auth/';
 	const authRegEx = new RegExp(`${authUrl}/*`);
 	mock.onPost(authRegEx).reply(200, {
 		jwt: 'jsgfkjdsgsdgsjdgl2343535235',
-		profile: { id: 1, name: 'John Smith', email: 'John.smith@test.com' },
+		profile: { id: 1, name: 'John Smith', email: testUserEmail },
 	});
 
 	mock.onPost('/api/medusa/setup').reply(200);
@@ -531,7 +562,7 @@ function enableMockFunctions(): void {
 	const apiRegEx = new RegExp(`${apiUrl}/*`);
 	mock.onPost(apiRegEx).reply(200, {
 		jwt: 'jsgfkjdsgsdgsjdgl2343535235',
-		profile: { id: 1, name: 'John Smith', email: 'John.smith@test.com' },
+		profile: { id: 1, name: 'John Smith', email: testUserEmail },
 	});
 
 	//mock.onHead('/_health').reply(200);
