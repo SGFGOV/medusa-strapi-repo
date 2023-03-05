@@ -11,6 +11,9 @@ import {
 	productCollectionService,
 	enableMocks,
 	isMockEnabled,
+	strapiHost,
+	strapiPath,
+	testUserEmail,
 } from '../__mocks__/service-mocks';
 import { StrapiMedusaPluginOptions } from '../../types/globals';
 import { IdMap, MockManager } from 'medusa-test-utils';
@@ -24,11 +27,6 @@ let service: StrapiService;
 let result: StrapiResult;
 const testTimeOut = 300e3;
 jest.setTimeout(testTimeOut);
-const strapiProtocol = process.env.STRAPI_PROTOCOL ?? '172.31.34.235';
-const strapiPort = process.env.STRAPI_PORT ?? '1337';
-const strapiHost = process.env.STRAPI_HOST ?? '172.31.34.235';
-export const strapiPath = `${strapiProtocol}://${strapiHost}:${strapiPort}`;
-export const testUserEmail = 'test15@test.com';
 
 describe('StrapiService Tests', () => {
 	jest.setTimeout(testTimeOut);

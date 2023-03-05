@@ -4,7 +4,11 @@ import { jest } from '@jest/globals';
 import express, { Application } from 'express';
 
 import { IdMap } from 'medusa-test-utils';
-import { testUserEmail } from '../__tests__/medusa-plugin-strapi.test';
+export const strapiProtocol = process.env.STRAPI_PROTOCOL ?? '172.31.34.235';
+export const strapiPort = process.env.STRAPI_PORT ?? '1337';
+export const strapiHost = process.env.STRAPI_HOST ?? '172.31.34.235';
+export const strapiPath = `${strapiProtocol}://${strapiHost}:${strapiPort}`;
+export const testUserEmail = 'test15@test.com';
 
 export const regionService = {
 	count: jest.fn().mockImplementation(() => Promise.resolve(1)),
