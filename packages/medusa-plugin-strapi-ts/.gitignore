@@ -133,6 +133,7 @@ dist
 .tern-port
 *.tgz
 
+*.db
 
 **/*.js
 **/*.d.ts

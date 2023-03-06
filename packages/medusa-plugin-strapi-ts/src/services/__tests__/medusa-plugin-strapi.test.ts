@@ -25,7 +25,7 @@ import axios from 'axios';
 
 let service: StrapiService;
 let result: StrapiResult;
-const testTimeOut = 300e3;
+const testTimeOut = 30e3;
 jest.setTimeout(testTimeOut);
 
 describe('StrapiService Tests', () => {

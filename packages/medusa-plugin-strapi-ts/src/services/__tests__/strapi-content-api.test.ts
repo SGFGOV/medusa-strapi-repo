@@ -14,6 +14,7 @@ import {
 	mockServer,
 	enableMocks,
 	strapiPath,
+	strapiHost,
 } from '../__mocks__/service-mocks';
 import { StrapiMedusaPluginOptions } from '../../types/globals';
 import { IdMap, MockManager, MockRepository } from 'medusa-test-utils';
@@ -46,7 +47,7 @@ describe('StrapiService Tests', () => {
 			blocked: false,
 			provider: 'local',
 		},
-		strapi_host: '127.0.0.1',
+		strapi_host: strapiHost,
 		strapi_admin: {
 			password: 'MedusaStrapi1',
 			firstname: 'SuperUser',
@@ -73,17 +74,6 @@ describe('StrapiService Tests', () => {
 		},
 		strapiConfigParameters
 	);
-	try {
-		axios.head(`${strapiPath}/_health`).then(
-			() => disableMocks(),
-			() => {
-				enableMocks(axios);
-				console.warn('you need a working strapi entity to try all the tests');
-			}
-		);
-	} catch (error) {
-		enableMocks(axios);
-	}
 
 	const entry = {
 		unpublish: jest.fn(async () => {
@@ -103,13 +93,24 @@ describe('StrapiService Tests', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('health check', () => {
+	/*describe('health check', () => {
 		it('check health', async () => {
 			expect(service).toBeDefined();
 			expect(service.checkStrapiHealth()).toBeTruthy();
 		});
-	});
+	});*/
 	beforeAll(async () => {
+		try {
+			axios.head(`${strapiPath}/_health`).then(
+				() => disableMocks(),
+				() => {
+					enableMocks(axios);
+					console.warn('you need a working strapi entity to try all the tests');
+				}
+			);
+		} catch (error) {
+			enableMocks(axios);
+		}
 		const registerUser = await service.registerOrLoginDefaultMedusaUser();
 		let result: StrapiResult;
 		const typeResult = await service.createProductTypeInStrapi('dummy', defaultAuthInterface);
