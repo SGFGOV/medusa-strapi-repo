@@ -441,7 +441,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'product-variants',
 					id: collection.id,
 					authInterface,
-					data: collection,
+					data: {...collection,...data},
 					method: 'put',
 				});
 				this.logger.info('Variant Strapi Id - ', response);
@@ -616,7 +616,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'regions',
 					id: region.id,
 					authInterface,
-					data: region,
+					data: { ...region, ...data },
 				});
 				this.logger.info('Region Strapi Id - ', response);
 				return response;
@@ -681,7 +681,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			type: 'product-metafields',
 			id: data.id,
 			authInterface,
-			data: dataToUpdate,
+			data: {...productInfo,...dataToUpdate},
 			method: 'put',
 		});
 	}
@@ -767,7 +767,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'products',
 					id: product.id,
 					authInterface,
-					data: product,
+					data: {...product,...data},
 					method: 'put',
 				});
 				return response;
@@ -831,7 +831,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'product-variants',
 					id: variant.id,
 					authInterface,
-					data: variant,
+					data: {...variant,...data},
 					method: 'put',
 				});
 				this.logger.info('Variant Strapi Id - ', response);
@@ -1367,7 +1367,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 		} catch (e) {
 			this.logger.error(
-				`entity doesn't exist in strapi :${e.message} : ${command.id}` + ' , insert not possible'
+				`entity doesn't exist in strapi :${e.message} : ${command.id}` + ' , update not possible'
 			);
 		}
 	}

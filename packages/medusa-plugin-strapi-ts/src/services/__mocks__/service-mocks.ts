@@ -20,7 +20,7 @@ export const regionService = {
 				return Promise.resolve({
 					id: IdMap.getId('exists'),
 					name: 'Test Region',
-					// countries: [filters:{ id: IdMap.getId(IdMap.getId('exists')) }],
+					// countries: [filters:{ id: IdMap.getId('exists') }],
 					tax_rate: 0.25,
 					// payment_providers: ["default_provider", "unregistered"],
 					// fulfillment_providers: ["test_shipper"],
@@ -34,7 +34,7 @@ export const regionService = {
 				return Promise.resolve({
 					id: IdMap.getId('exists'),
 					name: 'new-name',
-					// countries: [filters:{ id: IdMap.getId(IdMap.getId('exists')) }],
+					// countries: [filters:{ id: IdMap.getId('exists') }],
 					tax_rate: 0.25,
 					// payment_providers: ["default_provider", "unregistered"],
 					// fulfillment_providers: ["test_shipper"],
@@ -58,17 +58,17 @@ export const productService = {
 	list: jest.fn(async () => {
 		return await Promise.all([
 			Promise.resolve({
-				id: IdMap.getId(IdMap.getId('exists')),
+				id: IdMap.getId('exists'),
 				type: { id: 'dummy' },
 				title: 'test-product',
-				// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
+				// variants: [{ id: IdMap.getId('exists') }]
 				options: [
 					{
 						id: IdMap.getId('exists'),
 						title: 'Color',
 					},
 				],
-				// collection_id: IdMap.getId(IdMap.getId('exists')),
+				// collection_id: IdMap.getId('exists'),
 				collection: {
 					id: IdMap.getId('exists'),
 					handle: 'test-collection',
@@ -83,19 +83,19 @@ export const productService = {
 	retrieve: jest
 		.fn()
 		.mockImplementationOnce((id) => {
-			if (id === IdMap.getId('exists') || id == IdMap.getId(IdMap.getId('exists'))) {
+			if (id === IdMap.getId('exists') || id == IdMap.getId('exists')) {
 				return Promise.resolve({
-					id: IdMap.getId(IdMap.getId('exists')),
+					id: IdMap.getId('exists'),
 					type: { id: 'dummy' },
 					title: 'test-product',
-					// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
+					// variants: [{ id: IdMap.getId('exists') }]
 					options: [
 						{
 							id: IdMap.getId('exists'),
 							title: 'Color',
 						},
 					],
-					// collection_id: IdMap.getId(IdMap.getId('exists')),
+					// collection_id: IdMap.getId('exists'),
 					collection: {
 						id: IdMap.getId('exists'),
 						handle: 'test-collection',
@@ -109,14 +109,14 @@ export const productService = {
 					id: IdMap.getId('exists-2'),
 					type: { id: 'dummy' },
 					title: 'test-product',
-					// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
+					// variants: [{ id: IdMap.getId('exists') }]
 					options: [
 						{
 							id: IdMap.getId('exists'),
 							title: 'Color',
 						},
 					],
-					// collection_id: IdMap.getId(IdMap.getId('exists')),
+					// collection_id: IdMap.getId('exists'),
 					collection: {
 						id: IdMap.getId('exists'),
 						handle: 'test-collection',
@@ -129,9 +129,9 @@ export const productService = {
 			return Promise.resolve(undefined);
 		})
 		.mockImplementation((id) => {
-			if (id === IdMap.getId('exists') || id == IdMap.getId(IdMap.getId('exists'))) {
+			if (id === IdMap.getId('exists') || id == IdMap.getId('exists')) {
 				return Promise.resolve({
-					id: IdMap.getId(IdMap.getId('exists')),
+					id: IdMap.getId('exists'),
 					type: { id: 'dummy' },
 					title: 'test-product-2',
 					created_at: new Date().toISOString(),
@@ -146,7 +146,7 @@ export const productService = {
 					id: IdMap.getId('exists-2'),
 					type: { id: 'dummy' },
 					title: 'test-product',
-					// variants: [{ id: IdMap.getId(IdMap.getId('exists')) }]
+					// variants: [{ id: IdMap.getId('exists') }]
 					options: [
 						{
 							id: IdMap.getId('exists'),
@@ -155,7 +155,7 @@ export const productService = {
 					],
 					// collection_id: "exists",
 					collection: {
-						id: IdMap.getId(IdMap.getId('exists')),
+						id: IdMap.getId('exists'),
 						handle: 'test-collection',
 						title: 'test-collection-title',
 					},
@@ -204,11 +204,11 @@ export const productVariantService = {
 	retrieve: jest
 		.fn()
 		.mockImplementationOnce((id) => {
-			if (id === IdMap.getId('exists') || id == IdMap.getId(IdMap.getId('exists'))) {
+			if (id === IdMap.getId('exists') || id == IdMap.getId('exists')) {
 				return Promise.resolve({
 					id: IdMap.getId('exists'),
 					product: {
-						id: IdMap.getId(IdMap.getId('exists')),
+						id: IdMap.getId('exists'),
 						title: 'test-product',
 					},
 					title: 'test-product-variant',
@@ -242,7 +242,7 @@ export const productVariantService = {
 				return Promise.resolve({
 					id: IdMap.getId('exists'),
 					product: {
-						id: IdMap.getId(IdMap.getId('exists')),
+						id: IdMap.getId('exists'),
 						title: 'test-product',
 					},
 					title: 'test-product-variant-2',

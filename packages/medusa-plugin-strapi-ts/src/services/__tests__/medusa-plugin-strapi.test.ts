@@ -208,12 +208,13 @@ describe('StrapiService Tests', () => {
 			it(
 				'product creation',
 				async () => {
-					result = await service.createProductInStrapi(IdMap.getId('exists'), defaultAuthInterface);
+					const product_id = IdMap.getId('exists');
+					result = await service.createProductInStrapi(product_id, defaultAuthInterface);
 					expect(result).toBeDefined();
 					expect(result.status == 200 || result.status == 302).toBeTruthy();
 					expect(result.data?.medusa_id).toBeDefined();
 					expect(result.data).toMatchObject({
-						medusa_id: IdMap.getId('exists'),
+						medusa_id: product_id,
 					});
 					expect(spy).toHaveBeenCalled();
 					if (result) {
@@ -278,7 +279,7 @@ describe('StrapiService Tests', () => {
 				);
 			}
 			it(
-				'product update product ',
+				'product update product',
 				async () => {
 					result = await service.updateProductInStrapi(
 						{ id: IdMap.getId('exists'), title: 'new-title' },
@@ -286,6 +287,12 @@ describe('StrapiService Tests', () => {
 					);
 					expect(result).toBeDefined();
 					expect(result.status == 200 || result.status == 302).toBeTruthy();
+					if (!isMockEnabled()) {
+						expect(result).toMatchObject({
+							data: { title: 'new-title', medusa_id: IdMap.getId('exists') },
+						});
+					}
+
 					expect(spy).toHaveBeenCalled();
 				},
 				testTimeOut

@@ -1,6 +1,6 @@
 const fs = require("fs");
 module.exports = ({ env }) => {
-  const tmpDbFile = env("DATABASE_FILENAME", ".tmp/test.db");
+  const tmpDbFile = env("DATABASE_FILENAME", "test-db/test.db");
   if (fs.existsSync(tmpDbFile)) {
     fs.unlinkSync(tmpDbFile);
   }
