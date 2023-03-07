@@ -1,7 +1,7 @@
 {
   "name": "@sgftech/medusa-strapi-repo",
   "private": true,
-  "version": "4.5.5",
+  "version": "4.5.6",
   "description": "Monorepo for all Strapi components to sync with medusa",
   "engines": {
     "node": ">14.17.3"
