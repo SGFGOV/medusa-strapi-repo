@@ -10,7 +10,7 @@
     "build": "strapi build",
     "lint": "eslint . --ext .js --fix",
     "strapi": "strapi",
-    "test": "DOTENV_CONFIG_PATH=.env.test jest --forceExit --detectOpenHandles --coverage --setupFiles=dotenv/config --silent",
+    "test": "rm -rf ./.cache && DOTENV_CONFIG_PATH=.env.test jest --forceExit --detectOpenHandles --coverage --setupFiles=dotenv/config --silent",
     "postinstall": "patch-package"
   },
   "dependencies": {
