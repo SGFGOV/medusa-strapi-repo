@@ -20,16 +20,16 @@ on:
 
 jobs:
   eslint:
-    name: Run eslint scanning
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
-      strategy:
-      matrix:
-        node-verion: [16.x]
-     steps:
+      name: Run eslint scanning
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        security-events: write
+        actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+        strategy:
+        matrix:
+          node-verion: [16.x]
+      steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.1
         with:
