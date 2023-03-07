@@ -13,9 +13,7 @@
     "@strapi/helper-plugin": "^4.5.4",
     "@types/bcrypt": "^5.0.0",
     "fs": "^0.0.1-security",
-    "jsonwebtoken": "^8.5.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@aws-sdk/credential-provider-node": "^3.100.0",
@@ -76,7 +74,9 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "files": [
     "dist",
