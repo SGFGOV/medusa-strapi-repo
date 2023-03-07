@@ -28,9 +28,9 @@ RUN n 16
 WORKDIR /app
 
 COPY ./package*.json ./
-
+RUN ls
 COPY ./package.json ./
-# COPY ./yarn.lock ./
+COPY ./yarn.lock ./
 
 COPY . .
 
