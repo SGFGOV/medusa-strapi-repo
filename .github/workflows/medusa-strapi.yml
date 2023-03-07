@@ -32,6 +32,11 @@ jobs:
       - name: 'yarn install'
         working-directory: ./packages/medusa-strapi
         run: yarn install --frozen-lockfile
+        
+      - name: 'yarn build'
+        working-directory: ./packages/medusa-strapi
+        run: yarn run build
+
 
       - name: 'run unit tests'
         working-directory: ./packages/medusa-strapi
