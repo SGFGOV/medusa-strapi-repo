@@ -28,10 +28,7 @@ RUN n 16
 WORKDIR /app
 
 COPY ./package*.json ./
-RUN ls
 COPY ./package.json ./
-COPY ./yarn.lock ./
-
 COPY . .
 
 ENV NODE_ENV production
