@@ -29,9 +29,12 @@ WORKDIR /app
 
 COPY ./package*.json ./
 COPY ./package.json ./
-COPY ./config ./config
-COPY ./data ./data
-COPY ./src ./src
+RUN mkdir ./config
+RUN mkdir ./data
+RUN mkdir ./src
+ADD ./config ./config
+ADD ./data ./data
+ADD ./src ./src
 
 RUN ls
 
