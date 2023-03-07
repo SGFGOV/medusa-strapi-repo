@@ -1,6 +1,6 @@
 'use strict';
 
-import axios, { AxiosError, AxiosResponse, Method } from 'axios';
+import { AxiosResponse, Method, default as axios } from 'axios';
 import { Logger } from '@medusajs/medusa/dist/types/global';
 import { sleep } from '@medusajs/medusa/dist/utils/sleep';
 import qs from 'qs';
@@ -9,16 +9,16 @@ import axiosRetry from 'axios-retry';
 
 let strapiRetryDelay: number;
 
-axiosRetry(axios, {
+axiosRetry(axios as any, {
 	retries: 100,
-	retryDelay: (retryCount, error: AxiosError) => {
+	retryDelay: (retryCount, error: any) => {
 		error.response &&
 			error.response.status === 429 &&
 			// Use X-Retry-After rather than Retry-After, and cap retry delay at 60 seconds
 			error.response.headers['x-retry-after'] &&
-			error.response.headers['x-retry-after'] <= 60;
-		let retryHeaderDelay = error.response.headers['x-retry-after'];
-		const rateLimitResetTime = error.response.headers['x-ratelimit-reset'];
+			parseInt(error.response.headers['x-retry-after']) <= 60;
+		let retryHeaderDelay = parseInt(error.response.headers['x-retry-after'].toString());
+		const rateLimitResetTime = parseInt(error.response.headers['x-ratelimit-reset'].toString());
 
 		if (!retryHeaderDelay && !rateLimitResetTime) {
 			/** @todo change from fixed back off to exponential backoff */
@@ -27,7 +27,7 @@ axiosRetry(axios, {
 		}
 		if (!retryHeaderDelay) {
 			const currentTime = Date.now();
-			const timeDiffms = Math.abs(parseInt(rateLimitResetTime) - Math.floor(currentTime / 1000)) + 2;
+			const timeDiffms = Math.abs(parseInt(rateLimitResetTime.toString()) - Math.floor(currentTime / 1000)) + 2;
 			retryHeaderDelay = timeDiffms * 1000;
 			strapiRetryDelay = retryHeaderDelay;
 		} else {
@@ -37,10 +37,10 @@ axiosRetry(axios, {
 		return strapiRetryDelay;
 	},
 	shouldResetTimeout: false,
-	onRetry(retryCount, error: AxiosError) {
+	onRetry: (retryCount, error: any) => {
 		console.info(`retring request ${retryCount}` + ` because of ${error.response.status}  ${error.request.path}`);
 	},
-	async retryCondition(error: AxiosError): Promise<boolean> {
+	retryCondition: async (error: any) => {
 		return error.response.status === 429;
 	},
 });
@@ -74,7 +74,6 @@ import {
 } from '../types/globals';
 import { EntityManager } from 'typeorm';
 import _ from 'lodash';
-import { cp } from 'fs';
 
 export type StrapiEntity = BaseEntity & { medusa_id?: string };
 export type AdminResult = { data: any; status: number };
@@ -441,7 +440,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'product-variants',
 					id: collection.id,
 					authInterface,
-					data: {...collection,...data},
+					data: { ...collection, ...data },
 					method: 'put',
 				});
 				this.logger.info('Variant Strapi Id - ', response);
@@ -681,7 +680,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			type: 'product-metafields',
 			id: data.id,
 			authInterface,
-			data: {...productInfo,...dataToUpdate},
+			data: { ...productInfo, ...dataToUpdate },
 			method: 'put',
 		});
 	}
@@ -767,7 +766,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'products',
 					id: product.id,
 					authInterface,
-					data: {...product,...data},
+					data: { ...product, ...data },
 					method: 'put',
 				});
 				return response;
@@ -831,7 +830,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					type: 'product-variants',
 					id: variant.id,
 					authInterface,
-					data: {...variant,...data},
+					data: { ...variant, ...data },
 					method: 'put',
 				});
 				this.logger.info('Variant Strapi Id - ', response);

@@ -245,3 +245,4 @@ dist
 **/*.js.map
 
 !babel.config.j
+node_modules/

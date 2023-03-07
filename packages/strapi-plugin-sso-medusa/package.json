@@ -21,11 +21,20 @@
     "Cognito"
   ],
   "peerDependencies": {
-    "@strapi/admin": "^4.6.0",
-    "@strapi/strapi": "^4.1.7"
+    "@strapi/logger": "4.5.5",
+    "@strapi/plugin-documentation": "4.5.5",
+    "@strapi/plugin-i18n": "4.5.5",
+    "@strapi/plugin-sentry": "4.5.5",
+    "@strapi/plugin-seo": "^1.7.5",
+    "@strapi/plugin-upload": "4.5.5",
+    "@strapi/plugin-users-permissions": "4.5.5",
+    "@strapi/provider-email-sendgrid": "4.5.5",
+    "@strapi/provider-upload-aws-s3": "4.5.5",
+    "@strapi/provider-upload-local": "4.5.5",
+    "@strapi/strapi": "4.5.5"
   },
   "dependencies": {
-    "axios": "^1.3.1",
+    "axios": "^0.27.2",
     "generate-password": "^1.7.0",
     "jsonwebtoken": "^9.0.0",
     "uuid": "^9.0.0"
@@ -52,7 +61,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@strapi/admin": "^4.6.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^8.28.0",
     "eslint-config-google": "^0.14.0",

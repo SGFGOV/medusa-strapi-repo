@@ -25,7 +25,6 @@
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
     "test": "jest --coverage --runInBand --setupFiles=dotenv/config"
-    
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.x",
@@ -38,6 +37,7 @@
     "@typescript-eslint/parser": "^5.41.0",
     "awilix": "^8.0.0",
     "axios-mock-adapter": "^1.21.2",
+    "axios": "^0.27.2",
     "babel-preset-medusa-package": "^1.1.13",
     "commitizen": "^4.2.4",
     "cross-env": "^7.0.3",
@@ -57,15 +57,16 @@
     "ts-jest": "^27.1.3",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.9.1",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "@strapi/plugin-users-permissions": "^4.6.1"
   },
   "peerDependencies": {
-    "@medusajs/medusa": "latest",
-    "axios": "^1.1.3",
-    "medusa-interfaces": "latest"
+    "@medusajs/medusa": "^1.7.11",
+    "axios": "^0.27.2",
+    "medusa-interfaces": "latest",
+    "@strapi/plugin-users-permissions": "^4.6.1"
   },
   "dependencies": {
-    "@strapi/plugin-users-permissions": "^4.5.5",
     "@types/bcrypt": "^5.0.0",
     "axios-retry": "^3.3.1",
     "bcryptjs": "^2.4.3",

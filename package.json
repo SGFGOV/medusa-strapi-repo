@@ -1,7 +1,7 @@
 {
-  "name": "@sgftech/medusa-tools",
+  "name": "@sgftech/medusa-strapi-repo",
   "private": true,
-  "version": "0.0.0",
+  "version": "4.5.5",
   "description": "Monorepo for all Strapi components to sync with medusa",
   "engines": {
     "node": ">14.17.3"
@@ -18,7 +18,6 @@
     "release": "./node_modules/.bin/lerna publish",
     "watch": "./node_modules/.bin/lerna run watch",
     "test": "./node_modules/.bin/lerna run test ",
-    "test:local": "./node_modules/.bin/lerna run test:local",
     "lint": "./node_modules/.bin/eslint 'packages/**' --fix"
   },
   "repository": {
@@ -47,8 +46,5 @@
     "prettier": "^2.5.0",
     "tslint": "~6.1.0",
     "typescript": "^4.5.5"
-  },
-  "resolutions": {
-    "@medusajs/medusa": "latest"
   }
 }
