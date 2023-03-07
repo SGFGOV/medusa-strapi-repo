@@ -24,6 +24,4 @@ jobs:
 
     - name: Build the Docker image
       run: docker build ./packages/medusa-strapi --file ./packages/medusa-strapi/Dockerfile --tag medusa-strapi-docker:$(date +%s)
-      with:
-        repo-token: ${{ secrets.EXECUTION_TOKEN }}
-  
+      
