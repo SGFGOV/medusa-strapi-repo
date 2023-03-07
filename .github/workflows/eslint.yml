@@ -25,7 +25,7 @@ jobs:
       permissions:
         contents: read
         security-events: write
-        actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+        actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status  
       strategy:
         matrix:
           node-verion: [16.x]
@@ -45,8 +45,8 @@ jobs:
       - name: Install ESLint
         run: |
           npm install -g eslint@8.10.0
-          npm install -g @microsoft/eslint-formatter-sarif@2.1.7
-          yarn --frozen-lockfile
+          npm install -g @microsoft/eslint-formatter-sarif
+         # yarn --frozen-lockfile
 
       - name: Run ESLint
         run: npx eslint .
