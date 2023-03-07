@@ -46,7 +46,7 @@ jobs:
         run: |
           npm install -g eslint@8.10.0
           npm install -g @microsoft/eslint-formatter-sarif
-         # yarn --frozen-lockfile
+          yarn
 
       - name: Run ESLint
         run: npx eslint .
