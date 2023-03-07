@@ -30,7 +30,7 @@ WORKDIR /app
 COPY ./package*.json ./
 
 COPY ./package.json ./
-COPY ./yarn.lock ./
+# COPY ./yarn.lock ./
 
 COPY . .
 
