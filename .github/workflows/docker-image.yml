@@ -17,11 +17,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build ./packages/medusa-strapi --file ./packages/medusa-strapi/Dockerfile --tag medusa-strapi-docker:$(date +%s)
-      with:
-        repo-token: ${{ secrets.EXECUTION_TOKEN }}
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.9.1
       with:
         access_token: ${{ secrets.EXECUTION_TOKEN }}
+
+    - name: Build the Docker image
+      run: docker build ./packages/medusa-strapi --file ./packages/medusa-strapi/Dockerfile --tag medusa-strapi-docker:$(date +%s)
+      with:
+        repo-token: ${{ secrets.EXECUTION_TOKEN }}
+  
