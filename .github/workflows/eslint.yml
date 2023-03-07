@@ -32,9 +32,9 @@ jobs:
 
       - name: Install ESLint
         run: |
-          yarn add --global eslint@8.10.0
-          yarn add --global @microsoft/eslint-formatter-sarif@2.1.7
-          yarn install --frozen-lockfile
+          npm install -g eslint@8.10.0
+          npm install -g @microsoft/eslint-formatter-sarif@2.1.7
+          yarn --frozen-lockfile
 
       - name: Run ESLint
         run: npx eslint .
