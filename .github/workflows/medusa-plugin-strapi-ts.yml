@@ -1,0 +1,38 @@
+name: medusa-plugin-strapi-ts
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-verion: [16.x]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout
+        uses: actions/checkout@v2.3.5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: ${{ matrix.node-verion }}
+
+      - name: 'yarn install'
+        working-directory: ./packages/medusa-plugin-strapi-ts
+        run: yarn
+
+      - name: 'run unit tests'
+        working-directory: ./packages/medusa-plugin-strapi-ts
+        run: yarn run test
