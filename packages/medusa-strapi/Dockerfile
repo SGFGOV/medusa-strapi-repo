@@ -29,7 +29,11 @@ WORKDIR /app
 
 COPY ./package*.json ./
 COPY ./package.json ./
-COPY . .
+COPY ./config ./config
+COPY ./data ./data
+COPY ./src ./src
+
+RUN ls
 
 ENV NODE_ENV production
 
