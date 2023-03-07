@@ -1,3 +1,22 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 4.0.9 (2023-03-07)
+
+
+### Bug Fixes
+
+* build ([172bf4a](https://github.com/SGFGOV/medusa-strapi-repo/commit/172bf4adfb02e739aafc1165d4f80e949b85c63f))
+* build issues ([396d1f9](https://github.com/SGFGOV/medusa-strapi-repo/commit/396d1f9e50a750f0e732b8bc6bf1f6ba58bb1103))
+* tests ([93c5b53](https://github.com/SGFGOV/medusa-strapi-repo/commit/93c5b530dbf9fb85a04c657729b5227dddf3f22b))
+* tests and versions ([a539df1](https://github.com/SGFGOV/medusa-strapi-repo/commit/a539df182f18795bb48d915506253cfc56822113))
+
+
+
+
+
 ### Changelog
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.

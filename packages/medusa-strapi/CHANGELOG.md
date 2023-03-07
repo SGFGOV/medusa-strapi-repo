@@ -1,3 +1,25 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 0.1.2 (2023-03-07)
+
+
+### Bug Fixes
+
+*  updateStrapiData ([1eae8ea](https://github.com/SGFGOV/medusa-strapi-repo/commit/1eae8ea05709b60884dccb24fe3f8665f1638d17))
+* build ([172bf4a](https://github.com/SGFGOV/medusa-strapi-repo/commit/172bf4adfb02e739aafc1165d4f80e949b85c63f))
+* content-api ([b420d00](https://github.com/SGFGOV/medusa-strapi-repo/commit/b420d009f1a745e3019b019782a321e110ba2928))
+* dependencies ([3c8062f](https://github.com/SGFGOV/medusa-strapi-repo/commit/3c8062fb459ad3d7e2106bbc6bca80375fa54452))
+* dependencies ([778de3d](https://github.com/SGFGOV/medusa-strapi-repo/commit/778de3d295ff6fcf523ea23a833906d1dfbdc745))
+* tests and versions ([a539df1](https://github.com/SGFGOV/medusa-strapi-repo/commit/a539df182f18795bb48d915506253cfc56822113))
+* updates ([1152274](https://github.com/SGFGOV/medusa-strapi-repo/commit/1152274f7f68d6084ace059b3143aea6824b5df7))
+
+
+
+
+
 ### Changelog
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.

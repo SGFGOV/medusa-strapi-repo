@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-medusajs",
-  "version": "4.0.8",
+  "version": "4.0.9",
   "description": "This plugin enables handshaking and sync between strapi and medusajs",
   "main": "dist/server/index.js",
   "strapi": {
@@ -68,9 +68,6 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "bcryptjs": "^2.4.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@strapi/logger": "4.5.5",
     "@strapi/plugin-documentation": "4.5.5",
     "@strapi/plugin-i18n": "4.5.5",
@@ -81,7 +78,10 @@
     "@strapi/provider-email-sendgrid": "4.5.5",
     "@strapi/provider-upload-aws-s3": "4.5.5",
     "@strapi/provider-upload-local": "4.5.5",
-    "@strapi/strapi": "4.5.5"
+    "@strapi/strapi": "4.5.5",
+    "bcryptjs": "^2.4.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "files": [
     "dist",
