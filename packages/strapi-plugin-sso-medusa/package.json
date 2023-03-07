@@ -8,6 +8,10 @@
     "description": "Version 4 enables single sign-on",
     "kind": "plugin"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SGFGOV/medusa-strapi-repo/"
+  },
   "scripts": {
     "test": "jest",
     "lint": "eslint"
@@ -40,11 +44,7 @@
     "uuid": "^9.0.0"
   },
   "author": {
-    "name": "yasudacloud",
-    "url": "https://github.com/SGFGOV/strapi-plugin-sso"
-  },
-  "repository": {
-    "type": "git",
+    "name": "govind diwakar",
     "url": "https://github.com/SGFGOV/strapi-plugin-sso"
   },
   "bugs": {

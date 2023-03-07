@@ -4,6 +4,10 @@
   "version": "0.1.1",
   "type": "commonjs",
   "description": "Strapi Implementation for medusa market ",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SGFGOV/medusa-strapi-repo/"
+  },
   "scripts": {
     "develop": "strapi develop",
     "start": "strapi start",
