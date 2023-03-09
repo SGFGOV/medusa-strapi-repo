@@ -1,4 +1,4 @@
-import { BaseEntity, EventBusService, ProductService, ProductVariantService, User } from '@medusajs/medusa';
+import { BaseEntity, EventBusService, ProductService, ProductVariantService, RegionService } from '@medusajs/medusa';
 import { Logger } from '@medusajs/medusa/dist/types/global';
 
 import { AuthInterface } from '../types/globals';
@@ -20,37 +20,37 @@ class StrapiSubscriber {
 		this.logger = logger;
 		this.logger.info('Strapi Subscriber Initialized');
 
-		this.eventBus_.subscribe('region.created', async (data: BaseEntity) => {
+		this.eventBus_.subscribe(RegionService.Events.CREATED, async (data: BaseEntity) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.createRegionInStrapi(data.id, authInterace);
 		});
 
-		this.eventBus_.subscribe('region.updated', async (data: BaseEntity) => {
+		this.eventBus_.subscribe(RegionService.Events.UPDATED, async (data: BaseEntity) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.updateRegionInStrapi(data.id, authInterace);
 		});
 
-		this.eventBus_.subscribe('product-variant.created', async (data: BaseEntity) => {
+		this.eventBus_.subscribe(ProductVariantService.Events.CREATED, async (data: BaseEntity) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.createProductVariantInStrapi(data.id, authInterace);
 		});
 
-		this.eventBus_.subscribe('product-variant.updated', async (data) => {
+		this.eventBus_.subscribe(ProductVariantService.Events.UPDATED, async (data) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.updateProductVariantInStrapi(data, authInterace);
 		});
 
-		this.eventBus_.subscribe('product.updated', async (data) => {
+		this.eventBus_.subscribe(ProductService.Events.UPDATED, async (data) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.updateProductInStrapi(data);
 		});
 
-		this.eventBus_.subscribe('product.created', async (data: BaseEntity) => {
+		this.eventBus_.subscribe(ProductService.Events.CREATED, async (data: BaseEntity) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.createProductInStrapi(data.id, authInterace);
@@ -74,20 +74,20 @@ class StrapiSubscriber {
 			}
 		);
 
-		this.eventBus_.subscribe('product.deleted', async (data) => {
+		this.eventBus_.subscribe(ProductService.Events.DELETED, async (data) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.deleteProductInStrapi(data, authInterace);
 		});
 
-		this.eventBus_.subscribe('product-variant.deleted', async (data) => {
+		this.eventBus_.subscribe(ProductVariantService.Events.DELETED, async (data) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.deleteProductVariantInStrapi(data, authInterace);
 		});
 
 		// Blocker - Delete Region API
-		this.eventBus_.subscribe('region.deleted', async (data) => {
+		this.eventBus_.subscribe(RegionService.Events.DELETED, async (data) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.deleteRegionInStrapi(data, authInterace);
