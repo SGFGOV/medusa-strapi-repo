@@ -1323,10 +1323,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 				authInterface: command.authInterface,
 			});
 			if (result.data?.length > 0 && result.status == 200) {
-				return {
-					status: result.status == 200 ? 302 : 400,
-					data: result.data[0],
-				};
+				if (result.data[0]) {
+					return {
+						status: result.status == 200 ? 302 : 400,
+						data: result.data[0],
+					};
+				}
 			}
 		} catch (e) {
 			this.logger.info(e.message);
