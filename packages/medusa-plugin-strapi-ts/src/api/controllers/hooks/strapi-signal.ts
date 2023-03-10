@@ -30,7 +30,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 			case 'SYNC COMPLETED':
 				try {
 					await eventBus.withTransaction(manager).emit('strapi.sync-completed', decodedMessage);
-					res.status(200);
+					res.sendStatus(200);
 					logger.debug('strapi sync completed');
 				} catch (e) {
 					res.status(400).json(e);
@@ -40,7 +40,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 			case 'STATUS UPDATE':
 				try {
 					await eventBus.withTransaction(manager).emit('strapi.status.update', decodedMessage);
-					res.status(200);
+					res.sendStatus(200);
 					logger.debug('strapi status message received');
 				} catch (e) {
 					res.status(400).json(e);
@@ -59,7 +59,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 			default:
 				try {
 					await eventBus.emit('strapi.message', decodedMessage);
-					res.status(200);
+					res.sendStatus(200);
 					logger.debug('strapi status message received');
 				} catch (e) {
 					res.status(400).json(e);
