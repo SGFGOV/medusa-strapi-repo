@@ -22,7 +22,7 @@ export interface StrapiSeedInterface {
 		pageLimit: number;
 		hasMore: Record<string, boolean>;
 	};
-	data: Record<string, StrapiSeedType[]>;
+	data: { data: Record<string, StrapiSeedType[]> };
 }
 
 export async function hasMedusaRole(): Promise<number | undefined> {
@@ -252,14 +252,14 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
 	let continueSeed;
 	do {
 		continueSeed = false;
-		const products = seedData?.data?.products;
-		const regions = seedData?.data?.regions;
-		const shippingOptions = seedData?.data?.shippingOptions;
-		const paymentProviders = seedData?.data?.paymentProviders;
-		const fulfillmentProviders = seedData?.data?.fulfillmentProviders;
-		const shippingProfiles = seedData?.data?.shippingProfiles;
-		const productCollections = seedData?.data?.productCollections;
-		const stores = seedData?.data?.stores;
+		const products = seedData?.data?.data?.products;
+		const regions = seedData?.data?.data?.regions;
+		const shippingOptions = seedData?.data?.data?.shippingOptions;
+		const paymentProviders = seedData?.data?.data?.paymentProviders;
+		const fulfillmentProviders = seedData?.data?.data?.fulfillmentProviders;
+		const shippingProfiles = seedData?.data?.data?.shippingProfiles;
+		const productCollections = seedData?.data?.data?.productCollections;
+		const stores = seedData?.data?.data?.stores;
 		try {
 			const servicesToSync = {
 				'api::fulfillment-provider.fulfillment-provider': fulfillmentProviders,
