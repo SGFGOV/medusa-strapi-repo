@@ -1,12 +1,21 @@
 
 
 
-# strapi-medusa-template for Strapi v4
+# Strapi-medusa-template for Strapi v4
 
-Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa. 
+Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa.  This is a batteries included version of strapi for medusa
 
+## Some Features
 
-npx create-strapi-app strapi-medusa --template https://github.com/Kyle772/strapi-medusa-template.git
+I promise to improve the documentation over a period of time. But here is a shortlit
+
+1. AWS Ready - This supports both standard as well as IAM Role based postgres access
+2. Loads of useful plugins 
+3. Single Sign On With Medusa from the admin
+4. Integrated with Medusa to run as slave to medusa. 
+5. Docker Ready so go ahead and launch it. You can load the environment file in an S3 and launch it will pick it up during deployment. For now we support pull from only s3. 
+6. 
+
 # 🚀 Getting started with Strapi
 
 Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/developer-docs/latest/developer-resources/cli/CLI.html) (CLI) which lets you scaffold and manage your project in seconds.
@@ -40,6 +49,14 @@ npm run build
 # or
 yarn build
 ```
+### `Testing standalone`
+
+If this passes you schema has been configured correctly. It only checks the schema. 
+
+```
+yarn run test
+```
+
 
 ## ⚙️ Deployment
 

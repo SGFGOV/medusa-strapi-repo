@@ -43,7 +43,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       if (data && data.length) {
         for (let i = 0; i < data.length; i++) {
           const product = data[i];
-          strapi.log.debug(
+          strapi.log.info(
             `Syncing Products ${i} of ${data.length}...${product.title} `
           );
           const productStrapiId = await strapi.services[uid].syncProduct(

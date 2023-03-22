@@ -844,7 +844,7 @@
     json5 "^2.2.2"
     semver "^6.3.0"
 
-"@babel/generator@^7.18.10", "@babel/generator@^7.21.0", "@babel/generator@^7.7.2":
+"@babel/generator@^7.18.10", "@babel/generator@^7.21.0", "@babel/generator@^7.21.1", "@babel/generator@^7.7.2":
   version "7.21.1"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.21.1.tgz#951cc626057bc0af2c35cd23e9c64d384dea83dd"
   integrity sha512-1lT45bAYlQhFn/BHivJs43AiW2rg3/UbLyShGfF3C0KmHvO5fSghWd5kBJy30kpRRucGzXStvnnCFniCR2kXAA==
@@ -1067,10 +1067,15 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.18.10", "@babel/parser@^7.20.7", "@babel/parser@^7.21.0":
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.18.10":
   version "7.21.1"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.21.1.tgz#a8f81ee2fe872af23faea4b17a08fcc869de7bcc"
   integrity sha512-JzhBFpkuhBNYUY7qs+wTzNmyCWUHEaAFpQQD2YfU1rPL38/L43Wvid0fFkiOCnHvsGncRZgEPyGnltABLcVDTg==
+
+"@babel/parser@^7.20.7", "@babel/parser@^7.21.0", "@babel/parser@^7.21.2":
+  version "7.21.2"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.21.2.tgz#dacafadfc6d7654c3051a66d6fe55b6cb2f2a0b3"
+  integrity sha512-URpaIJQwEkEC2T9Kn+Ai6Xe/02iNaVCuT/PtoRz3GPVJVDpPd7mLo+VddTbhCRU9TXqW5mSrQfXZyi8kDKOVpQ==
 
 "@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@^7.18.6":
   version "7.18.6"
@@ -1876,7 +1881,7 @@
     "@babel/parser" "^7.20.7"
     "@babel/types" "^7.20.7"
 
-"@babel/traverse@^7.18.10", "@babel/traverse@^7.20.5", "@babel/traverse@^7.20.7", "@babel/traverse@^7.21.0", "@babel/traverse@^7.4.5", "@babel/traverse@^7.7.2":
+"@babel/traverse@^7.18.10", "@babel/traverse@^7.20.5", "@babel/traverse@^7.20.7", "@babel/traverse@^7.21.0", "@babel/traverse@^7.7.2":
   version "7.21.0"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.21.0.tgz#0e1807abd5db98e6a19c204b80ed1e3f5bca0edc"
   integrity sha512-Xdt2P1H4LKTO8ApPfnO1KmzYMFpp7D/EinoXzLYN/cHcBNrVCAkAtGUcXnHXrl/VGktureU6fkQrHSBE2URfoA==
@@ -1892,10 +1897,35 @@
     debug "^4.1.0"
     globals "^11.1.0"
 
-"@babel/types@^7.0.0", "@babel/types@^7.18.10", "@babel/types@^7.18.6", "@babel/types@^7.18.9", "@babel/types@^7.20.0", "@babel/types@^7.20.2", "@babel/types@^7.20.5", "@babel/types@^7.20.7", "@babel/types@^7.21.0", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
+"@babel/traverse@^7.4.5":
+  version "7.21.2"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.21.2.tgz#ac7e1f27658750892e815e60ae90f382a46d8e75"
+  integrity sha512-ts5FFU/dSUPS13tv8XiEObDu9K+iagEKME9kAbaP7r0Y9KtZJZ+NGndDvWoRAYNpeWafbpFeki3q9QoMD6gxyw==
+  dependencies:
+    "@babel/code-frame" "^7.18.6"
+    "@babel/generator" "^7.21.1"
+    "@babel/helper-environment-visitor" "^7.18.9"
+    "@babel/helper-function-name" "^7.21.0"
+    "@babel/helper-hoist-variables" "^7.18.6"
+    "@babel/helper-split-export-declaration" "^7.18.6"
+    "@babel/parser" "^7.21.2"
+    "@babel/types" "^7.21.2"
+    debug "^4.1.0"
+    globals "^11.1.0"
+
+"@babel/types@^7.0.0", "@babel/types@^7.18.10", "@babel/types@^7.18.9", "@babel/types@^7.20.0", "@babel/types@^7.20.2", "@babel/types@^7.20.5", "@babel/types@^7.3.0", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
   version "7.21.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.21.0.tgz#1da00d89c2f18b226c9207d96edbeb79316a1819"
   integrity sha512-uR7NWq2VNFnDi7EYqiRz2Jv/VQIu38tu64Zy8TX2nQFQ6etJ9V/Rr2msW8BS132mum2rL645qpDrLtAJtVpuow==
+  dependencies:
+    "@babel/helper-string-parser" "^7.19.4"
+    "@babel/helper-validator-identifier" "^7.19.1"
+    to-fast-properties "^2.0.0"
+
+"@babel/types@^7.18.6", "@babel/types@^7.20.7", "@babel/types@^7.21.0", "@babel/types@^7.21.2":
+  version "7.21.2"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.21.2.tgz#92246f6e00f91755893c2876ad653db70c8310d1"
+  integrity sha512-3wRZSs7jiFaB8AjxiiD+VqN5DTG2iRvJGQ+qYFrs/654lg6kGTQWIOFjlBo5RaXuAZjBmP3+OQH4dmhqiiyYxw==
   dependencies:
     "@babel/helper-string-parser" "^7.19.4"
     "@babel/helper-validator-identifier" "^7.19.1"
@@ -2641,12 +2671,19 @@
   dependencies:
     tslib "^2.0.1"
 
-"@floating-ui/core@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.2.1.tgz#074182a1d277f94569c50a6b456e62585d463c8e"
-  integrity sha512-LSqwPZkK3rYfD7GKoIeExXOyYx6Q1O4iqZWwIehDNuv3Dv425FIAE8PRwtAx1imEolFTHgBEcoFHm9MDnYgPCg==
+"@floating-ui/core@^1.2.1", "@floating-ui/core@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.2.3.tgz#327a2c11e6570b7d64368ad74a3ac12786c9f751"
+  integrity sha512-upVRtrNZuYNsw+EoxkiBFRPROnU8UTy/u/dZ9U0W14BlemPYODwhhxYXSR2Y9xOnvr1XtptJRWx7gL8Te1qaog==
 
-"@floating-ui/dom@^1.0.1", "@floating-ui/dom@^1.2.1":
+"@floating-ui/dom@^1.0.1":
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.2.4.tgz#e2eb2674f57fc182c425587e48ea43e336f4b8f8"
+  integrity sha512-4+k+BLhtWj+peCU60gp0+rHeR8+Ohqx6kjJf/lHMnJ8JD5Qj6jytcq1+SZzRwD7rvHKRhR7TDiWWddrNrfwQLg==
+  dependencies:
+    "@floating-ui/core" "^1.2.3"
+
+"@floating-ui/dom@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.2.1.tgz#8f93906e1a3b9f606ce78afb058e874344dcbe07"
   integrity sha512-Rt45SmRiV8eU+xXSB9t0uMYiQ/ZWGE/jumse2o3i5RGlyvcbqOF4q+1qBnzLE2kZ5JGhq0iMkcGXUKbFe7MpTA==
@@ -3924,12 +3961,6 @@
     passport-jwt "^4.0.0"
     passport-strategy "1.x.x"
 
-"@sgftech/strapi-plugin-sso@file:../private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.10.tgz":
-  version "0.1.10"
-  resolved "file:../private-applications/strapi-plugin-sso-saasform/sgftech-strapi-plugin-sso-0.1.10.tgz#77f8bb50ad6ab78f964a41730f8289f78868437c"
-  dependencies:
-    generate-password "^1.7.0"
-
 "@simov/deep-extend@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@simov/deep-extend/-/deep-extend-1.0.0.tgz#dff17d38305614e296eb80bf4898b9d10b061325"
@@ -4182,7 +4213,7 @@
     styled-components "5.3.3"
     whatwg-fetch "^3.6.2"
 
-"@strapi/helper-plugin@^4.5.4", "@strapi/helper-plugin@^4.6.1":
+"@strapi/helper-plugin@^4.6.1":
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/@strapi/helper-plugin/-/helper-plugin-4.6.1.tgz#6c949e16dc5fb5f447868f6958538440abaa5d71"
   integrity sha512-7FRT1vpaypQFUx8WEZn6un9wSgB9pucXdde/jlMtEsyou0gB6BJQxPDSpBVstSc2AtIBSGyqGTNV8uYd3dbEhw==
@@ -4905,7 +4936,12 @@
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
   integrity sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==
 
-"@types/node@*", "@types/node@>=10.0.0", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^18.11.9":
+"@types/node@*":
+  version "18.15.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.15.2.tgz#0407ceb15647f186318101546d5ae40725b73810"
+  integrity sha512-sDPHm2wfx2QhrMDK0pOt2J4KLJMAcerqWNvnED0itPRJWvI+bK+uNHzcH1dFsBlf7G3u8tqXmRF3wkvL9yUwMw==
+
+"@types/node@>=10.0.0", "@types/node@>=12.12.47", "@types/node@>=13.7.0", "@types/node@^18.11.9":
   version "18.14.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.0.tgz#94c47b9217bbac49d4a67a967fdcdeed89ebb7d0"
   integrity sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==
@@ -15526,11 +15562,10 @@ strapi-plugin-local-image-sharp@*:
     ufo "^0.8.5"
 
 strapi-plugin-medusajs@^4.0.6:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/strapi-plugin-medusajs/-/strapi-plugin-medusajs-4.0.6.tgz#85afe365e9861c9c2a0b740e71a3dd2ddc442c42"
-  integrity sha512-JxycGxD353W+0+xHgdnzwa/oqZxa+NrY2sqlwRe4Huwx+/4Fw7MomaPFpzlkycl8uteiS21d8KGNijiB888P6Q==
+  version "4.0.12"
+  resolved "https://registry.yarnpkg.com/strapi-plugin-medusajs/-/strapi-plugin-medusajs-4.0.12.tgz#9815bbd7cdb451e81407f25a93d8f525e34ecc5e"
+  integrity sha512-R1UoXD/lkToPF++qBDLR9Kk6T5exsc8o1IDtR9/l64niaGY5MhOMYj6s4LBwpfTrxxPMDTmZtCw+AM3Y4cTN2w==
   dependencies:
-    "@strapi/helper-plugin" "^4.5.4"
     "@types/bcrypt" "^5.0.0"
     fs "^0.0.1-security"
     jsonwebtoken "^8.5.1"
@@ -15565,6 +15600,16 @@ strapi-plugin-sitemap@^2.0.8:
     redux-thunk "^2.3.0"
     sitemap "^7.1.0"
     xml2js "^0.4.23"
+
+strapi-plugin-sso-medusa@^0.1.0:
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/strapi-plugin-sso-medusa/-/strapi-plugin-sso-medusa-0.1.12.tgz#2917d8556aa22ac3f94074a75695242912c811aa"
+  integrity sha512-hIEZoO2TR6fJBSB/+0oqVFmDuxnI6qb6SdbgO1QxZFdHKcSXtCOEUDtmClbMA/2ctHq9yGAL1OgzigQ81Gjtaw==
+  dependencies:
+    axios "^0.27.2"
+    generate-password "^1.7.0"
+    jsonwebtoken "^9.0.0"
+    uuid "^9.0.0"
 
 stream-browserify@^3.0.0:
   version "3.0.0"
