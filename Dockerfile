@@ -38,6 +38,6 @@ ENV NODE_ENV production
 
 RUN yarn install --ignore-platform --network-timeout 10000000 && yarn build
 
-EXPOSE 1337
+#EXPOSE 1337
 
 CMD ["yarn", "start"]
