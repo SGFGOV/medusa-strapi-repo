@@ -100,6 +100,7 @@ function DatabaseConfiguration({ env }) {
           "DATABASE_PORT",
           parseInt(process.env.RDS_PORT, 10) || 5432
         ),
+        schema: env("DATABASE_SCHEMA", "public"),
         database: env(
           "DATABASE_NAME",
           process.env.RDS_DATABASE || "postgres_strapi"
@@ -123,6 +124,7 @@ function DatabaseConfiguration({ env }) {
         database: env("DATABASE_NAME", "postgres_strapi"),
         user: env("DATABASE_USERNAME", "postgres"),
         password: env("DATABASE_PASSWORD", "postgres"),
+        schema: env("DATABASE_SCHEMA", "public"),
       },
     },
   };
