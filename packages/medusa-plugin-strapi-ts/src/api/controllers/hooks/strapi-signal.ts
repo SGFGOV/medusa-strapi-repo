@@ -30,25 +30,25 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 			case 'SYNC COMPLETED':
 				try {
 					await eventBus.withTransaction(manager).emit('strapi.sync-completed', decodedMessage);
+					logger.debug('valid strapi sync completed');
 					res.sendStatus(200);
-					logger.debug('strapi sync completed');
 				} catch (e) {
-					res.status(400).json(e);
 					logger.debug('sync failed');
+					res.sendStatus(400);
 				}
 				break;
 			case 'STATUS UPDATE':
 				try {
 					await eventBus.withTransaction(manager).emit('strapi.status.update', decodedMessage);
 					res.sendStatus(200);
-					logger.debug('strapi status message received');
+					logger.debug('valid update strapi status message received');
 				} catch (e) {
 					res.status(400).json(e);
 					logger.debug('strapi status message receive failed');
 				}
 				break;
 			case 'SEED': {
-				logger.debug('strapi seed request received');
+				logger.debug('valid strapi seed request received');
 				return seedHandler(req as any, res, next);
 			}
 
@@ -60,15 +60,15 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 				try {
 					await eventBus.emit('strapi.message', decodedMessage);
 					res.sendStatus(200);
-					logger.debug('strapi status message received');
+					logger.debug('valid strapi status message received');
 				} catch (e) {
-					res.status(400).json(e);
 					logger.debug('unable to signal receipt of strapi message');
+					res.sendStatus(400);
 				}
 				break;
 		}
 	} catch (e) {
-		res.status(400).json(e);
 		logger.error('invalid messsage received');
+		res.sendStatus(400);
 	}
 };
