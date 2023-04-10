@@ -3,6 +3,7 @@
   "private": true,
   "version": "4.5.6",
   "description": "Monorepo for all Strapi components to sync with medusa",
+  "keywords": ["medusa","medusa-plugins","strapi"],
   "engines": {
     "node": ">14.17.3"
   },
