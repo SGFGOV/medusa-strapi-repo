@@ -57,6 +57,7 @@ import {
 	ProductVariantService,
 	RegionService,
 	TransactionBaseService,
+	ProductCategoryService,
 } from '@medusajs/medusa';
 import role from '@strapi/plugin-users-permissions/server/content-types/role/index';
 import {
@@ -125,6 +126,7 @@ export interface UpdateStrapiServiceParams {
 	productTypeService: ProductTypeService;
 	eventBusService: EventBusService;
 	productCollectionService: ProductCollectionService;
+	productCategoryService: ProductCategoryService;
 	logger: Logger;
 }
 
@@ -156,6 +158,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	lastAdminLoginAttemptTime: number;
 	isStarted: boolean;
 	productCollectionService: ProductCollectionService;
+	productCategoryService: any;
 
 	constructor(container: UpdateStrapiServiceParams, options: StrapiMedusaPluginOptions) {
 		super(container);
@@ -167,6 +170,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.regionService_ = container.regionService;
 		this.eventBus_ = container.eventBusService;
 		this.productCollectionService = container.productCollectionService;
+		this.productCategoryService = container.productCategoryService;
 
 		this.options_ = options;
 		this.algorithm = this.options_.encryption_algorithm || 'aes-256-cbc'; // Using AES encryption
@@ -219,6 +223,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				eventBusService: this.eventBus_,
 				redisClient: this.redis_,
 				productCollectionService: this.productCollectionService,
+				productCategoryService: this.productCategoryService,
 			},
 			this.options_
 		);
@@ -355,6 +360,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					'variants.options',
 					'type',
 					'collection',
+					'categories',
 					'tags',
 					'images',
 				],
@@ -395,6 +401,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 				productToSend['product-collections'] = _.cloneDeep(productToSend.collection);
 				delete productToSend.collection;
+
+				productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
+				delete productToSend.categories;
 
 				const result = await this.createEntryInStrapi({
 					type: 'products',
@@ -480,6 +489,80 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 		} catch (error) {
 			this.logger.error(`unable to create collection ${collectionId} ${error.message}`);
+		}
+	}
+
+	async updateCategoryInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
+		const updateFields = ['handle', 'name'];
+
+		// Update came directly from product category service so only act on a couple
+		// of fields. When the update comes from the product we want to ensure
+		// references are set up correctly so we run through everything.
+		if (data.fields) {
+			const found =
+				data.fields.find((f) => updateFields.includes(f)) || this.verifyDataContainsFields(data, updateFields);
+			if (!found) {
+				return { status: 400 };
+			}
+		}
+
+		try {
+			const ignore = await this.shouldIgnore_(data.id, 'strapi');
+			if (ignore) {
+				return { status: 400 };
+			}
+
+			const category = await this.productCategoryService.retrieve(data.id);
+			this.logger.info(JSON.stringify(category));
+
+			if (category) {
+				// Update entry in Strapi
+				const response = await this.updateEntryInStrapi({
+					type: 'product-variants',
+					id: category.id,
+					authInterface,
+					data: { ...category, ...data },
+					method: 'put',
+				});
+				this.logger.info('Variant Strapi Id - ', response);
+				return response;
+			}
+
+			return { status: 400 };
+		} catch (error) {
+			this.logger.info('Failed to update product variant', data.id);
+			return { status: 400 };
+		}
+	}
+
+	async createCategoryInStrapi(categoryId: string, authInterface: AuthInterface): Promise<StrapiResult> {
+		const hasType = await this.getType('product-categories', authInterface)
+			.then(() => true)
+			.catch(() => false);
+
+		if (!hasType) {
+			return Promise.resolve({
+				status: 400,
+			});
+		}
+		try {
+			const category = await this.productCategoryService.retrieve(categoryId);
+
+			// this.logger.info(variant)
+			if (category) {
+				const categoryToSend = _.cloneDeep(category);
+
+				const result = await this.createEntryInStrapi({
+					type: 'product-categories',
+					id: categoryId,
+					authInterface,
+					data: categoryToSend,
+					method: 'POST',
+				});
+				return result;
+			}
+		} catch (error) {
+			this.logger.error(`unable to create category ${categoryId} ${error.message}`);
 		}
 	}
 
@@ -984,6 +1067,29 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 		return await this.deleteEntryInStrapi({
 			type: 'product-collections',
+			id: data.id,
+			authInterface,
+			method: 'delete',
+		});
+	}
+	async deleteCategoryInStrapi(data, authInterface): Promise<StrapiResult> {
+		const hasType = await this.getType('product-categories', authInterface)
+			.then(() => true)
+			.catch(() => {
+				// this.logger.info(err)
+				return false;
+			});
+		if (!hasType) {
+			return { status: 400 };
+		}
+
+		const ignore = await this.shouldIgnore_(data.id, 'strapi');
+		if (ignore) {
+			return { status: 400 };
+		}
+
+		return await this.deleteEntryInStrapi({
+			type: 'product-categories',
 			id: data.id,
 			authInterface,
 			method: 'delete',

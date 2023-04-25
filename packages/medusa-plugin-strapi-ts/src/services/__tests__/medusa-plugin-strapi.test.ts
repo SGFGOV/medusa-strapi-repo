@@ -9,6 +9,7 @@ import {
 	eventBusService,
 	disableMocks,
 	productCollectionService,
+	productCategoryService,
 	enableMocks,
 	isMockEnabled,
 	strapiHost,
@@ -76,6 +77,7 @@ describe('StrapiService Tests', () => {
 			productTypeService: productTypeService as any,
 			eventBusService: eventBusService as any,
 			productCollectionService: productCollectionService as any,
+			productCategoryService: productCategoryService as any,
 			logger: logger as any,
 		},
 		strapiConfigParameters
@@ -254,7 +256,7 @@ describe('StrapiService Tests', () => {
 			}
 			if (!isMockEnabled()) {
 				it(
-					'product second creation in the same collection',
+					'product second creation in the same ',
 					async () => {
 						result = await service.createProductInStrapi(IdMap.getId('exists-2'), defaultAuthInterface);
 						expect(result).toBeDefined();
@@ -379,6 +381,40 @@ describe('StrapiService Tests', () => {
                 });*/
 				expect(spy).toHaveBeenCalled();
 			});
+			it('create  and update product category in strapi', async () => {
+				result = await service.createCategoryInStrapi(IdMap.getId('exists'), defaultAuthInterface);
+				expect(result).toBeDefined();
+				expect(result.status == 200 || result.status == 302).toBeTruthy();
+
+				/* expect(result.data).toMatchObject({
+                    id: expect.any(Number),
+                    data: { title: expect.any(String) },
+                    medus_id: expect.any(String)
+                });*/
+
+				if (result) {
+					const productCategoryResult = await service.getEntitiesFromStrapi({
+						authInterface: defaultAuthInterface,
+						strapiEntityType: 'product-categories',
+					});
+					expect(productCategoryResult).toBeDefined();
+					expect(productCategoryResult.data.length > 0).toBeTruthy();
+				}
+
+				result = await service.updateCategoryInStrapi(
+					{ id: IdMap.getId('exists'), name: 'test-product-variant-2' },
+					defaultAuthInterface
+				);
+				expect(result).toBeDefined();
+				expect(result.status == 200 || result.status == 302).toBeTruthy();
+
+				/* expect(result.data).toMatchObject({
+                    id: expect.any(Number),
+                    data: { title: "test-product-variant-2" },
+                    medus_id: expect.any(String)
+                });*/
+				expect(spy).toHaveBeenCalled();
+			});
 		});
 		if (!isMockEnabled()) {
 			describe('deletions', () => {
@@ -437,10 +473,19 @@ describe('StrapiService Tests', () => {
 					).toBe(0);
 				});
 
-				it('clean up types and collections', async () => {
+				it('clean up types, categories and collections', async () => {
+					result = await service.deleteCategoryInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
+					let falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'product-categories',
+						authInterface: defaultAuthInterface,
+						id: result.data?.medusa_id,
+					});
+					expect(falseResult.status).toBe(200);
+					expect(falseResult.data?.length).toBe(0);
+
 					result = await service.deleteProductTypeInStrapi({ id: 'dummy' }, defaultAuthInterface);
 					expect(result.status).toBe(200);
-					let falseResult = await service.getEntitiesFromStrapi({
+					falseResult = await service.getEntitiesFromStrapi({
 						strapiEntityType: 'product-types',
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
@@ -524,8 +569,13 @@ describe('region checks', () => {
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();
 			if (!isMockEnabled()) {
+				result = await service.getEntitiesFromStrapi({
+					id: IdMap.getId('exists'),
+					authInterface: defaultAuthInterface,
+					strapiEntityType: 'regions',
+				});
 				expect(result).toMatchObject({
-					data: { name: 'new-name', medusa_id: IdMap.getId('exists') },
+					data: [{ name: 'new-name', medusa_id: IdMap.getId('exists') }],
 				});
 			}
 			result = await service.getEntitiesFromStrapi({

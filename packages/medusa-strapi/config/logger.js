@@ -1,38 +1,32 @@
 // path: ./config/logger.js
 
-"use strict";
+'use strict';
 
-const { winston } = require("@strapi/logger");
+const { winston } = require('@strapi/logger');
 
 const alignColorsAndTime = winston.format.combine(
-  winston.format.colorize({
-    all: true,
-  }),
-  winston.format.label({
-    label: "[STRAPI]",
-  }),
-  winston.format.timestamp({
-    format: "YY-MM-DD HH:mm:ss",
-  }),
-  winston.format.printf(
-    (info) =>
-      ` ${info.label}  ${info.timestamp}  ${info.level} : ${info.message}`
-  )
+	winston.format.colorize({
+		all: true,
+	}),
+	winston.format.label({
+		label: '[STRAPI]',
+	}),
+	winston.format.timestamp({
+		format: 'YY-MM-DD HH:mm:ss',
+	}),
+	winston.format.printf((info) => ` ${info.label}  ${info.timestamp}  ${info.level} : ${info.message}`)
 );
 
 module.exports = {
-  transports: [
-    new winston.transports.Console({
-      level: "info",
-      debugStdout: true,
-      format: winston.format.combine(
-        winston.format.colorize(),
-        alignColorsAndTime
-      ),
-      /* winston.format.combine(
+	transports: [
+		new winston.transports.Console({
+			level: 'info',
+			debugStdout: true,
+			format: winston.format.combine(winston.format.colorize(), alignColorsAndTime),
+			/* winston.format.combine(
         levelFilter('silly'),
         prettyPrint({ timestamps: 'YYYY-MM-DD hh:mm:ss.SSS' })
       ),*/
-    }),
-  ],
+		}),
+	],
 };

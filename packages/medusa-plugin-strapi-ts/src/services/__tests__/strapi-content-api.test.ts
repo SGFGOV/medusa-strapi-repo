@@ -15,6 +15,7 @@ import {
 	enableMocks,
 	strapiPath,
 	strapiHost,
+	productCategoryService,
 } from '../__mocks__/service-mocks';
 import { StrapiMedusaPluginOptions } from '../../types/globals';
 import { IdMap, MockManager, MockRepository } from 'medusa-test-utils';
@@ -70,6 +71,7 @@ describe('StrapiService Tests', () => {
 			productTypeService: productTypeService as any,
 			eventBusService: eventBusService as any,
 			productCollectionService: productCollectionService as any,
+			productCategoryService: productCategoryService as any,
 			logger: logger as any,
 		},
 		strapiConfigParameters

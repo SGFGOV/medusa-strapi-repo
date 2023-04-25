@@ -1,4 +1,12 @@
-import { BaseEntity, EventBusService, ProductService, ProductVariantService, RegionService } from '@medusajs/medusa';
+import {
+	BaseEntity,
+	EventBusService,
+	ProductCategoryService,
+	ProductCollectionService,
+	ProductService,
+	ProductVariantService,
+	RegionService,
+} from '@medusajs/medusa';
 import { Logger } from '@medusajs/medusa/dist/types/global';
 
 import { AuthInterface } from '../types/globals';
@@ -71,6 +79,42 @@ class StrapiSubscriber {
 				const authInterace: AuthInterface =
 					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 				await this.strapiService_.updateProductMetafieldInStrapi(data, authInterace);
+			}
+		);
+
+		this.eventBus_.subscribe(
+			ProductCollectionService.Events.UPDATED,
+			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+				const authInterace: AuthInterface =
+					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
+				await this.strapiService_.updateCollectionInStrapi(data, authInterace);
+			}
+		);
+
+		this.eventBus_.subscribe(
+			ProductCollectionService.Events.CREATED,
+			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+				const authInterace: AuthInterface =
+					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
+				await this.strapiService_.createCollectionInStrapi(data.id, authInterace);
+			}
+		);
+
+		this.eventBus_.subscribe(
+			ProductCategoryService.Events.UPDATED,
+			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+				const authInterace: AuthInterface =
+					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
+				await this.strapiService_.updateCategoryInStrapi(data, authInterace);
+			}
+		);
+
+		this.eventBus_.subscribe(
+			ProductCategoryService.Events.CREATED,
+			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+				const authInterace: AuthInterface =
+					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
+				await this.strapiService_.createCategoryInStrapi(data.id, authInterace);
 			}
 		);
 

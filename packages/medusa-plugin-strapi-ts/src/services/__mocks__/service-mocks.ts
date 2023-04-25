@@ -4,7 +4,7 @@ import { jest } from '@jest/globals';
 import express, { Application } from 'express';
 
 import { IdMap } from 'medusa-test-utils';
-export const strapiProtocol = process.env.STRAPI_PROTOCOL ?? '172.31.34.235';
+export const strapiProtocol = process.env.STRAPI_PROTOCOL ?? 'http';
 export const strapiPort = process.env.STRAPI_PORT ?? '1337';
 export const strapiHost = process.env.STRAPI_HOST ?? '172.31.34.235';
 export const strapiPath = `${strapiProtocol}://${strapiHost}:${strapiPort}`;
@@ -74,6 +74,13 @@ export const productService = {
 					handle: 'test-collection',
 					title: 'test-collection-title',
 				},
+				categories: [
+					{
+						id: IdMap.getId('exists'),
+						handle: 'test-category',
+						name: 'test-categpry-title',
+					},
+				],
 				created_at: new Date().toISOString(),
 				updated_at: new Date().toISOString(),
 			}),
@@ -101,6 +108,13 @@ export const productService = {
 						handle: 'test-collection',
 						title: 'test-collection-title',
 					},
+					categories: [
+						{
+							id: IdMap.getId('exists'),
+							handle: 'test-category',
+							name: 'test-categpry-title',
+						},
+					],
 					created_at: new Date().toISOString(),
 					updated_at: new Date().toISOString(),
 				});
@@ -159,6 +173,13 @@ export const productService = {
 						handle: 'test-collection',
 						title: 'test-collection-title',
 					},
+					categories: [
+						{
+							id: IdMap.getId('exists'),
+							handle: 'test-category',
+							name: 'test-categpry-title',
+						},
+					],
 					created_at: new Date().toISOString(),
 					updated_at: new Date().toISOString(),
 				});
@@ -182,6 +203,17 @@ export const productCollectionService = {
 		return Promise.resolve({
 			title: 'test-collection-title',
 			handle: 'test-collection',
+			id: IdMap.getId('exists'),
+		});
+	}),
+};
+
+export const productCategoryService = {
+	list: jest.fn().mockReturnValue(Promise.resolve()),
+	retrieve: jest.fn((id) => {
+		return Promise.resolve({
+			name: 'test-category-title',
+			handle: 'test-category',
 			id: IdMap.getId('exists'),
 		});
 	}),
