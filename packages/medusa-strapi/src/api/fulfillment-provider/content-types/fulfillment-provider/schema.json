@@ -31,13 +31,13 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::region.region",
-      "inversedBy": "fulfillment-providers"
+      "mappedBy": "regions"
     },
     "shipping-options": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-option.shipping-option",
-      "inversedBy": "fulfillment-providers"
+      "mappedBy": "shipping-options"
     }
   }
 }
