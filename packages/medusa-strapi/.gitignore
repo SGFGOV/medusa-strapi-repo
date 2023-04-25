@@ -114,6 +114,7 @@ build
 .strapi-updater.json
 .vscode
 dist
+!./src/
 ./src/plugins/**/*
 .env
 jest-html-reporters-attach/

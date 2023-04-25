@@ -114,6 +114,13 @@
       "target": "api::product-collection.product-collection",
       "mappedBy": "products"
     },
+    "product-categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product-category.product-category",
+      "mappedBy": "products"
+    },
+    
     "product-type": {
       "type": "relation",
       "relation": "manyToOne",
