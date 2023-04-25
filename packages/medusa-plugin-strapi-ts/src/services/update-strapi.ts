@@ -58,7 +58,6 @@ import {
 	RegionService,
 	TransactionBaseService,
 } from '@medusajs/medusa';
-import { Service } from 'medusa-extender';
 import role from '@strapi/plugin-users-permissions/server/content-types/role/index';
 import {
 	StrapiMedusaPluginOptions,
@@ -129,7 +128,6 @@ export interface UpdateStrapiServiceParams {
 	logger: Logger;
 }
 
-@Service({ scope: 'SINGLETON' })
 export class UpdateStrapiService extends TransactionBaseService {
 	protected manager_: EntityManager;
 	protected transactionManager_: EntityManager;
