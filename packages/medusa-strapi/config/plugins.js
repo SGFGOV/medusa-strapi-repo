@@ -99,7 +99,7 @@ module.exports = ({ env }) => ({
 		},
 	},
 	meilisearch:
-		process.env.NODE_ENV == 'test'
+		env('NODE_ENV') == 'test'
 			? undefined
 			: {
 					config: {
