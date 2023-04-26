@@ -38,10 +38,10 @@ Moreover it made integration testing much easier. Testing was critical as the nu
 ## Monorepo organisation
 
 This mono repo houses 4 components. All are under the packages folder. You can read more about the individual components there
-1.[medusa-strapi](packages/medusa-strapi/README.md)            - the strapi implementation
-2.[medusa-plugin-strapi-ts](packages/medusa-plugin-strapi-ts/README.md)  - the medusa plugin for strapi
-3.[strapi-plugin-medusajs](packages/strapi-plugin-medusajs/README.md)   - the strapi plugin to ensure strapi runs as a slave to medusa
-4.[strapi-plugin-sso-medusa](packages/strapi-plugin-sso-medusa/README.md) - the strapi plugin to help you can sign into strapi with medusa credentials
+1. [medusa-strapi](packages/medusa-strapi/README.md)            - the strapi implementation
+2. [medusa-plugin-strapi-ts](packages/medusa-plugin-strapi-ts/README.md)  - the medusa plugin for strapi
+3. [strapi-plugin-medusajs](packages/strapi-plugin-medusajs/README.md)   - the strapi plugin to ensure strapi runs as a slave to medusa
+4. [strapi-plugin-sso-medusa](packages/strapi-plugin-sso-medusa/README.md) - the strapi plugin to help you can sign into strapi with medusa credentials
 
 ## Version info
 
