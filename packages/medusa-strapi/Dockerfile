@@ -13,7 +13,7 @@ FROM strapi/base
 # Let WatchTower know to ignore this container for checking
 LABEL com.centurylinklabs.watchtower.enable="false"
 
-FROM strapi/base
+FROM naskio/strapi
 
 RUN  apt update 
 
