@@ -1,4 +1,4 @@
-### 🏠 [Homepage](../README.md)
+### 🏠 [Homepage](../../README.md)
 # Strapi plugin strapi-plugin-medusajs
 
 A quick description of strapi-plugin-medusajs.

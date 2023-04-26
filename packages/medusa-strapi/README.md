@@ -1,6 +1,6 @@
 
 
-### 🏠 [Homepage](../README.md)
+### 🏠 [Homepage](../../README.md)
 # strapi-medusa-template for Strapi v4
 
 Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa. 

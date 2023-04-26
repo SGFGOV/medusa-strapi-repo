@@ -1,7 +1,7 @@
 <div align="center">
  <img src="https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/strapi-plugin-sso.png?raw=true" width="180"/>
 </div>
-### 🏠 [Homepage](../README.md)
+### 🏠 [Homepage](../../README.md)
 # Strapi plugin strapi-plugin-sso-medusa
 
 ## Introduction

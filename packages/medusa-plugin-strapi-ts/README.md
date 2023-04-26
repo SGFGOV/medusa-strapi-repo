@@ -1,4 +1,4 @@
-### 🏠 [Homepage](../README.md)
+### 🏠 [Homepage](../../README.md)
 # Medusa Plugin Strapi Written in TypeScript
 
 ## Getting started
