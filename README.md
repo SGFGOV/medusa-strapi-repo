@@ -62,7 +62,7 @@ This is the easiest bit
 2. Go to the medusa-strapi folder inside <yourrepo>/packages/medusa-strapi
 3. Create a .env file. Update the environment variables as noted in the readme of [medusa-strapi](packages/medusa-strapi/README.md)     
 4. Run yarn run build
-5. For local deployment use the command yarn start
+
 
 
 ### Deployment - Container
