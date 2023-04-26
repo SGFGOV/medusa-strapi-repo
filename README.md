@@ -92,7 +92,7 @@ yarn run test
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/SGFGOV/medusa-strapi-repo/issues). You can also take a look at the [contributing guide](CONTRIBUTING.md).
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/SGFGOV/medusa-strapi-repo/issues). You can also take a look at the [contributing guide](./CONTRIBUTING.md).
 
 ## Show your support
 
