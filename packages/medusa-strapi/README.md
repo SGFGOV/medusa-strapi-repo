@@ -3,7 +3,7 @@
 ### 🏠 [Homepage](../../README.md)
 # strapi-medusa-template for Strapi v4
 
-Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa. 
+Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa. This is a batteries included implementation so that you can get down writing your customisations 
 
 
 npx create-strapi-app strapi-medusa --template https://github.com/Kyle772/strapi-medusa-template.git
@@ -121,7 +121,7 @@ MEILISEARCH_MASTER_KEY=<MEILISEARCH KEY>
 
 ### Redis Cache
 
-This implementation comes preconfigured with redis caching, As medusa already uses redis,
+This implementation qcomes preconfigured with redis caching, As medusa already uses redis,
  it was a reasonable assumption that the same redis service can be used for strapi as well
 
 REDIS_HOST=<redis host name>
@@ -147,6 +147,27 @@ For the full list of routes currently supported by the API
 use the command npx strapi routes:list
 ```
 
+## Preinstalled plugins
+1. Seo
+2. Strapi-plugin-medusajs
+3. Users-permissions
+4. Strapi-plugin-sso
+5. Upload - via s3 provider
+6. Email - via sendgrid 
+7. Sentry - troubleshooting
+8. Meilisearch
+9. content-versioning (experimental), requires a patch that wasn't released at the time
+10. strapi-google-translator
+11. comments
+12. io
+13. other mandatory strapi plugins as defined in package.json
+
+## Middleware enabled
+
+1. redis
+2. content security policy 
+3. powered by
+4. query
 
 ## Known issues,
 
@@ -157,6 +178,9 @@ use the command npx strapi routes:list
 5. Service tests don't check apis that use media types, though api tests cover it all.
 6. Testing currently limited to APIs not plugins
 7. Product-option title isn't a required field. We will need to access the product option repository and determine the corresponding title. Happy to accept a PR,with tests
+
+
+
 
 ## Show your support
 
