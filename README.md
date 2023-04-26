@@ -8,8 +8,10 @@
   <a href="https://github.com/SGFGOV/medusa-strapi-repo/graphs/commit-activity" target="_blank">
     <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
   </a>
+  
+  <a href="https://github.com/adrien2p/medusa-extender/blob/main/LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/adrien2p/medusa-extender?style=flat" height="20"/></a>
 </p>
-![GitHub](https://img.shields.io/github/license/SGFGOV/medusa-strapi-repo)
+[GitHub](https://img.shields.io/github/license/SGFGOV/medusa-strapi-repo)
 > Monorepo for all Strapi components to sync with medusa
 
 ### 🏠 [Homepage](README.md)
