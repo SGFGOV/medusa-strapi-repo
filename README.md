@@ -1,16 +1,15 @@
 <h1 align="center">Welcome to medus-strapi-repo 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
-  <img src="https://img.shields.io/badge/node-%3E14.17.3-blue.svg" />
+  <img src="https://img.shields.io/badge/node-%3E16.17.2-blue.svg" />
   <a href="./docs" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
   </a>
   <a href="https://github.com/SGFGOV/medusa-strapi-repo/graphs/commit-activity" target="_blank">
     <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
   </a>
-  <a href="https://github.com/adrien2p/medusa-extender/blob/main/LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/adrien2p/medusa-extender?style=flat" height="20"/></a>
 </p>
-
+![GitHub](https://img.shields.io/github/license/SGFGOV/medusa-strapi-repo)
 > Monorepo for all Strapi components to sync with medusa
 
 ### 🏠 [Homepage](README.md)
