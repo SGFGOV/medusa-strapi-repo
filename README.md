@@ -58,10 +58,18 @@ We support strapi v4.9.2 at the moment with medusa version.
  
 This is the easiest bit
 
-clone the repo. 
-go to you medusa-strapi folder. 
-update the environment variables as noted in the readme of [medusa-strapi](packages/medusa-strapi/README.md)     
+1. Clone the repo. 
+2. Go to the medusa-strapi folder inside <yourrepo>/packages/medusa-strapi
+3. Create a .env file. Update the environment variables as noted in the readme of [medusa-strapi](packages/medusa-strapi/README.md)     
+4. Run yarn run build
+5. For local deployment use the command yarn start
 
+
+### Deployment - Container
+
+I recommend using docker and setting the environment variables as per the docker container deployment environment that you are using
+
+### Deployment - Local
 execute command
 ```sh
 yarn start
