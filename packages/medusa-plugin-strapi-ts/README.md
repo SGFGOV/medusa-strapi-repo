@@ -1,13 +1,13 @@
-
-# Medusa Plugin Strapi Writtent in TypeScript
+### 🏠 [Homepage](../README.md)
+# Medusa Plugin Strapi Written in TypeScript
 
 ## Getting started
 
-Strapi is an amazing headless cms, this plugin helps bridge the medusajsa and strapi. This is based on the medusa-plugin-strapi developed by DeathWish, and additionally implements handshaking between strapi and medusa. 
+Strapi is an amazing headless cms, this plugin helps bridge the medusajs and strapi. This is based on the medusa-plugin-strapi developed by DeathWish, and additionally implements handshaking between strapi and medusa. 
 
 This plugin hands over control of strapi to Medusa. And medusa is purely used as a content engine. 
 
-## Pre-requisities
+## Pre-requisites
 
 You need to install the strapi-plugin-medusajs and enable it in strapi and follow the instructions in its readme file. 
 
@@ -82,7 +82,12 @@ the package uses axios retry with a default fixed retry interval of 400seconds f
 
 
 
+## Show your support
 
-## Support us 
+I love developing software and building products that are useful. 
+I sincerely hope you this project helps you. I'm happy to help if you need support setting this up. 
+Give a ⭐️ if this project helped you! Catch me on discord @govdiw
 
-As much as we love FOSS software, nothing in this world is truely free. We'll be grateful if you can buy our team a coffee (https://www.buymeacoffee.com/uMRqW9NmS9). 
+As you might have guessed by now that considerable time and effort has gone into make this product useful to the community at large, and I'd love to keep maintaining and upgrading this. However, As much as we love FOSS software, nothing in this world is truly free. Please help by [sponsoring or supporting the project]. (https://github.com/sponsors/SGFGOV)
+
+***

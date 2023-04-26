@@ -1,6 +1,6 @@
 
 
-
+### 🏠 [Homepage](../README.md)
 # strapi-medusa-template for Strapi v4
 
 Bring the power of two awesome open source system together. It comes preloaded with the plugins that you need kick start medusa. 
@@ -158,9 +158,16 @@ use the command npx strapi routes:list
 6. Testing currently limited to APIs not plugins
 7. Product-option title isn't a required field. We will need to access the product option repository and determine the corresponding title. Happy to accept a PR,with tests
 
-## Support us 
+## Show your support
 
-As much as we love FOSS software, nothing in this world is truely free. We'll be grateful if you can buy our team a coffee (https://www.buymeacoffee.com/uMRqW9NmS9). 
+I love developing software and building products that are useful. 
+I sincerely hope you this project helps you. I'm happy to help if you need support setting this up. 
+Give a ⭐️ if this project helped you! Catch me on discord @govdiw
+
+As you might have guessed by now that considerable time and effort has gone into make this product useful to the community at large, and I'd love to keep maintaining and upgrading this. However, As much as we love FOSS software, nothing in this world is truly free. Please help by [sponsoring or supporting the project]. (https://github.com/sponsors/SGFGOV)
+
+***
+
 
 
 ## 📚 Learn more

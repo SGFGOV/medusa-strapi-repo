@@ -1,82 +1,159 @@
 <div align="center">
  <img src="https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/strapi-plugin-sso.png?raw=true" width="180"/>
 </div>
+### 🏠 [Homepage](../README.md)
+# Strapi plugin strapi-plugin-sso-medusa
 
-# Strapi plugin strapi-plugin-sso
-
+## Introduction
 This plugin can provide single sign-on.
 
-You will be able to log in to the administration screen using your Google account or Cognito User Pool.
+You will be able to log in to the administration screen using your medusa credentials
 
-Currently supports Cognito user pool and Google accounts.
+This plugin was based on strapi-plugin-sso which supports google and cognito logins. However as we want medusa to be the true source of account information all those routes have been disabled. 
+
+This plugin is designed exclusively for medusa 
 
 Please read the [documents](#user-content-documentationenglish) for some precautions.
 
 **This plugin is developed by one engineer.**
-**If possible, consider using the Gold Plan features.**
 
-# Easy to install
+
+## Easy to install
 ```shell
-yarn add strapi-plugin-sso
+yarn add strapi-plugin-sso-medusa
 ```
 or
 ```shell
-npm i strapi-plugin-sso
+npm i strapi-plugin-sso-medusa
 ```
 
-# Requirements
+## Requirements
 - Strapi Version4
-- **strapi-plugin-sso**
-- Google Account or AWS Cognito UserPool
+- **strapi-plugin-sso-medusa**
+- a properly configured medusa server
 
-# Example Configuration
+## Example Configuration
 ```javascript
 // config/plugins.js
 module.exports = ({env}) => ({
-  'strapi-plugin-sso': {
+
+  ...
+  'strapi-plugin-sso-medusa': {
     enabled: true,
     config: {
-      // Google
-      GOOGLE_OAUTH_CLIENT_ID: '[Client ID created in GCP]',
-      GOOGLE_OAUTH_CLIENT_SECRET: '[Client Secret created in GCP]',
-      GOOGLE_OAUTH_REDIRECT_URI: 'http://localhost:1337/strapi-plugin-sso/google/callback', // URI after successful login
-      GOOGLE_ALIAS: '', // Gmail Aliases
-      GOOGLE_GSUITE_HD: '', // G Suite Primary Domain
-      
-      // Cognito
-      COGNITO_OAUTH_CLIENT_ID: '[Client ID created in AWS Cognito]',
-      COGNITO_OAUTH_CLIENT_SECRET: '[Client Secret created in AWS Cognito]',
-      COGNITO_OAUTH_DOMAIN: '[OAuth Domain created in AWS Cognito]',
-      COGNITO_OAUTH_REDIRECT_URI: 'http://localhost:1337/strapi-plugin-sso/cognito/callback', //  // URI after successful login
-      COGNITO_OAUTH_REGION: 'ap-northeast-1', // AWS Cognito Region 
-    }
-  }
-})
+			MEDUSA_SERVER: env('MEDUSA_BACKEND_URL', 'http://localhost:9000'),
+			MEDUSA_ADMIN: env('MEDUSA_BACKEND_ADMIN', 'http://localhost:7000'),
+			MEDUSA_STRAPI_SECRET: env('MEDUSA_STRAPI_SECRET', 'no_secret'),
+		},
+}
+
+...
+}
+)
 ```
 
-# Support
-- ✅ NodeJS <= 18.x
-- Strapi 4.1.7 or higher
+## Support
+- ✅ NodeJS >=16.x
+- Strapi 4.9.2 or higher
 
-# Documentation(English)
+## Configuring the medusa admin to support sso with strapi
 
-[Google Single Sign On Setup](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/en/google/setup.md)
+In your medusa admin-ui/ui/src/services/api.js
 
-[Google Single Sign On Specifications](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/en/google/admin.md)
+add the following
+```
+strapi: {
+    login() {
+      const path = `/strapi/admin/login`
+      return medusaRequest("GET", path)
+    },
 
-[Cognito Single Sign On Setup](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/en/cognito/setup.md)
+    logout() {
+      const path = `/strapi/admin/login`
+      return medusaRequest("DELETE", path)
+    },
+  },
+```
+
+in your medusa admin-ui/ui/src/domain
+add files index.tsx and strapi-cms.tsxt
+
+domain
+  |--cms
+  |   |-- index.tsx
+  |    |--strapi-cms.tsxt
+  |---other domains
+
+create folder called cms
 
 
-# Documentation(Japanese)
-[Description](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/README.md)
+add the following contents to index.tsx
 
-[Google Single Sign On Setup](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/ja/google/setup.md)
+```
+import StrapiCms from "./strapi-cms"
+import { Route, Routes } from "react-router-dom"
+const Cms = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<StrapiCms reload={false} />} />
+    </Routes>
+  )
+}
 
-[Google Single Sign-On Specifications](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/ja/google/admin.md)
+export default Cms
+```
 
-[Cognito Single Sign On Setup](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/ja/cognito/setup.md)
+add the following contents to strapi-cms.tsx
+```
 
-[Cognito Single Sign-On Specifications](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/ja/cognito/admin.md)
+import { useState } from 'react';
+import api from '../../services/api';
+import { strapiUrl } from '../../services/config';
+const authenticatedStrapiUrl = `${strapiUrl}/strapi-plugin-sso/medusa`;
 
-# Demo
-![CognitoDemo](https://github.com/yasudacloud/strapi-plugin-sso/blob/main/docs/demo.gif?raw=true "DemoMovie")
+const StrapiCms = ({ reload }) => {
+	const [strapiFrameState, setStrapiFrameState] = useState<string>(reload ? 'true' : 'false');
+	// setStrapiFrameState("")
+	api.auth.session().then(async (session) => {
+		if (session) {
+			await api.strapi.login();
+			setStrapiFrameState(session.data.user.id);
+		}
+	});
+	return (
+		<iframe
+			src={authenticatedStrapiUrl}
+			key={strapiFrameState?.toString()}
+			width="100%"
+			height="100%"
+			sandbox="allow-scripts allow-modals allow-forms allow-same-origin allow-scripts"
+		></iframe>
+	);
+};
+export default StrapiCms;
+
+
+```
+
+then in a.tsx in SGF-MedusaAdmin/src/pages/a.jsx
+add the following
+
+```
+ import Cms from "../domain/cms"
+```
+
+add the route in a.jsx
+```
+ <Route path="cms/*" element={<Cms />} />
+
+```
+
+## Show your support
+
+I love developing software and building products that are useful. 
+I sincerely hope you this project helps you. I'm happy to help if you need support setting this up. 
+Give a ⭐️ if this project helped you! Catch me on discord @govdiw
+
+As you might have guessed by now that considerable time and effort has gone into make this product useful to the community at large, and I'd love to keep maintaining and upgrading this. However, As much as we love FOSS software, nothing in this world is truly free. Please help by [sponsoring or supporting the project]. (https://github.com/sponsors/SGFGOV)
+
+***
