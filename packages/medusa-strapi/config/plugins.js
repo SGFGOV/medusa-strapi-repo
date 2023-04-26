@@ -98,17 +98,16 @@ module.exports = ({ env }) => ({
 			sendMetadata: true,
 		},
 	},
-	meilisearch:
-		env('NODE_ENV') == 'test'
-			? undefined
-			: {
-					config: {
-						// Your meili host
-						host: env('MEILISEARCH_HOST'),
-						// Your master key or private key
-						apiKey: env('MEILISEARCH_MASTER_KEY'),
-					},
-			  },
+	meilisearch: !env('MEILISEARCH_HOST')
+		? undefined
+		: {
+				config: {
+					// Your meili host
+					host: env('MEILISEARCH_HOST'),
+					// Your master key or private key
+					apiKey: env('MEILISEARCH_MASTER_KEY'),
+				},
+		  },
 	'content-versioning': {
 		enabled: true,
 	},
