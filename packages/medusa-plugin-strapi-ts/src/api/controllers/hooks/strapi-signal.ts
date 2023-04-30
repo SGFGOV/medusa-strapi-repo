@@ -68,7 +68,9 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 				break;
 		}
 	} catch (e) {
-		logger.error('invalid messsage received');
-		res.sendStatus(400);
+		logger.error('Error occur while receiving strapi signal.', {
+			'error.message': e.message,
+		});
+		res.status(500).send('Error occur while receiving strapi signal - ' + e.message);
 	}
 };
