@@ -70,7 +70,7 @@ This is the easiest bit
 I recommend using docker and setting the environment variables as per the docker container deployment environment that you are using
 
 ### Deployment - Local
-execute command
+Go to the medusa-strapi folder inside /packages/medusa-strapi and execute command
 ```sh
 yarn start
 ```
