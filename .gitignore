@@ -115,7 +115,7 @@ index.js
 dist
 coverage
 
-api/
+medusa-plugin-strapi-ts/api/
 services/
 models/
 subscribers/
