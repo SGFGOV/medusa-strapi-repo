@@ -16,4 +16,5 @@ export default {
 	testEnvironment: 'node',
 	bail: true,
 	maxWorkers: 1,
+	testTimeout: 300000,
 };

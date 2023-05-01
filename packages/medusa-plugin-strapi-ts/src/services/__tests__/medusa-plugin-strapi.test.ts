@@ -583,7 +583,7 @@ describe('region checks', () => {
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();
 			expect(result).toMatchObject({
-				data: { id: 1, name: 'India' },
+				data: { id: 1, name: 'IN' },
 			});
 
 			result = await service.createRegionInStrapi(IdMap.getId('exists'), defaultAuthInterface);

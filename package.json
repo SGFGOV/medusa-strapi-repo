@@ -13,6 +13,7 @@
     ]
   },
   "scripts": {
+    "integration-test":"./node_modules/.bin/lerna run integration-test --concurrency 1",
     "build": "./node_modules/.bin/lerna run --parallel build",
     "bootstrap": "./node_modules/.bin/lerna bootstrap",
     "clean": "./node_modules/.bin/lerna run --parallel clean",

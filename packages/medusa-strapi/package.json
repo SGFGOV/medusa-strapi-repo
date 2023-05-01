@@ -9,6 +9,7 @@
     "url": "https://github.com/SGFGOV/medusa-strapi-repo/"
   },
   "scripts": {
+    "integration-test":"NODE_ENV=test strapi develop",
     "develop": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",

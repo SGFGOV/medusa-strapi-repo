@@ -1986,7 +1986,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async registerOrLoginDefaultMedusaUser(): Promise<UserCreds> {
 		try {
 			await this.registerDefaultMedusaUser();
-			this.logger.info('registered default user');
+			this.logger.info('registered default user', JSON.stringify(e));
 		} catch (e) {
 			this.logger.info('default user already registered', JSON.stringify(e));
 		}
