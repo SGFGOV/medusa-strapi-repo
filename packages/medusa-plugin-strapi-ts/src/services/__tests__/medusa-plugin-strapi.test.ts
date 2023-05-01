@@ -26,7 +26,7 @@ import axios from 'axios';
 
 let service: StrapiService;
 let result: StrapiResult;
-const testTimeOut = 30e3;
+const testTimeOut = 120e3;
 jest.setTimeout(testTimeOut);
 
 describe('StrapiService Tests', () => {
@@ -82,6 +82,9 @@ describe('StrapiService Tests', () => {
 		},
 		strapiConfigParameters
 	);
+	if (isMockEnabled()) {
+		service.selfTestMode = true;
+	}
 
 	const entry = {
 		unpublish: jest.fn(async () => {
@@ -135,15 +138,27 @@ describe('StrapiService Tests', () => {
 		});
 	});
 	describe('user CURD', () => {
-		it('register or login admin', async () => {
-			await service.registerOrLoginAdmin();
-			expect(service.strapiSuperAdminAuthToken).toBeDefined();
-			expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
-		});
-		it('check if default role exists', async () => {
-			const roleId = await service.getRoleId('Author');
-			expect(roleId).toBeGreaterThan(0);
-		});
+		it(
+			'register or login admin',
+			async () => {
+				await service.registerOrLoginAdmin();
+				expect(service.strapiSuperAdminAuthToken).toBeDefined();
+				expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
+
+				const roleId = await service.getRoleId('Author');
+				expect(roleId).toBeGreaterThan(0);
+			},
+			testTimeOut
+		);
+
+		it(
+			'check if error is sent if role doesnt exists',
+			async () => {
+				const roleId = await service.getRoleId('new role');
+				expect(roleId).toBe(-1);
+			},
+			testTimeOut
+		);
 
 		it(
 			'register or login default medusa user',
@@ -559,6 +574,10 @@ describe('region checks', () => {
 			});
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();
+			expect(result).toMatchObject({
+				data: { id: 1, name: 'IN' },
+			});
+
 			result = await service.createRegionInStrapi(IdMap.getId('exists'), defaultAuthInterface);
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();

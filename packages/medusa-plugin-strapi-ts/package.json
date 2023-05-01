@@ -18,13 +18,14 @@
     "e-commerce",
     "content management"
   ],
-  "author": "Govind Diwakar <govind.diwakar@gmail.com>",
+  "author": "Govind Diwakar",
   "license": "MIT",
   "scripts": {
+    "integration-test":"yarn test",
     "clean": "./node_modules/.bin/rimraf types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
-    "test": "jest --coverage --runInBand --setupFiles=dotenv/config"
+    "test": "jest --coverage --runInBand --setupFiles=dotenv/config --silent"
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.8.2",

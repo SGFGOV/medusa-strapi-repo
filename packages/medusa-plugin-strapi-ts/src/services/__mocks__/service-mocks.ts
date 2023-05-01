@@ -6,7 +6,7 @@ import express, { Application } from 'express';
 import { IdMap } from 'medusa-test-utils';
 export const strapiProtocol = process.env.STRAPI_PROTOCOL ?? 'http';
 export const strapiPort = process.env.STRAPI_PORT ?? '1337';
-export const strapiHost = process.env.STRAPI_HOST ?? '172.31.34.235';
+export const strapiHost = process.env.STRAPI_HOST ?? 'localhost';
 export const strapiPath = `${strapiProtocol}://${strapiHost}:${strapiPort}`;
 export const testUserEmail = 'test15@test.com';
 
@@ -519,6 +519,26 @@ function enableMockFunctions(axios): void {
 			{
 				id: 1,
 				name: 'Editor',
+			},
+		],
+	});
+	mock.onGet(/\/api\/countries/g).reply(200, {
+		data: [
+			{
+				id: 1,
+				name: 'IN',
+			},
+			{
+				id: 2,
+				name: 'US',
+			},
+		],
+	});
+	mock.onGet(/\/api\/countries\//g).reply(200, {
+		data: [
+			{
+				id: 1,
+				name: 'India',
 			},
 		],
 	});

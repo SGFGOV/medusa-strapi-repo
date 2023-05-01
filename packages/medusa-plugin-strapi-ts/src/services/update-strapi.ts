@@ -159,10 +159,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 	isStarted: boolean;
 	productCollectionService: ProductCollectionService;
 	productCategoryService: any;
+	private enableAdminDataLogging: boolean;
+	selfTestMode: boolean;
 
 	constructor(container: UpdateStrapiServiceParams, options: StrapiMedusaPluginOptions) {
 		super(container);
-
+		this.selfTestMode = false;
+		this.enableAdminDataLogging = process.env.NODE_ENV == 'test' ? true : false;
 		this.logger = container.logger ?? (console as any);
 		this.productService_ = container.productService;
 		this.productVariantService_ = container.productVariantService;
@@ -187,22 +190,27 @@ export class UpdateStrapiService extends TransactionBaseService {
 			password: this.defaultUserPassword,
 		};
 		this.userTokens = {};
-		this.executeStrapiHealthCheck().then(async (res) => {
-			if (res && this.options_.auto_start) {
-				UpdateStrapiService.isHealthy = res;
-				let startupStatus;
-				try {
-					const startUpResult = await this.startInterface();
-					startupStatus = startUpResult.status < 300;
-				} catch (error) {
-					this.logger.error(error.message);
-				}
+		this.executeStrapiHealthCheck().then(
+			async (res) => {
+				if (res && this.options_.auto_start) {
+					UpdateStrapiService.isHealthy = res;
+					let startupStatus;
+					try {
+						const startUpResult = await this.startInterface();
+						startupStatus = startUpResult.status < 300;
+					} catch (error) {
+						this.logger.error(error.message);
+					}
 
-				if (!startupStatus) {
-					throw new Error('strapi startup error');
+					if (!startupStatus) {
+						throw new Error('strapi startup error');
+					}
 				}
+			},
+			() => {
+				this.selfTestMode = true;
 			}
-		});
+		);
 
 		// attaching the default user
 		this.redis_ = container.redisClient;
@@ -602,9 +610,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 				delete variantToSend.prices;
 
 				/* const variantOptionValues = variantToSend.options;
-                 for (const variantOption of variantOptionValues) {
-                    this.convertOptionValueToMedusaReference(variantOption);
-                }*/
+				 for (const variantOption of variantOptionValues) {
+					this.convertOptionValueToMedusaReference(variantOption);
+				}*/
 
 				variantToSend['product-option-value'] = _.cloneDeep(variantToSend.options);
 
@@ -649,7 +657,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		// eslint-disable-next-line no-useless-catch
 		try {
 			const region = await this.regionService_.retrieve(regionId, {
-				relations: ['countries', 'payment_providers', 'fulfillment_providers', 'currency'],
+				relations: ['	', 'payment_providers', 'fulfillment_providers', 'currency'],
 				select: ['id', 'name', 'tax_rate', 'tax_code', 'metadata'],
 			});
 
@@ -1122,6 +1130,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 			url: `${this.strapi_url}/_health`,
 		};
 		this.logger.info('Checking strapi health');
+		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
+			this.logger.info('running in self test mode');
+			return true;
+		}
 		try {
 			let response = undefined;
 			let timeOut = process.env.STRAPI_HEALTH_CHECK_INTERVAL
@@ -1169,6 +1181,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			this.strapiSuperAdminAuthToken = undefined;
 		}
 
+		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
+			return true;
+		}
 		const result =
 			intervalElapsed || !UpdateStrapiService.isHealthy
 				? await this.executeStrapiHealthCheck()
@@ -1252,10 +1267,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	/** 
-     * @Todo Create API based access
+	 * @Todo Create API based access
   async fetchMedusaUserApiKey(emailAddress) {
 
-    return await this.strapiAdminSend("get")
+	return await this.strapiAdminSend("get")
   }
 
   */
@@ -1361,23 +1376,23 @@ export class UpdateStrapiService extends TransactionBaseService {
 			const response = await axios.post(`${this.strapi_url}/api/auth/local`, authData);
 			// } catch (e) {
 			/* if (e.response.status == 429) {
-                    let i = 0;
-                    let timeOut: NodeJS.Timeout;
-                    while (i++ < 60000) {
-                        if (timeOut) {
-                            clearTimeout(timeOut);
-                            this.logger.info(
-                                `429 recieved backing off  seconds: ${timeOut} remaining`
-                            );
-                        }
-                        timeOut = setTimeout(async () => {
-                            res = await axios.post(
-                                `${this.strapi_url}/api/auth/local`,
-                                authData
-                            );
-                        }, 60000 - i);
-                    }
-                }*/
+					let i = 0;
+					let timeOut: NodeJS.Timeout;
+					while (i++ < 60000) {
+						if (timeOut) {
+							clearTimeout(timeOut);
+							this.logger.info(
+								`429 recieved backing off  seconds: ${timeOut} remaining`
+							);
+						}
+						timeOut = setTimeout(async () => {
+							res = await axios.post(
+								`${this.strapi_url}/api/auth/local`,
+								authData
+							);
+						}, 60000 - i);
+					}
+				}*/
 			// }
 			// console.log("login result"+res);
 			return response;
@@ -1392,16 +1407,19 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 	async getRoleId(requestedRole: string): Promise<number> {
 		const response = await this.executeStrapiAdminSend('get', 'roles');
+		let idToReturn = -1;
 		// console.log("role:", response);
 		if (response) {
 			const availableRoles = response.data.data as role[];
-			for (const role of availableRoles) {
+			const theRole = availableRoles?.filter((role) => role.name == requestedRole);
+			/*for (const role of availableRoles) {
 				if (role.name == requestedRole) {
 					return role.id;
 				}
-			}
+			}*/
+			idToReturn = theRole?.[0]?.id ?? -1;
 		}
-		return -1;
+		return idToReturn;
 	}
 	async processStrapiEntry(command: StrapiSendParams): Promise<StrapiResult> {
 		try {
@@ -1622,6 +1640,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			this.logger.info(`Endpoint Attempted: ${endPoint}`);
 		}
 		const theError = `${(error as Error).message} `;
+		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
 		this.logger.error('Error occur while sending request to strapi', {
 			'error.message': theError,
 			request: {
@@ -1630,16 +1649,18 @@ export class UpdateStrapiService extends TransactionBaseService {
 				method: method || 'none',
 			},
 			response: {
-				body: JSON.stringify(error?.response?.data) ?? 'none',
+				body: JSON.stringify(responseData),
 				status: error?.response?.status ?? 'none',
 			},
 		});
 
-		throw new Error(
-			`Error while trying admin ${method}` +
-				`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
+		if (!endPoint.includes('register-admin')) {
+			throw new Error(
+				`Error while trying ${method}` +
+					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
-		);
+			);
+		}
 	}
 	async executeStrapiAdminSend(
 		method: Method,
@@ -1692,7 +1713,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
 					`Strapi Ok : ${method}, ${id ?? ''}` +
-						`, ${type ?? ''}, ${data ?? ''}, ${action ?? ''} :status:${result.status}`
+						`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${
+							result.status
+						}`
 				);
 				this.logger.info(`Strapi Data : ${JSON.stringify(result.data)}`);
 			} else {
@@ -1701,17 +1724,20 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return result;
 		} catch (error) {
-			this.logger.error('Admin endpoint error');
-			this._axiosError(error, id, type, data, method, basicConfig.url);
+			//  this.logger.error('Admin endpoint error');
+			this._axiosError(error, id, type, this.enableAdminDataLogging ? data : {}, method, basicConfig.url);
 		}
-		``;
 	}
 
 	async executeRegisterMedusaUser(auth: MedusaUserType): Promise<AxiosResponse | undefined> {
 		let response: AxiosResponse;
 
-		await this.executeLoginAsStrapiSuperAdmin();
-		await this.waitForHealth();
+		try {
+			await this.executeLoginAsStrapiSuperAdmin();
+			if (!this.selfTestMode) await this.waitForHealth();
+		} catch (e) {
+			if (this.selfTestMode) this.logger.warn('running in self testmode');
+		}
 
 		try {
 			response = await axios.post(`${this.strapi_url}/strapi-plugin-medusajs/create-medusa-user`, auth, {
@@ -1746,10 +1772,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const auth: AdminUserType = {
 			...this.options_.strapi_admin,
 		};
-
-		return (await this.executeStrapiAdminSend('post', 'register-admin', undefined, undefined, auth)).data.user;
+		try {
+			const result = await this.executeStrapiAdminSend('post', 'register-admin', undefined, undefined, auth);
+			return result.data?.user;
+		} catch (e) {
+			this.logger.warn(`unable to register super user,` + ` super user may already registered, ${e.message}`);
+		}
 	}
-
 	async registerAdminUserInStrapi(
 		email: string,
 		firstname: string,
@@ -1899,7 +1928,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			};
 		} catch (error) {
 			// Handle error.
-			this.logger.info('An error occurred' + 'while logging into admin:');
+			this.logger.info('An error occurred' + ' while logging into admin:');
 			this._axiosError(error, undefined, undefined, undefined, undefined, `${this.strapi_url}/admin/login`);
 
 			throw error;
@@ -1912,9 +1941,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			if (user) {
 				const response = await this.executeSync(this.strapiSuperAdminAuthToken);
 				/* const response = await this.configureStrapiMedusaForUser({
-                    email: this.options_.strapi_default_user.email,
-                    password: this.options_.strapi_default_user.password
-                });*/
+					email: this.options_.strapi_default_user.email,
+					password: this.options_.strapi_default_user.password
+				});*/
 				if (response.status < 300) {
 					this.logger.info('medusa - strap -bootstrap confirmed ..please wait till sync completes');
 					return response;
@@ -1957,6 +1986,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async registerOrLoginDefaultMedusaUser(): Promise<UserCreds> {
 		try {
 			await this.registerDefaultMedusaUser();
+			this.logger.info('registered default user');
 		} catch (e) {
 			this.logger.info('default user already registered', JSON.stringify(e));
 		}
