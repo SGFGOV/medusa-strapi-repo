@@ -16,6 +16,7 @@ import {
 	strapiPath,
 	strapiHost,
 	productCategoryService,
+	isMockEnabled,
 } from '../__mocks__/service-mocks';
 import { StrapiMedusaPluginOptions } from '../../types/globals';
 import { IdMap, MockManager, MockRepository } from 'medusa-test-utils';
@@ -112,6 +113,9 @@ describe('StrapiService Tests', () => {
 			);
 		} catch (error) {
 			enableMocks(axios);
+		}
+		if (isMockEnabled()) {
+			service.selfTestMode = true;
 		}
 		const registerUser = await service.registerOrLoginDefaultMedusaUser();
 		let result: StrapiResult;

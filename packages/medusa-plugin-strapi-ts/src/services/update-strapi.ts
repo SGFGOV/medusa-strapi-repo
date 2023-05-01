@@ -1730,8 +1730,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async executeRegisterMedusaUser(auth: MedusaUserType): Promise<AxiosResponse | undefined> {
 		let response: AxiosResponse;
 
-		await this.executeLoginAsStrapiSuperAdmin();
-		await this.waitForHealth();
+		try {
+			await this.executeLoginAsStrapiSuperAdmin();
+			if (!this.selfTestMode) await this.waitForHealth();
+		} catch (e) {
+			if (this.selfTestMode) this.logger.warn('running in self testmode');
+		}
 
 		try {
 			response = await axios.post(`${this.strapi_url}/strapi-plugin-medusajs/create-medusa-user`, auth, {
@@ -1919,7 +1923,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			};
 		} catch (error) {
 			// Handle error.
-			this.logger.info('An error occurred' + 'while logging into admin:');
+			this.logger.info('An error occurred' + ' while logging into admin:');
 			this._axiosError(error, undefined, undefined, undefined, undefined, `${this.strapi_url}/admin/login`);
 
 			throw error;

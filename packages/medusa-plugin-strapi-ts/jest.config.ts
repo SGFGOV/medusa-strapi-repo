@@ -15,4 +15,5 @@ export default {
 	coverageDirectory: './coverage',
 	testEnvironment: 'node',
 	bail: true,
+	maxWorkers: 1,
 };
