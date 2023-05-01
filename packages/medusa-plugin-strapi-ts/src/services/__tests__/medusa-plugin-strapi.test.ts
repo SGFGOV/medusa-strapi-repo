@@ -145,9 +145,6 @@ describe('StrapiService Tests', () => {
 				expect(service.strapiSuperAdminAuthToken).toBeDefined();
 				expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
 
-				console.log('skipping author check');
-				expect(1).toBe(1);
-				return;
 				const roleId = await service.getRoleId('Author');
 				expect(roleId).toBeGreaterThan(0);
 			},
@@ -157,8 +154,6 @@ describe('StrapiService Tests', () => {
 		it(
 			'check if error is sent if role doesnt exists',
 			async () => {
-				expect(1).toBe(1);
-				return;
 				const roleId = await service.getRoleId('new role');
 				expect(roleId).toBe(-1);
 			},
@@ -168,9 +163,6 @@ describe('StrapiService Tests', () => {
 		it(
 			'register or login default medusa user',
 			async () => {
-				expect(1).toBe(1);
-				return;
-
 				const creds = await service.registerOrLoginDefaultMedusaUser();
 				expect(creds.token).toBeDefined();
 			},
