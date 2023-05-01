@@ -52,7 +52,7 @@
     "pg": "8.6.0",
     "qs": "^6.11.0",
     "sentry": "^0.1.2",
-    "sharp": "^0.31.3",
+    "sharp": "^0.32.1",
     "strapi-google-translator": "^1.0.7",
     "strapi-html-editor": "^1.0.2",
     "strapi-middleware-cache": "^2.1.8",
