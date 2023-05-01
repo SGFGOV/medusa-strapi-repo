@@ -141,16 +141,11 @@ describe('StrapiService Tests', () => {
 		it(
 			'register or login admin',
 			async () => {
-			await service.registerOrLoginAdmin();
-			expect(service.strapiSuperAdminAuthToken).toBeDefined();
-			expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);*/
-				expect(1).toBe(1);
-			},
-			testTimeOut
-		);
-		it(
-			'check if default role exists',
-			async () => {
+				await service.registerOrLoginAdmin();
+				expect(service.strapiSuperAdminAuthToken).toBeDefined();
+				expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
+
+				console.log('skpping author check');
 				expect(1).toBe(1);
 				return;
 				const roleId = await service.getRoleId('Author');
