@@ -444,19 +444,26 @@ export class UpdateStrapiService extends TransactionBaseService {
 			if (collection) {
 				// Update entry in Strapi
 				const response = await this.updateEntryInStrapi({
-					type: 'product-variants',
+					type: 'product-collections',
 					id: collection.id,
 					authInterface,
 					data: { ...collection, ...data },
 					method: 'put',
 				});
-				this.logger.info('Variant Strapi Id - ', response);
+				this.logger.info(`Successfully updated collection ${collection.id} in Strapi`, {
+					'response.status': response.status,
+					'response.data': response.data,
+					'entity.id': collection.id,
+				});
 				return response;
 			}
 
 			return { status: 400 };
 		} catch (error) {
-			this.logger.info('Failed to update product variant', data.id);
+			this.logger.info('Failed to update product collection', {
+				'entity.id': data.id,
+				'error.message': error.message,
+			});
 			return { status: 400 };
 		}
 	}
@@ -513,24 +520,30 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 
 			const category = await this.productCategoryService.retrieve(data.id);
-			this.logger.info(JSON.stringify(category));
 
 			if (category) {
 				// Update entry in Strapi
 				const response = await this.updateEntryInStrapi({
-					type: 'product-variants',
+					type: 'product-categories',
 					id: category.id,
 					authInterface,
 					data: { ...category, ...data },
 					method: 'put',
 				});
-				this.logger.info('Variant Strapi Id - ', response);
+				this.logger.info(`Successfully updated category ${category.id} in Strapi`, {
+					'response.status': response.status,
+					'response.data': response.data,
+					'entity.id': category.id,
+				});
 				return response;
 			}
 
 			return { status: 400 };
 		} catch (error) {
-			this.logger.info('Failed to update product variant', data.id);
+			this.logger.info('Failed to update product category', {
+				'entity.id': data.id,
+				'error.message': error.message,
+			});
 			return { status: 400 };
 		}
 	}
@@ -548,7 +561,6 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const category = await this.productCategoryService.retrieve(categoryId);
 
-			// this.logger.info(variant)
 			if (category) {
 				const categoryToSend = _.cloneDeep(category);
 
@@ -1610,12 +1622,19 @@ export class UpdateStrapiService extends TransactionBaseService {
 			this.logger.info(`Endpoint Attempted: ${endPoint}`);
 		}
 		const theError = `${(error as Error).message} `;
-		this.logger.error(
-			`AxiosError ${error?.response?.status} ${
-				error?.response ? JSON.stringify(error?.response.data?.error ?? error?.response.data?.data) : ''
-			}`
-		);
-		this.logger.info(theError);
+		this.logger.error('Error occur while sending request to strapi', {
+			'error.message': theError,
+			request: {
+				url: endPoint || 'none',
+				data: JSON.stringify(data) || 'none',
+				method: method || 'none',
+			},
+			response: {
+				body: JSON.stringify(error?.response?.data) ?? 'none',
+				status: error?.response?.status ?? 'none',
+			},
+		});
+
 		throw new Error(
 			`Error while trying admin ${method}` +
 				`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
