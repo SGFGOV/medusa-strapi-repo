@@ -15,7 +15,7 @@
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
     "fs": "^0.0.1-security",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^9.0.0"
   },
   "devDependencies": {
     "@aws-sdk/credential-provider-node": "^3.100.0",
