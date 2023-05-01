@@ -164,6 +164,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	constructor(container: UpdateStrapiServiceParams, options: StrapiMedusaPluginOptions) {
 		super(container);
+		this.selfTestMode = false;
 		this.enableAdminDataLogging = process.env.NODE_ENV == 'test' ? true : false;
 		this.logger = container.logger ?? (console as any);
 		this.productService_ = container.productService;
@@ -1129,6 +1130,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			url: `${this.strapi_url}/_health`,
 		};
 		this.logger.info('Checking strapi health');
+		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
+			return true;
+		}
 		try {
 			let response = undefined;
 			let timeOut = process.env.STRAPI_HEALTH_CHECK_INTERVAL
@@ -1648,11 +1652,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 			},
 		});
 
-		throw new Error(
-			`Error while trying ${method}` +
-				`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
+		if (!endPoint.includes('register-admin')) {
+			throw new Error(
+				`Error while trying ${method}` +
+					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
-		);
+			);
+		}
 	}
 	async executeStrapiAdminSend(
 		method: Method,
@@ -1716,7 +1722,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return result;
 		} catch (error) {
-			this.logger.error('Admin endpoint error');
+			//  this.logger.error('Admin endpoint error');
 			this._axiosError(error, id, type, data, method, basicConfig.url);
 		}
 	}

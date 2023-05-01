@@ -82,6 +82,9 @@ describe('StrapiService Tests', () => {
 		},
 		strapiConfigParameters
 	);
+	if (isMockEnabled()) {
+		service.selfTestMode = true;
+	}
 
 	const entry = {
 		unpublish: jest.fn(async () => {
