@@ -141,7 +141,7 @@ describe('StrapiService Tests', () => {
 		it(
 			'register or login admin',
 			async () => {
-				/*await service.registerOrLoginAdmin();
+			await service.registerOrLoginAdmin();
 			expect(service.strapiSuperAdminAuthToken).toBeDefined();
 			expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);*/
 				expect(1).toBe(1);
