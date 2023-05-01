@@ -260,7 +260,13 @@ async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
 		for (const field of uniqueFields) {
 			const filters = {};
 			filters[field] = dataReceived[field];
-			try {
+
+      // we're not iterating over empty fields as they're not unique
+      if (dataReceived[field] === null || dataReceived[field] === '') {
+        continue;
+      }
+
+      try {
 				const entity = await strapi.entityService.findMany(uid, {
 					filters,
 					fields: ['id', ...uniqueFields],
