@@ -368,10 +368,10 @@ describe('StrapiService Tests', () => {
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
 				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: expect.any(String) },
-                    medus_id: expect.any(String)
-                });*/
+					id: expect.any(Number),
+					data: { title: expect.any(String) },
+					medus_id: expect.any(String)
+				});*/
 
 				if (result) {
 					const productVariantGetResult = await service.getEntitiesFromStrapi({
@@ -390,10 +390,10 @@ describe('StrapiService Tests', () => {
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
 				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: "test-product-variant-2" },
-                    medus_id: expect.any(String)
-                });*/
+					id: expect.any(Number),
+					data: { title: "test-product-variant-2" },
+					medus_id: expect.any(String)
+				});*/
 				expect(spy).toHaveBeenCalled();
 			});
 			it('create  and update product category in strapi', async () => {
@@ -402,10 +402,10 @@ describe('StrapiService Tests', () => {
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
 				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: expect.any(String) },
-                    medus_id: expect.any(String)
-                });*/
+					id: expect.any(Number),
+					data: { title: expect.any(String) },
+					medus_id: expect.any(String)
+				});*/
 
 				if (result) {
 					const productCategoryResult = await service.getEntitiesFromStrapi({
@@ -424,10 +424,10 @@ describe('StrapiService Tests', () => {
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
 				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: "test-product-variant-2" },
-                    medus_id: expect.any(String)
-                });*/
+					id: expect.any(Number),
+					data: { title: "test-product-variant-2" },
+					medus_id: expect.any(String)
+				});*/
 				expect(spy).toHaveBeenCalled();
 			});
 		});
@@ -458,11 +458,11 @@ describe('StrapiService Tests', () => {
 					});
 
 					/*   result = await service.deleteCollectionInStrapi(
-                    { id: "exists" },
-                    defaultAuthInterface
-                );
+					{ id: "exists" },
+					defaultAuthInterface
+				);
 
-                expect(result.status != 200).toBeTruthy();*/
+				expect(result.status != 200).toBeTruthy();*/
 
 					result = await service.deleteProductMetafieldInStrapi(
 						{ id: IdMap.getId('exists') },
