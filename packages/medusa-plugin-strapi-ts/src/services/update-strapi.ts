@@ -1639,6 +1639,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			this.logger.info(`Endpoint Attempted: ${endPoint}`);
 		}
 		const theError = `${(error as Error).message} `;
+		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
 		this.logger.error('Error occur while sending request to strapi', {
 			'error.message': theError,
 			request: {
@@ -1647,7 +1648,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				method: method || 'none',
 			},
 			response: {
-				body: JSON.stringify(error?.response?.data) ?? 'none',
+				body: JSON.stringify(responseData),
 				status: error?.response?.status ?? 'none',
 			},
 		});
@@ -1723,7 +1724,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return result;
 		} catch (error) {
 			//  this.logger.error('Admin endpoint error');
-			this._axiosError(error, id, type, data, method, basicConfig.url);
+			this._axiosError(error, id, type, this.enableAdminDataLogging ? data : {}, method, basicConfig.url);
 		}
 	}
 
@@ -1770,10 +1771,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const auth: AdminUserType = {
 			...this.options_.strapi_admin,
 		};
-
-		return (await this.executeStrapiAdminSend('post', 'register-admin', undefined, undefined, auth)).data.user;
+		try {
+			const result = await this.executeStrapiAdminSend('post', 'register-admin', undefined, undefined, auth);
+			return result.data?.user;
+		} catch (e) {
+			this.logger.warn(`unable to register super user,` + ` super user may already registered, ${e.message}`);
+		}
 	}
-
 	async registerAdminUserInStrapi(
 		email: string,
 		firstname: string,
