@@ -178,9 +178,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.options_ = options;
 		this.algorithm = this.options_.encryption_algorithm || 'aes-256-cbc'; // Using AES encryption
 		this.protocol = this.options_.strapi_protocol;
-		this.strapi_url = `${this.protocol ?? 'https'}://${this.options_.strapi_host ?? 'localhost'}:${
-			this.options_.strapi_port ?? 1337
-		}`;
+		this.strapi_url = `${this.protocol ?? 'https'}://${this.options_.strapi_host ?? 'localhost'}:${this.options_.strapi_port ?? 1337
+			}`;
 		this.encryption_key = this.options_.strapi_secret || this.options_.strapi_public_key;
 		UpdateStrapiService.isHealthy = false;
 		this.defaultUserEmail = options.strapi_default_user.email;
@@ -610,9 +609,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 				delete variantToSend.prices;
 
 				/* const variantOptionValues = variantToSend.options;
-                 for (const variantOption of variantOptionValues) {
-                    this.convertOptionValueToMedusaReference(variantOption);
-                }*/
+				 for (const variantOption of variantOptionValues) {
+					this.convertOptionValueToMedusaReference(variantOption);
+				}*/
 
 				variantToSend['product-option-value'] = _.cloneDeep(variantToSend.options);
 
@@ -1267,10 +1266,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	/** 
-     * @Todo Create API based access
+	 * @Todo Create API based access
   async fetchMedusaUserApiKey(emailAddress) {
 
-    return await this.strapiAdminSend("get")
+	return await this.strapiAdminSend("get")
   }
 
   */
@@ -1376,23 +1375,23 @@ export class UpdateStrapiService extends TransactionBaseService {
 			const response = await axios.post(`${this.strapi_url}/api/auth/local`, authData);
 			// } catch (e) {
 			/* if (e.response.status == 429) {
-                    let i = 0;
-                    let timeOut: NodeJS.Timeout;
-                    while (i++ < 60000) {
-                        if (timeOut) {
-                            clearTimeout(timeOut);
-                            this.logger.info(
-                                `429 recieved backing off  seconds: ${timeOut} remaining`
-                            );
-                        }
-                        timeOut = setTimeout(async () => {
-                            res = await axios.post(
-                                `${this.strapi_url}/api/auth/local`,
-                                authData
-                            );
-                        }, 60000 - i);
-                    }
-                }*/
+					let i = 0;
+					let timeOut: NodeJS.Timeout;
+					while (i++ < 60000) {
+						if (timeOut) {
+							clearTimeout(timeOut);
+							this.logger.info(
+								`429 recieved backing off  seconds: ${timeOut} remaining`
+							);
+						}
+						timeOut = setTimeout(async () => {
+							res = await axios.post(
+								`${this.strapi_url}/api/auth/local`,
+								authData
+							);
+						}, 60000 - i);
+					}
+				}*/
 			// }
 			// console.log("login result"+res);
 			return response;
@@ -1610,12 +1609,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.logger.info(`${basicConfig.method} ${basicConfig.url}`);
 		const config = data
 			? {
-					...basicConfig,
-					data,
-			  }
+				...basicConfig,
+				data,
+			}
 			: {
-					...basicConfig,
-			  };
+				...basicConfig,
+			};
 
 		try {
 			this.logger.info(`User Endpoint firing: ${endPoint}`);
@@ -1624,8 +1623,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			// console.log("attempting action:"+result);
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
-					`Strapi Ok : method: ${method}, id:${id}, type:${type}, data:${JSON.stringify(data)}, :status:${
-						result.status
+					`Strapi Ok : method: ${method}, id:${id}, type:${type}, data:${JSON.stringify(data)}, :status:${result.status
 					}`
 				);
 			}
@@ -1657,7 +1655,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		if (!endPoint.includes('register-admin')) {
 			throw new Error(
 				`Error while trying ${method}` +
-					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
+				`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
 			);
 		}
@@ -1702,20 +1700,19 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.logger.info(`Admin Endpoint fired: ${basicConfig.url}`);
 		const config = data
 			? {
-					...basicConfig,
-					data,
-			  }
+				...basicConfig,
+				data,
+			}
 			: {
-					...basicConfig,
-			  };
+				...basicConfig,
+			};
 		try {
 			const result = await axios(config);
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
 					`Strapi Ok : ${method}, ${id ?? ''}` +
-						`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${
-							result.status
-						}`
+					`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${result.status
+					}`
 				);
 				this.logger.info(`Strapi Data : ${JSON.stringify(result.data)}`);
 			} else {
@@ -1941,9 +1938,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			if (user) {
 				const response = await this.executeSync(this.strapiSuperAdminAuthToken);
 				/* const response = await this.configureStrapiMedusaForUser({
-                    email: this.options_.strapi_default_user.email,
-                    password: this.options_.strapi_default_user.password
-                });*/
+					email: this.options_.strapi_default_user.email,
+					password: this.options_.strapi_default_user.password
+				});*/
 				if (response.status < 300) {
 					this.logger.info('medusa - strap -bootstrap confirmed ..please wait till sync completes');
 					return response;
@@ -1986,7 +1983,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async registerOrLoginDefaultMedusaUser(): Promise<UserCreds> {
 		try {
 			await this.registerDefaultMedusaUser();
-			this.logger.info('registered default user', JSON.stringify(e));
+			this.logger.info('registered default user');
 		} catch (e) {
 			this.logger.info('default user already registered', JSON.stringify(e));
 		}

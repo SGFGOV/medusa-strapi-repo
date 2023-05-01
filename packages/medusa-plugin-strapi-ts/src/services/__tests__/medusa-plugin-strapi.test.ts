@@ -145,7 +145,7 @@ describe('StrapiService Tests', () => {
 				expect(service.strapiSuperAdminAuthToken).toBeDefined();
 				expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
 
-				console.log('skpping author check');
+				console.log('skipping author check');
 				expect(1).toBe(1);
 				return;
 				const roleId = await service.getRoleId('Author');
