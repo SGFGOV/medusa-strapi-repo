@@ -178,8 +178,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.options_ = options;
 		this.algorithm = this.options_.encryption_algorithm || 'aes-256-cbc'; // Using AES encryption
 		this.protocol = this.options_.strapi_protocol;
-		this.strapi_url = `${this.protocol ?? 'https'}://${this.options_.strapi_host ?? 'localhost'}:${this.options_.strapi_port ?? 1337
-			}`;
+		this.strapi_url = `${this.protocol ?? 'https'}://${this.options_.strapi_host ?? 'localhost'}:${
+			this.options_.strapi_port ?? 1337
+		}`;
 		this.encryption_key = this.options_.strapi_secret || this.options_.strapi_public_key;
 		UpdateStrapiService.isHealthy = false;
 		this.defaultUserEmail = options.strapi_default_user.email;
@@ -1609,12 +1610,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.logger.info(`${basicConfig.method} ${basicConfig.url}`);
 		const config = data
 			? {
-				...basicConfig,
-				data,
-			}
+					...basicConfig,
+					data,
+			  }
 			: {
-				...basicConfig,
-			};
+					...basicConfig,
+			  };
 
 		try {
 			this.logger.info(`User Endpoint firing: ${endPoint}`);
@@ -1623,7 +1624,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 			// console.log("attempting action:"+result);
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
-					`Strapi Ok : method: ${method}, id:${id}, type:${type}, data:${JSON.stringify(data)}, :status:${result.status
+					`Strapi Ok : method: ${method}, id:${id}, type:${type}, data:${JSON.stringify(data)}, :status:${
+						result.status
 					}`
 				);
 			}
@@ -1655,7 +1657,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		if (!endPoint.includes('register-admin')) {
 			throw new Error(
 				`Error while trying ${method}` +
-				`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
+					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
 			);
 		}
@@ -1700,19 +1702,20 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.logger.info(`Admin Endpoint fired: ${basicConfig.url}`);
 		const config = data
 			? {
-				...basicConfig,
-				data,
-			}
+					...basicConfig,
+					data,
+			  }
 			: {
-				...basicConfig,
-			};
+					...basicConfig,
+			  };
 		try {
 			const result = await axios(config);
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
 					`Strapi Ok : ${method}, ${id ?? ''}` +
-					`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${result.status
-					}`
+						`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${
+							result.status
+						}`
 				);
 				this.logger.info(`Strapi Data : ${JSON.stringify(result.data)}`);
 			} else {
