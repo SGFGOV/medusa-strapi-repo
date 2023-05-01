@@ -650,7 +650,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		// eslint-disable-next-line no-useless-catch
 		try {
 			const region = await this.regionService_.retrieve(regionId, {
-				relations: ['countries', 'payment_providers', 'fulfillment_providers', 'currency'],
+				relations: ['	', 'payment_providers', 'fulfillment_providers', 'currency'],
 				select: ['id', 'name', 'tax_rate', 'tax_code', 'metadata'],
 			});
 
@@ -1640,7 +1640,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 
 		throw new Error(
-			`Error while trying admin ${method}` +
+			`Error while trying ${method}` +
 				`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
 		);

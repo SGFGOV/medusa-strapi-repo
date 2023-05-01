@@ -522,6 +522,26 @@ function enableMockFunctions(axios): void {
 			},
 		],
 	});
+	mock.onGet(/\/api\/countries/g).reply(200, {
+		data: [
+			{
+				id: 1,
+				name: 'India',
+			},
+			{
+				id: 2,
+				name: 'Usa',
+			},
+		],
+	});
+	mock.onGet(/\/api\/countries\//g).reply(200, {
+		data: [
+			{
+				id: 1,
+				name: 'India',
+			},
+		],
+	});
 	mock.onGet(/\/admin\/roles/g).reply(200, {
 		data: [
 			{
