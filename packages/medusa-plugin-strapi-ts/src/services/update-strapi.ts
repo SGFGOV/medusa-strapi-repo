@@ -1131,6 +1131,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		};
 		this.logger.info('Checking strapi health');
 		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
+			this.logger.info('running in self test mode');
 			return true;
 		}
 		try {
@@ -1985,6 +1986,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async registerOrLoginDefaultMedusaUser(): Promise<UserCreds> {
 		try {
 			await this.registerDefaultMedusaUser();
+			this.logger.info('registered default user', JSON.stringify(e));
 		} catch (e) {
 			this.logger.info('default user already registered', JSON.stringify(e));
 		}
