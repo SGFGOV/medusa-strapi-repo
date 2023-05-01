@@ -159,10 +159,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 	isStarted: boolean;
 	productCollectionService: ProductCollectionService;
 	productCategoryService: any;
+	private enableAdminDataLogging: boolean;
 
 	constructor(container: UpdateStrapiServiceParams, options: StrapiMedusaPluginOptions) {
 		super(container);
-
+		this.enableAdminDataLogging = process.env.NODE_ENV == 'test' ? true : false;
 		this.logger = container.logger ?? (console as any);
 		this.productService_ = container.productService;
 		this.productVariantService_ = container.productVariantService;
@@ -1692,7 +1693,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
 					`Strapi Ok : ${method}, ${id ?? ''}` +
-						`, ${type ?? ''}, ${data ?? ''}, ${action ?? ''} :status:${result.status}`
+						`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${
+							result.status
+						}`
 				);
 				this.logger.info(`Strapi Data : ${JSON.stringify(result.data)}`);
 			} else {
