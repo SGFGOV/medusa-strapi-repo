@@ -1393,16 +1393,19 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 	async getRoleId(requestedRole: string): Promise<number> {
 		const response = await this.executeStrapiAdminSend('get', 'roles');
+		let idToReturn = -1;
 		// console.log("role:", response);
 		if (response) {
 			const availableRoles = response.data.data as role[];
-			for (const role of availableRoles) {
+			const theRole = availableRoles?.filter((role) => role.name == requestedRole);
+			/*for (const role of availableRoles) {
 				if (role.name == requestedRole) {
 					return role.id;
 				}
-			}
+			}*/
+			idToReturn = theRole?.[0]?.id ?? -1;
 		}
-		return -1;
+		return idToReturn;
 	}
 	async processStrapiEntry(command: StrapiSendParams): Promise<StrapiResult> {
 		try {
@@ -1707,7 +1710,6 @@ export class UpdateStrapiService extends TransactionBaseService {
 			this.logger.error('Admin endpoint error');
 			this._axiosError(error, id, type, data, method, basicConfig.url);
 		}
-		``;
 	}
 
 	async executeRegisterMedusaUser(auth: MedusaUserType): Promise<AxiosResponse | undefined> {

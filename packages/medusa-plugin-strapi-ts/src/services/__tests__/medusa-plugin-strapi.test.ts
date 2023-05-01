@@ -145,6 +145,11 @@ describe('StrapiService Tests', () => {
 			expect(roleId).toBeGreaterThan(0);
 		});
 
+		it('check if error is sent if role doesnt exists', async () => {
+			const roleId = await service.getRoleId('new role');
+			expect(roleId).toBe(-1);
+		});
+
 		it(
 			'register or login default medusa user',
 			async () => {
