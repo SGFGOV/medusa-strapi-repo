@@ -58,6 +58,6 @@
     "**/parse-url":"^8.1.0",
     "**/sharp":"0.32.0",
     "**/class-validator":"^0.14.0",
-    "**/strapi-plugin-multi-country-select":"npm:@sgftech/strapi-plugin-multi-country-select"
+    "**/strapi-plugin-multi-country-select":"npm:@sgftech/plugin-multi-country-select"
   }
 }
