@@ -4,8 +4,9 @@
 ### 🏠 [Homepage](../../README.md)
 # Strapi plugin strapi-plugin-sso-medusa
 
+
 ## Introduction
-This plugin can provide single sign-on.
+This plugin can provide single sign-on. This document is still a little work in progress as the new admin requires you to make some changes to the admin and admin-ui to parameterise the strapi url and csp frame url !
 
 You will be able to log in to the administration screen using your medusa credentials
 
@@ -16,6 +17,9 @@ This plugin is designed exclusively for medusa
 Please read the [documents](#user-content-documentationenglish) for some precautions.
 
 **This plugin is developed by one engineer.**
+
+## Preview
+[image](https://user-images.githubusercontent.com/97059996/235581081-55c04342-b9d9-4f1d-ae9b-6cfa096434ad.png)
 
 
 ## Easy to install
