@@ -24,14 +24,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adrien2p/medusa-plugins.git"
+    "url": "git+https://github.com/sgfgov/medusa-strapi-repo.git"
   },
   "author": "Govind Diwakar",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/adrien2p/medusa-plugins/issues"
+    "url": "https://github.com/sgfgov/medusa-strapi-repo/issues"
   },
-  "homepage": "https://github.com/adrien2p/medusa-plugins#readme",
+  "homepage": "https://github.com/sgfgov/medusa-strapi-repo#readme",
   "dependencies": {
     "rimraf": "^3.0.1",
     "tsconfig.json": "^1.0.11"
@@ -57,6 +57,7 @@
     "**/parse-path":"^5.0.0",
     "**/parse-url":"^8.1.0",
     "**/sharp":"0.32.0",
-    "**/class-validator":"^0.14.0"
+    "**/class-validator":"^0.14.0",
+    "**/strapi-plugin-multi-country-select":"npm:@sgftech/plugin-multi-country-select"
   }
 }
