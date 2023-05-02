@@ -19,8 +19,9 @@ Please read the [documents](#user-content-documentationenglish) for some precaut
 **This plugin is developed by one engineer.**
 
 ## Preview
-[image](https://user-images.githubusercontent.com/97059996/235581081-55c04342-b9d9-4f1d-ae9b-6cfa096434ad.png)
-
+<div align="center"> 
+ <img src="https://user-images.githubusercontent.com/97059996/235581081-55c04342-b9d9-4f1d-ae9b-6cfa096434ad.png" />
+</div>
 
 ## Easy to install
 ```shell
