@@ -832,14 +832,16 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			const product = await this.productService_.retrieve(data.id, {
 				relations: [
-					'options',
-					'variants',
-					'variants.prices',
-					'variants.options',
-					'type',
-					'collection',
-					'tags',
-					'images',
+					// As for now, we can't update relations due to issue with redundant fields
+					// We should pick which fields we want to synchronise from product relations
+					// 'options',
+					// 'variants',
+					// 'variants.prices',
+					// 'variants.options',
+					// 'type',
+					// 'collection',
+					// 'tags',
+					// 'images',
 				],
 				select: [
 					'id',
