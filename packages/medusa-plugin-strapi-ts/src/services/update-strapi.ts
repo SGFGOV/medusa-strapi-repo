@@ -1634,10 +1634,17 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return result;
 		} catch (error) {
-			this._axiosError(error, id, type, data, method, endPoint);
+			await this._axiosError(error, id, type, data, method, endPoint);
 		}
 	}
-	_axiosError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string): void {
+	_axiosError(
+		error: any,
+		id?: string,
+		type?: string,
+		data?: any,
+		method?: Method,
+		endPoint?: string
+	): void | Promise<void | StrapiResult> {
 		if (endPoint) {
 			this.logger.info(`Endpoint Attempted: ${endPoint}`);
 		}
@@ -1656,12 +1663,25 @@ export class UpdateStrapiService extends TransactionBaseService {
 			},
 		});
 
+		if (error?.response?.status == 401) {
+			return this.reauthoriseAndSend(id, type, data, method);
+		}
+
 		if (!endPoint.includes('register-admin')) {
 			throw new Error(
 				`Error while trying ${method}` +
 					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
 			);
+		}
+	}
+	async reauthoriseAndSend(id: string, type: string, data: any, method: Method): Promise<void | StrapiResult> {
+		try {
+			await this.executeLoginAsStrapiUser();
+			const strapiResult = await this.executeStrapiSend(method, type, id, data);
+			return strapiResult;
+		} catch (e) {
+			this.logger.error('re login attempt failed');
 		}
 	}
 	async executeStrapiAdminSend(
