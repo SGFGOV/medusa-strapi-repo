@@ -407,7 +407,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				productToSend['product-variants'] = _.cloneDeep(productToSend.variants);
 				delete productToSend.variants;
 
-				productToSend['product-collections'] = _.cloneDeep(productToSend.collection);
+				productToSend['product-collection'] = _.cloneDeep(productToSend.collection);
 				delete productToSend.collection;
 
 				productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
@@ -918,12 +918,16 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	private async adjustProductAndUpdateInStrapi(product: Product, data, authInterface: AuthInterface) {
-		// Medusa is not using consistent naming for product-collection.
-		// We have to adjust it manually from collection to product-collection
+		// Medusa is not using consistent naming for product-*.
+		// We have to adjust it manually. For example: collection to product-collection
 		const dataToUpdate = {...product, ...data};
-		if ('collection' in dataToUpdate) {
-			dataToUpdate['product-collection'] = dataToUpdate.collection;
-			delete dataToUpdate.collection;
+
+		const keysToUpdate = ['collection', 'categories', 'type', 'tags', 'variants', 'options'];
+		for (const key of keysToUpdate) {
+			if (key in dataToUpdate) {
+				dataToUpdate[`product-${key}`] = dataToUpdate[key];
+				delete dataToUpdate[key];
+			}
 		}
 
 		const response = await this.updateEntryInStrapi({
@@ -1324,7 +1328,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		return { data: result.data.data ?? result.data, status: result.status };
 	}
 
-	/** 
+	/**
 	 * @Todo Create API based access
   async fetchMedusaUserApiKey(emailAddress) {
 
