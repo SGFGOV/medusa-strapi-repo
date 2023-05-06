@@ -1,63 +1,63 @@
 module.exports = {
-  // parser: `@babel/eslint-parser`,
-  parserOptions: {
-    requireConfigFile: false,
-    ecmaFeatures: {
-      experimentalDecorators: true,
-    },
-    ecmaVersion: "latest",
-    sourceType: "module",
+  parser: '@typescript-eslint/parser',
+  parserOptions: { 
+    project: 'tsconfig.json',
+    sourceType: 'module',
   },
-  plugins: [`eslint-plugin-prettier`, `prettier`],
-  extends: [`eslint:recommended`, `google`, `eslint-config-prettier`],
-  rules: {
-    //   "prettier/prettier": `error`,
-    curly: [2, `all`],
-    "new-cap": `off`,
-    "require-jsdoc": `off`,
-    semi: `off`,
-    "no-unused-expressions": `off`,
-    camelcase: `off`,
-    "no-invalid-this": `off`,
-    "prettier/prettier": [
-      "error",
-      {
-        endOfLine: "auto",
-      },
-      {
-        usePrettierrc: true,
-      },
-    ],
-  },
+  plugins: ['@typescript-eslint/eslint-plugin', "prettier"],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
+  root: true,
   env: {
-    es6: true,
     node: true,
     jest: true,
   },
-  ignorePatterns: [`**/models`, `**/repositories`],
-  /* overrides: [
+  ignorePatterns: [
+    '**/*.txt',
+    '**/dist/*',
+    '**/*.yml',
+    '**/*.jpg',
+    '**/*.ico',
+    '**/*.sh',
+      '**/*.lock',
+      '**/*.png',
+      '**/*.gif',
+      '**/*.html',
+      '**/LICENSE',
+      '.eslintrc.js',
+      '**/.prettier*',
+      '**/.version*',
+      '**/*.md',
+      '**/*.json',
+      '**/*.js.map',
+      '**/*.d.ts',
+      '**/*.d.ts.map',
+      '**/*.pdf',
+  ],
+  overrides: [
     {
-      files: [`*.ts`], 
-      parser: `@typescript-eslint/parser`,
-      plugins: [`@typescript-eslint/eslint-plugin`],
-      extends: [`plugin:@typescript-eslint/recommended`],
-      rules: {
-        "valid-jsdoc": [ 
-          "error",
-          {
-            requireParamType: false,
-            requireReturnType: false,
-            prefer: {
-              arg: "param",
-              argument: "param",
-              class: "constructor",
-              return: "return",
-              virtual: "abstract",
-            },
-          },
-        ],
-        "@typescript-eslint/explicit-function-return-type": ["error"],
-        "@typescript-eslint/no-non-null-assertion": ["off"],
-      },
-    },*/
+      files: ["*"],
+      "rules": {
+        "prefer-rest-params": "off",
+        "@typescript-eslint/no-empty-function":"off"
+      }
+    },
+  ],
+  rules: {
+    "prettier/prettier": "error",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "Function": false
+        },
+        "extendDefaults": true
+      }
+    ],
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off"
+  },
 };

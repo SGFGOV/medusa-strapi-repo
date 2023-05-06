@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+	  "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowJs": false,
+      "rootDir": "src",
+      "baseUrl": "./",
+      "outDir": "./"
+
+  },
+  "extends": "../../tsconfig.json",
+  
+  "include": [
+    "src",
+    "src/api/routes/strapi-admin"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ]
+}

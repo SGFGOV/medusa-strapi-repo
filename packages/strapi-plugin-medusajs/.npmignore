@@ -1,0 +1,12 @@
+.idea
+node_modules
+.DS_store
+.env*
+coverage
+index.ts
+tests
+tsconfig.tsbuildinfo
+*ignore*
+.eslint*
+*.tgz
+server

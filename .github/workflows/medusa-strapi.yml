@@ -1,13 +1,11 @@
-name: SGF-strapi
+name: medusa-strapi
 on:
   push:
     branches:
       - master
-      - staging
   pull_request:
     branches:
       - master
-      - staging
 
 jobs:
   unit-test:
@@ -32,13 +30,21 @@ jobs:
           node-version: ${{ matrix.node-verion }}
 
       - name: 'yarn install'
-        working-directory: ./
+        working-directory: ./packages/medusa-strapi
         run: yarn install --frozen-lockfile
 
+      - name: 'yarn install'
+        working-directory: ./packages/strapi-plugin-medusajs
+        run: yarn install --frozen-lockfile 
+
       - name: 'yarn build'
-        working-directory: ./
+        working-directory: ./packages/strapi-plugin-medusajs
+        run: yarn run build 
+
+      - name: 'yarn build'
+        working-directory: ./packages/medusa-strapi
         run: yarn run build 
 
       - name: 'run unit tests'
-        working-directory: ./
+        working-directory: ./packages/medusa-strapi
         run: yarn run test
