@@ -99,6 +99,7 @@ function DatabaseConfiguration({ env }) {
 				database: env('DATABASE_NAME', process.env.RDS_DATABASE || 'postgres_strapi'),
 				user: env('DATABASE_USERNAME', process.env.RDS_USERNAME || 'postgres'),
 				password: getToken || env('DATABASE_PASSWORD', 'postgres'),
+				schema: env('DATABASE_SCHEMA', process.env.RDS_DABASE_SCHEMA || 'public'),
 				ssl: env.bool('DATABASE_SSL', {
 					rejectUnauthorized: false,
 					ca: getCertificate(),
@@ -116,6 +117,7 @@ function DatabaseConfiguration({ env }) {
 				database: env('DATABASE_NAME', 'postgres_strapi'),
 				user: env('DATABASE_USERNAME', 'postgres'),
 				password: env('DATABASE_PASSWORD', 'postgres'),
+				schema: env('DATABASE_SCHEMA', 'public'),
 			},
 		},
 	};
