@@ -737,7 +737,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	 */
 
 	async createProductMetafieldInStrapi(
-		data: { id: string; data: Record<string, unknown> },
+		data: { id: string; value: Record<string, unknown> },
 		authInterface: AuthInterface = this.defaultAuthInterface
 	): Promise<StrapiResult> {
 		const typeExists = await this.checkType('product-metafields', authInterface);
@@ -762,7 +762,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async updateProductMetafieldInStrapi(
-		data: { id: string; data: Record<string, unknown> },
+		data: { id: string; value: Record<string, unknown> },
 		authInterface: AuthInterface
 	): Promise<StrapiResult> {
 		const typeExists = await this.checkType('product-metafields', authInterface);
@@ -787,7 +787,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 	}
 
-	async updateProductsWithinCollectionInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
+	async updateProductsWithinCollectionInStrapi(
+		data,
+		authInterface: AuthInterface = this.defaultAuthInterface
+	): Promise<StrapiResult> {
 		const hasType = await this.getType('products', authInterface)
 			.then(() => {
 				return true;
@@ -796,7 +799,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return false;
 			});
 		if (!hasType) {
-			return {status: 400};
+			return { status: 400 };
 		}
 
 		const updateFields = ['productIds', 'productCollection'];
@@ -805,7 +808,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return { status: 400 };
 		}
 		try {
-			for(const productId of data.productIds) {
+			for (const productId of data.productIds) {
 				const ignore = await this.shouldIgnore_(productId, 'strapi');
 				if (ignore) {
 					this.logger.info(
@@ -826,7 +829,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			return { status: 200 };
 		} catch (error) {
-			this.logger.error("Error updating products in collection", error);
+			this.logger.error('Error updating products in collection', error);
 			throw error;
 		}
 		return { status: 400 };
@@ -920,7 +923,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	private async adjustProductAndUpdateInStrapi(product: Product, data, authInterface: AuthInterface) {
 		// Medusa is not using consistent naming for product-*.
 		// We have to adjust it manually. For example: collection to product-collection
-		const dataToUpdate = {...product, ...data};
+		const dataToUpdate = { ...product, ...data };
 
 		const keysToUpdate = ['collection', 'categories', 'type', 'tags', 'variants', 'options'];
 		for (const key of keysToUpdate) {
