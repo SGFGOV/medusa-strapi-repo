@@ -108,11 +108,11 @@
       "target": "api::image.image",
       "mappedBy": "product"
     },
-    "product-collections": {
+    "product-collection": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "manyToOne",
       "target": "api::product-collection.product-collection",
-      "mappedBy": "products"
+      "inversedBy": "products"
     },
     "product-categories": {
       "type": "relation",
@@ -120,7 +120,6 @@
       "target": "api::product-category.product-category",
       "mappedBy": "products"
     },
-    
     "product-type": {
       "type": "relation",
       "relation": "manyToOne",
