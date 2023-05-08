@@ -1,6 +1,6 @@
 {
   "name": "medusa-plugin-strapi-ts",
-  "version": "4.4.3",
+  "version": "4.4.7",
   "description": "A plugin for medusa to use strapi in the backend as the cms in typescript",
   "main": "index.js",
   "types": "index.d.ts",
@@ -25,8 +25,8 @@
     "clean": "./node_modules/.bin/rimraf types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
-    "test": "jest --coverage --runInBand --setupFiles=dotenv/config --silent",
-    "publish":"build && version patch && publish"
+    "test": "jest --coverage --runInBand --setupFiles=dotenv/config --silent"
+    
   },
   "devDependencies": {
     "@medusajs/medusa": "^1.8.2",
