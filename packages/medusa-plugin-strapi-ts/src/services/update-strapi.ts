@@ -478,7 +478,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createCollectionInStrapi(collectionId: string, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-collections', authInterface)
+		const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -558,7 +558,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createCategoryInStrapi(categoryId: string, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-categories', authInterface)
+		const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -588,7 +588,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createProductVariantInStrapi(variantId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-variants', authInterface)
+		const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -647,7 +647,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createRegionInStrapi(regionId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('regions', authInterface)
+		const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => false);
 		if (!hasType) {
@@ -677,7 +677,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async updateRegionInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('regions', authInterface)
+		const hasType = this.getType('regions', authInterface)
 			.then(() => {
 				// this.logger.info(res.data)
 				return true;
@@ -791,7 +791,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		data,
 		authInterface: AuthInterface = this.defaultAuthInterface
 	): Promise<StrapiResult> {
-		const hasType = await this.getType('products', authInterface)
+		const hasType = this.getType('products', authInterface)
 			.then(() => {
 				return true;
 			})
@@ -836,7 +836,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async updateProductInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('products', authInterface)
+		const hasType = this.getType('products', authInterface)
 			.then(() => {
 				// this.logger.info(res.data)
 				return true;
@@ -1011,7 +1011,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductMetafieldInStrapi(data: { id: string }, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-metafields', authInterface)
+		const hasType = this.getType('product-metafields', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.logger.info(err);
@@ -1036,7 +1036,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('products', authInterface)
+		const hasType = this.getType('products', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.logger.info(err);
@@ -1062,7 +1062,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductTypeInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-types', authInterface)
+		const hasType = this.getType('product-types', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.logger.info(err);
@@ -1086,7 +1086,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductVariantInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-variants', authInterface)
+		const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1111,7 +1111,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	// Blocker - Delete Region API
 	async deleteRegionInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('regions', authInterface)
+		const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1135,7 +1135,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteCollectionInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-collections', authInterface)
+		const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1158,7 +1158,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 	}
 	async deleteCategoryInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-categories', authInterface)
+		const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -2095,6 +2095,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		return await this.loginAsDefaultMedusaUser();
 	}
 	verifyDataContainsFields(data: any, updateFields: any[]): boolean {
+		if (!data || _.isEmpty(data)) return false;
 		let found = data.fields?.find((f) => updateFields.includes(f));
 		if (!found) {
 			try {
