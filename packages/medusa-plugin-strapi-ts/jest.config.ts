@@ -1,7 +1,7 @@
 export default {
 	globals: {
 		'ts-jest': {
-			tsconfig: 'tsconfig.spec.json',
+			tsconfig: './src/tsconfig.spec.json',
 		},
 	},
 	moduleFileExtensions: ['js', 'json', 'ts'],

@@ -19,3 +19,5 @@ export function notifyUpdates() {
 }
 */
 }
+
+export default notifyUpdates;

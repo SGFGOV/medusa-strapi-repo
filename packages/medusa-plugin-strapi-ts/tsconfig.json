@@ -1,29 +1,19 @@
 {
   "compilerOptions": {
+    "incremental": true,
 	  "experimentalDecorators": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "allowJs": false,
       "rootDir": "./",
       "baseUrl": "./",
-      "outDir": "./dist",
-      "resolveJsonModule": true
-
+      "outDir": "./",
+    "composite": true
   },
   "extends": "../../tsconfig.json",
-  
-  "include": [
-    "src/**/*",
-    "src/api/routes/strapi-admin"
-  ],
+  "files": ["package.json"],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts",
-    "**/__tests__/**",
-    "**/__mocks__/**",
-    "./subscribers/**",
-    "./api/**",
-    "./services/**",
-    "./utils/**",
-    "./types/**",
+    "**/*.spec.ts"
   ]
 }

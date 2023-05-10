@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    "allowJs": true
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "esModuleInterop": "true",
+    "moduleResolution": "node"
   },
   "extends": "../../tsconfig.json",
-  "include": ["src/**/*.spec.ts","src/**/__tests__/**/*.ts"],
+  //"include": ["src/**/*.spec.ts","src/**/__tests__/**/*.ts"],
   "exclude": ["node_modules"]
 }

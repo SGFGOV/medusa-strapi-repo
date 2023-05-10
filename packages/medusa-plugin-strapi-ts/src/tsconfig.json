@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "rootDir": ".",
+        "outDir": "../dist",
+        "resolveJsonModule": true,
+        "esModuleInterop":true,
+        "skipLibCheck": true,
+    },
+    "references": [ // this is how we declare a dependency from
+        {
+            "path": "../"
+        } // this project to the one at the root dir`
+    ],
+    "exclude": [
+        "**/node_modules/**/*",
+        "**/*.spec.ts",
+        "**/__tests__/**",
+        "**/__mocks__/**"
+    ]
+}

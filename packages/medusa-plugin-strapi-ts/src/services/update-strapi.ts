@@ -6,6 +6,9 @@ import { sleep } from '@medusajs/medusa/dist/utils/sleep';
 import qs from 'qs';
 import passwordGen from 'generate-password';
 import axiosRetry from 'axios-retry';
+import notifyUpdates from '../utils/update-notifier';
+
+notifyUpdates();
 
 let strapiRetryDelay: number;
 
