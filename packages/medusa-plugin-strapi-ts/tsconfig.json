@@ -3,21 +3,27 @@
 	  "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowJs": false,
-      "rootDir": "src",
+      "rootDir": "./",
       "baseUrl": "./",
-      "outDir": "./"
+      "outDir": "./dist",
+      "resolveJsonModule": true
 
   },
   "extends": "../../tsconfig.json",
   
   "include": [
-    "src",
+    "src/**/*",
     "src/api/routes/strapi-admin"
   ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
     "**/__tests__/**",
-    "**/__mocks__/**"
+    "**/__mocks__/**",
+    "./subscribers/**",
+    "./api/**",
+    "./services/**",
+    "./utils/**",
+    "./types/**",
   ]
 }
