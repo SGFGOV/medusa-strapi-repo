@@ -2,6 +2,7 @@
   "compilerOptions": {
 	  "experimentalDecorators": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "allowJs": false,
       "rootDir": "src",
       "baseUrl": "./",

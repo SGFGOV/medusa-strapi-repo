@@ -1,4 +1,4 @@
-import StrapiService from '../update-strapi';
+import StrapiService, { LoginTokenExpiredError } from '../update-strapi';
 import { jest, describe, expect, beforeEach, it, beforeAll, afterAll } from '@jest/globals';
 import {
 	regionService,
@@ -15,12 +15,14 @@ import {
 	strapiHost,
 	strapiPath,
 	testUserEmail,
+	strapiProtocol,
+	strapiPort,
 } from '../__mocks__/service-mocks';
 import { StrapiMedusaPluginOptions } from '../../types/globals';
 import { IdMap, MockManager } from 'medusa-test-utils';
 import UpdateStrapiService, { StrapiResult } from '../update-strapi';
 import logger from '../__mocks__/logger';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // This sets the mock adapter on the default instance
 
@@ -44,7 +46,6 @@ describe('StrapiService Tests', () => {
 	}
 	const strapiConfigParameters: StrapiMedusaPluginOptions = {
 		encryption_algorithm: 'aes-256-cbc',
-		strapi_protocol: 'http',
 		strapi_default_user: {
 			username: 'testuser15',
 			password: 'testuser',
@@ -54,13 +55,15 @@ describe('StrapiService Tests', () => {
 			blocked: false,
 			provider: 'local',
 		},
-		strapi_host: strapiHost,
+
 		strapi_admin: {
 			password: 'MedusaStrapi1',
 			firstname: 'SuperUser',
 			email: 'support@medusa-commerce.com',
 		},
-		strapi_port: '1337',
+		strapi_host: strapiHost,
+		strapi_protocol: strapiProtocol,
+		strapi_port: strapiPort,
 		strapi_secret: 'test',
 		strapi_public_key: undefined,
 		strapi_ignore_threshold: 0,
@@ -152,6 +155,48 @@ describe('StrapiService Tests', () => {
 		);
 
 		it(
+			'register or login admin with refresh by throwing an exception',
+			async () => {
+				const axiosSpy = jest.spyOn(axios, 'post').mockImplementationOnce(() => {
+					throw new LoginTokenExpiredError({
+						error: new AxiosError('test error', '401', {}, {}, {} as any),
+						response: {
+							status: 401,
+						},
+						message: 'test error',
+					});
+				});
+
+				await service.loginAsDefaultMedusaUser();
+				expect(axiosSpy).toBeCalled();
+				expect(service.strapiSuperAdminAuthToken).toBeDefined();
+				expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
+				const spy = jest.spyOn(service, 'executeLoginAsStrapiUser');
+				const spy_2 = jest.spyOn(service, 'retrieveRefreshedToken');
+				const roleId = await service.getType('products', defaultAuthInterface);
+				expect(spy).toBeCalledTimes(2);
+				expect(spy_2).toBeCalledTimes(2);
+				//	expect(roleId).toBeGreaterThan(0);
+			},
+			testTimeOut
+		);
+
+		it(
+			'register or login admin with refresh by resetting expiry time',
+			async () => {
+				const spy = jest.spyOn(service, 'executeLoginAsStrapiUser');
+				service.userTokens[testUserEmail].time = 0;
+				await service.registerOrLoginDefaultMedusaUser();
+
+				service.userTokens[testUserEmail].time = 0;
+				await service.getType('products', defaultAuthInterface);
+				expect(spy).toBeCalledTimes(2);
+				//expect(roleId).toBeGreaterThan(0);
+			},
+			testTimeOut
+		);
+
+		it(
 			'check if error is sent if role doesnt exists',
 			async () => {
 				const roleId = await service.getRoleId('new role');
@@ -168,17 +213,21 @@ describe('StrapiService Tests', () => {
 			},
 			testTimeOut
 		);
-		if (!isMockEnabled()) {
-			it(
-				'delete medusa user',
-				async () => {
+
+		it(
+			'delete medusa user',
+			async () => {
+				if (!isMockEnabled()) {
 					await service.deleteDefaultMedusaUser();
 					const creds = await service.loginAsDefaultMedusaUser();
 					expect(creds).toBeUndefined();
-				},
-				testTimeOut
-			);
-		}
+				} else {
+					console.warn('disabled when not connected to test server');
+					expect(true).toBe(true);
+				}
+			},
+			testTimeOut
+		);
 	});
 	describe('user actions and signal send', () => {
 		beforeAll(async () => await service.registerOrLoginDefaultMedusaUser());
@@ -245,10 +294,11 @@ describe('StrapiService Tests', () => {
 				},
 				testTimeOut
 			);
-			if (!isMockEnabled()) {
-				it(
-					'product recreation',
-					async () => {
+
+			it(
+				'product recreation',
+				async () => {
+					if (!isMockEnabled()) {
 						result = await service.createProductInStrapi(IdMap.getId('exists'), defaultAuthInterface);
 						expect(result).toBeDefined();
 						expect(result.status).toBe(302);
@@ -265,14 +315,18 @@ describe('StrapiService Tests', () => {
 							expect(productGetResult).toBeDefined();
 							expect(productGetResult.data.length > 0).toBeTruthy();
 						}
-					},
-					testTimeOut
-				);
-			}
-			if (!isMockEnabled()) {
-				it(
-					'product second creation in the same ',
-					async () => {
+					} else {
+						console.warn('disabled when not connected to test server');
+						expect(true).toBe(true);
+					}
+				},
+				testTimeOut
+			);
+
+			it(
+				'product second creation in the same ',
+				async () => {
+					if (!isMockEnabled()) {
 						result = await service.createProductInStrapi(IdMap.getId('exists-2'), defaultAuthInterface);
 						expect(result).toBeDefined();
 						expect(result.status == 200 || result.status == 302).toBeTruthy();
@@ -291,10 +345,14 @@ describe('StrapiService Tests', () => {
 							expect(productGetResult).toBeDefined();
 							expect(productGetResult.data.length > 0).toBeTruthy();
 						}
-					},
-					testTimeOut
-				);
-			}
+					} else {
+						console.warn('disabled when not connected to test server');
+						expect(true).toBe(true);
+					}
+				},
+				testTimeOut
+			);
+
 			it(
 				'product update product',
 				async () => {
@@ -431,9 +489,10 @@ describe('StrapiService Tests', () => {
 				expect(spy).toHaveBeenCalled();
 			});
 		});
-		if (!isMockEnabled()) {
-			describe('deletions', () => {
-				it('clean up product variants ', async () => {
+
+		describe('deletions', () => {
+			it('clean up product variants ', async () => {
+				if (!isMockEnabled()) {
 					result = await service.deleteProductVariantInStrapi(
 						{
 							id: IdMap.getId('exists'),
@@ -447,8 +506,13 @@ describe('StrapiService Tests', () => {
 					});
 					expect(falseResult.status).toBe(200);
 					expect(falseResult.data?.length).toBe(0);
-				});
-				it('clean up products ', async () => {
+				} else {
+					console.warn('disabled when not connected to test server');
+					expect(true).toBe(true);
+				}
+			});
+			it('clean up products ', async () => {
+				if (!isMockEnabled()) {
 					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
 					expect(result.status).toBe(200);
 					let falseResult = await service.getEntitiesFromStrapi({
@@ -486,9 +550,14 @@ describe('StrapiService Tests', () => {
 					expect(
 						falseResult.data?.filter((d: { id: any }) => d.id == result.data.deletedData.id).length
 					).toBe(0);
-				});
+				} else {
+					console.warn('disabled when not connected to test server');
+					expect(true).toBe(true);
+				}
+			});
 
-				it('clean up types, categories and collections', async () => {
+			it('clean up types, categories and collections', async () => {
+				if (!isMockEnabled()) {
 					result = await service.deleteCategoryInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
 					let falseResult = await service.getEntitiesFromStrapi({
 						strapiEntityType: 'product-categories',
@@ -520,9 +589,12 @@ describe('StrapiService Tests', () => {
 					});
 					expect(falseResult.status).toBe(200);
 					expect(falseResult.data?.length).toBe(0);
-				});
+				} else {
+					console.warn('disabled when not connected to test server');
+					expect(true).toBe(true);
+				}
 			});
-		}
+		});
 	});
 });
 describe('region checks', () => {

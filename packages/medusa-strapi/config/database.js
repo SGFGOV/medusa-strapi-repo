@@ -90,6 +90,9 @@ function DatabaseConfiguration({ env }) {
 		return undefined;
 	};
 
+	const schema =
+		process.env.NODE_ENV == 'test' ? undefined : env('DATABASE_SCHEMA', process.env.RDS_SCHEMA || 'public');
+
 	const awsConnection = {
 		connection: {
 			client: `${process.env.RDS_DATABASE_TYPE || 'postgres'}`,
@@ -103,6 +106,7 @@ function DatabaseConfiguration({ env }) {
 					rejectUnauthorized: false,
 					ca: getCertificate(),
 				}),
+				schema,
 			},
 		},
 	};
@@ -116,6 +120,7 @@ function DatabaseConfiguration({ env }) {
 				database: env('DATABASE_NAME', 'postgres_strapi'),
 				user: env('DATABASE_USERNAME', 'postgres'),
 				password: env('DATABASE_PASSWORD', 'postgres'),
+				schema,
 			},
 		},
 	};
