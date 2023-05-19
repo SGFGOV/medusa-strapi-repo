@@ -66,7 +66,7 @@ class StrapiSubscriber {
 
 		this.eventBus_.subscribe(
 			'product.metafields.create',
-			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+			async (data: BaseEntity & { value: Record<string, unknown> }) => {
 				const authInterace: AuthInterface =
 					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 				await this.strapiService_.createProductMetafieldInStrapi(data, authInterace);
@@ -75,7 +75,7 @@ class StrapiSubscriber {
 
 		this.eventBus_.subscribe(
 			'product.metafields.update',
-			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+			async (data: BaseEntity & { value: Record<string, unknown> }) => {
 				const authInterace: AuthInterface =
 					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 				await this.strapiService_.updateProductMetafieldInStrapi(data, authInterace);
@@ -97,6 +97,24 @@ class StrapiSubscriber {
 				const authInterace: AuthInterface =
 					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 				await this.strapiService_.createCollectionInStrapi(data.id, authInterace);
+			}
+		);
+
+		this.eventBus_.subscribe(
+			ProductCollectionService.Events.PRODUCTS_ADDED,
+			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+				const authInterace: AuthInterface =
+					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
+				await this.strapiService_.updateProductsWithinCollectionInStrapi(data.id, authInterace);
+			}
+		);
+
+		this.eventBus_.subscribe(
+			ProductCollectionService.Events.PRODUCTS_REMOVED,
+			async (data: BaseEntity & { data: Record<string, unknown> }) => {
+				const authInterace: AuthInterface =
+					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
+				await this.strapiService_.updateProductsWithinCollectionInStrapi(data.id, authInterace);
 			}
 		);
 

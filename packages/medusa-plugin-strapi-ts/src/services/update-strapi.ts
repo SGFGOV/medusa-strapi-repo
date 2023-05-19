@@ -407,7 +407,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				productToSend['product-variants'] = _.cloneDeep(productToSend.variants);
 				delete productToSend.variants;
 
-				productToSend['product-collections'] = _.cloneDeep(productToSend.collection);
+				productToSend['product-collection'] = _.cloneDeep(productToSend.collection);
 				delete productToSend.collection;
 
 				productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
@@ -446,8 +446,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return { status: 400 };
 			}
 
-			const collection = await this.productCollectionService.retrieve(data.id);
-			this.logger.info(JSON.stringify(collection));
+			const collection = await this.productCollectionService.retrieve(data.id, {
+				relations: ['products'],
+			});
 
 			if (collection) {
 				// Update entry in Strapi
@@ -477,7 +478,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createCollectionInStrapi(collectionId: string, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-collections', authInterface)
+		const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -557,7 +558,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createCategoryInStrapi(categoryId: string, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-categories', authInterface)
+		const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -587,7 +588,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createProductVariantInStrapi(variantId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-variants', authInterface)
+		const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -646,7 +647,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createRegionInStrapi(regionId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('regions', authInterface)
+		const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => false);
 		if (!hasType) {
@@ -676,7 +677,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async updateRegionInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('regions', authInterface)
+		const hasType = this.getType('regions', authInterface)
 			.then(() => {
 				// this.logger.info(res.data)
 				return true;
@@ -736,7 +737,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	 */
 
 	async createProductMetafieldInStrapi(
-		data: { id: string; data: Record<string, unknown> },
+		data: { id: string; value: Record<string, unknown> },
 		authInterface: AuthInterface = this.defaultAuthInterface
 	): Promise<StrapiResult> {
 		const typeExists = await this.checkType('product-metafields', authInterface);
@@ -761,7 +762,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async updateProductMetafieldInStrapi(
-		data: { id: string; data: Record<string, unknown> },
+		data: { id: string; value: Record<string, unknown> },
 		authInterface: AuthInterface
 	): Promise<StrapiResult> {
 		const typeExists = await this.checkType('product-metafields', authInterface);
@@ -786,8 +787,56 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 	}
 
+	async updateProductsWithinCollectionInStrapi(
+		data,
+		authInterface: AuthInterface = this.defaultAuthInterface
+	): Promise<StrapiResult> {
+		const hasType = this.getType('products', authInterface)
+			.then(() => {
+				return true;
+			})
+			.catch(() => {
+				return false;
+			});
+		if (!hasType) {
+			return { status: 400 };
+		}
+
+		const updateFields = ['productIds', 'productCollection'];
+
+		if (!this.verifyDataContainsFields(data, updateFields)) {
+			return { status: 400 };
+		}
+		try {
+			for (const productId of data.productIds) {
+				const ignore = await this.shouldIgnore_(productId, 'strapi');
+				if (ignore) {
+					this.logger.info(
+						'Strapi has just added this product to collection which triggered this function. IGNORING... '
+					);
+					continue;
+				}
+
+				const product = await this.productService_.retrieve(productId, {
+					relations: ['collection'],
+					select: ['id'],
+				});
+
+				if (product) {
+					// we're sending requests sequentially as the Strapi is having problems with deadlocks otherwise
+					await this.adjustProductAndUpdateInStrapi(product, data, authInterface);
+				}
+			}
+			return { status: 200 };
+		} catch (error) {
+			this.logger.error('Error updating products in collection', error);
+			throw error;
+		}
+		return { status: 400 };
+	}
+
 	async updateProductInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('products', authInterface)
+		const hasType = this.getType('products', authInterface)
 			.then(() => {
 				// this.logger.info(res.data)
 				return true;
@@ -804,6 +853,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const updateFields = [
 			'variants',
 			'options',
+			'categories',
 			'tags',
 			'title',
 			'subtitle',
@@ -832,16 +882,14 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			const product = await this.productService_.retrieve(data.id, {
 				relations: [
-					// As for now, we can't update relations due to issue with redundant fields
-					// We should pick which fields we want to synchronise from product relations
-					// 'options',
-					// 'variants',
-					// 'variants.prices',
-					// 'variants.options',
-					// 'type',
-					// 'collection',
-					// 'tags',
-					// 'images',
+					'options',
+					'variants',
+					'variants.prices',
+					'variants.options',
+					'type',
+					'collection',
+					'tags',
+					'images',
 				],
 				select: [
 					'id',
@@ -865,19 +913,35 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 
 			if (product) {
-				const response = await this.updateEntryInStrapi({
-					type: 'products',
-					id: product.id,
-					authInterface,
-					data: { ...product, ...data },
-					method: 'put',
-				});
-				return response;
+				return await this.adjustProductAndUpdateInStrapi(product, data, authInterface);
 			}
 			return { status: 400 };
 		} catch (error) {
 			throw error;
 		}
+	}
+
+	private async adjustProductAndUpdateInStrapi(product: Product, data, authInterface: AuthInterface) {
+		// Medusa is not using consistent naming for product-*.
+		// We have to adjust it manually. For example: collection to product-collection
+		const dataToUpdate = { ...product, ...data };
+
+		const keysToUpdate = ['collection', 'categories', 'type', 'tags', 'variants', 'options'];
+		for (const key of keysToUpdate) {
+			if (key in dataToUpdate) {
+				dataToUpdate[`product-${key}`] = dataToUpdate[key];
+				delete dataToUpdate[key];
+			}
+		}
+
+		const response = await this.updateEntryInStrapi({
+			type: 'products',
+			id: product.id,
+			authInterface,
+			data: dataToUpdate,
+			method: 'put',
+		});
+		return response;
 	}
 
 	async checkType(type, authInterface): Promise<boolean> {
@@ -948,7 +1012,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductMetafieldInStrapi(data: { id: string }, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-metafields', authInterface)
+		const hasType = this.getType('product-metafields', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.logger.info(err);
@@ -973,7 +1037,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('products', authInterface)
+		const hasType = this.getType('products', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.logger.info(err);
@@ -999,7 +1063,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductTypeInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-types', authInterface)
+		const hasType = this.getType('product-types', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.logger.info(err);
@@ -1023,7 +1087,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductVariantInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-variants', authInterface)
+		const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1048,7 +1112,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	// Blocker - Delete Region API
 	async deleteRegionInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('regions', authInterface)
+		const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1072,7 +1136,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteCollectionInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-collections', authInterface)
+		const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1095,7 +1159,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 	}
 	async deleteCategoryInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = await this.getType('product-categories', authInterface)
+		const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.logger.info(err)
@@ -1268,7 +1332,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		return { data: result.data.data ?? result.data, status: result.status };
 	}
 
-	/** 
+	/**
 	 * @Todo Create API based access
   async fetchMedusaUserApiKey(emailAddress) {
 
@@ -1516,18 +1580,57 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 	}
 
-	translateIdsToMedusaIds(dataToSend: StrapiEntity): StrapiEntity {
+	private isEntity(data: any): boolean {
+		return data instanceof Object && ('id' in data || 'medusa_id' in data);
+	}
+
+	// Medusa is using underscores to represent relations between entities, strapi is using dashes.
+	// This library is translating it in some places but omitting others, this method is providing automatic translation
+	// on every sent request.
+	private translateRelationNamesToStrapiFormat(dataToSend: StrapiEntity, key: string): StrapiEntity {
+		let testObject = null;
+
+		if (_.isArray(dataToSend[key])) {
+			if (dataToSend[key].length > 0) {
+				testObject = dataToSend[key][0];
+			}
+		} else {
+			testObject = dataToSend[key];
+		}
+
+		// if the object is a not empty array or object without id or medusa_id, it's not relation
+		if (testObject && !this.isEntity(testObject)) {
+			return dataToSend;
+		}
+
+		if (key.includes('_')) {
+			dataToSend[key.replace('_', '-')] = dataToSend[key];
+			delete dataToSend[key];
+		}
+
+		return dataToSend;
+	}
+
+	translateDataToStrapiFormat(dataToSend: StrapiEntity): StrapiEntity {
 		const keys = Object.keys(dataToSend);
+		const keysToIgnore = ['id', 'created_at', 'updated_at', 'deleted_at'];
+
 		for (const key of keys) {
 			if (_.isArray(dataToSend[key])) {
 				for (const element of dataToSend[key]) {
-					this.translateIdsToMedusaIds(element);
+					this.isEntity(element) && this.translateDataToStrapiFormat(element);
 				}
+				this.translateRelationNamesToStrapiFormat(dataToSend, key);
 			}
-			if (dataToSend[key] instanceof Object) {
-				this.translateIdsToMedusaIds(dataToSend[key]);
+
+			if (dataToSend[key] instanceof Object && this.isEntity(dataToSend[key])) {
+				this.translateDataToStrapiFormat(dataToSend[key]);
+				this.translateRelationNamesToStrapiFormat(dataToSend, key);
 			} else if (key == 'id') {
 				dataToSend['medusa_id'] = dataToSend[key];
+			}
+
+			if (this.isEntity(dataToSend) && keysToIgnore.includes(key)) {
 				delete dataToSend[key];
 			}
 		}
@@ -1548,9 +1651,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		let dataToSend: BaseEntity & { medusa_id?: string };
 		if (data && data.id) {
 			dataToSend = _.cloneDeep(data);
-			dataToSend = this.translateIdsToMedusaIds(dataToSend);
-			dataToSend['medusa_id'] = data.id;
-			delete dataToSend.id;
+			dataToSend = this.translateDataToStrapiFormat(dataToSend);
 		} else {
 			dataToSend = data;
 		}
@@ -1995,6 +2096,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		return await this.loginAsDefaultMedusaUser();
 	}
 	verifyDataContainsFields(data: any, updateFields: any[]): boolean {
+		if (!data || _.isEmpty(data)) return false;
 		let found = data.fields?.find((f) => updateFields.includes(f));
 		if (!found) {
 			try {

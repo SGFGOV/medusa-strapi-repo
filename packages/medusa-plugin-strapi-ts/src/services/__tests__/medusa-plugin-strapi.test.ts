@@ -318,8 +318,8 @@ describe('StrapiService Tests', () => {
 				result = await service.createProductMetafieldInStrapi(
 					{
 						id: IdMap.getId('exists'),
-						data: { testData: 'test' },
-					} as any,
+						value: { testData: 'test' },
+					},
 					defaultAuthInterface
 				);
 				expect(result).toBeDefined();
@@ -339,7 +339,7 @@ describe('StrapiService Tests', () => {
 				result = await service.updateProductMetafieldInStrapi(
 					{
 						id: IdMap.getId('exists'),
-						data: { testData: 'test-2' },
+						value: { testData: 'test-2' },
 					} as any,
 					defaultAuthInterface
 				);
