@@ -4,7 +4,7 @@
   "description": "A plugin for medusa to use strapi in the backend as the cms in typescript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": {
+  "repository": { 
     "type": "git",
     "url": "https://github.com/SGFGOV/medusa-strapi-repo/"
   },
