@@ -1214,11 +1214,14 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const config = {
 			url: `${this.strapi_url}/_health`,
 		};
-		this.logger.info(`Checking strapi health `);
+		this.logger.info(`Checking Strapi Health `);
 		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
 			this.logger.info('running in self test mode');
 			return true;
 		}
+
+		this.logger.debug(`check-url: ${config.url} `);
+
 		try {
 			let response = undefined;
 			let timeOut = this.options_.strapi_healthcheck_timeout ?? 120e3;
@@ -1226,12 +1229,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 				try {
 					response = await axios.head(config.url);
 				} catch (e) {
-					this.logger.info(`health check error ${e.message}`);
+					this.logger.error(`health check error ${e.message}`);
 				}
 				if (response && response?.status) {
 					break;
 				}
-				await sleep(1000);
+				this.logger.error(`response from the server: ${response?.status ?? 'no-response'}`);
+				await sleep(3000);
 			}
 			UpdateStrapiService.lastHealthCheckTime = Date.now();
 			if (response) {
