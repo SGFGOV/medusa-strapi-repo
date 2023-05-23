@@ -9,11 +9,12 @@ export interface StrapiMedusaPluginOptions {
 	strapi_host: string;
 	strapi_default_user: MedusaUserType;
 	strapi_admin: AdminUserType;
-	strapi_port: string;
+	strapi_port: number;
 	strapi_secret?: string;
 	strapi_public_key?: string;
 	strapi_ignore_threshold: number;
 	enable_marketplace?: boolean;
+	strapi_healthcheck_timeout?: number;
 	auto_start?: boolean;
 	max_page_size?: number;
 }

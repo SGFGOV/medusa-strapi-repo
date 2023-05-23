@@ -1,9 +1,9 @@
 {
   "name": "medusa-plugin-strapi-ts",
-  "version": "4.4.10",
+  "version": "4.4.13",
   "description": "A plugin for medusa to use strapi in the backend as the cms in typescript",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/SGFGOV/medusa-strapi-repo/"
@@ -11,6 +11,7 @@
   "keywords": [
     "medusa",
     "medusajs",
+    "medusa-plugin-cms",
     "strapi",
     "typescript",
     "plugin",
@@ -22,7 +23,7 @@
   "license": "MIT",
   "scripts": {
     "integration-test": "yarn test",
-    "clean": "./node_modules/.bin/rimraf types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
+    "clean": "./node_modules/.bin/rimraf dist/ types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
     "test": "jest --coverage --runInBand --setupFiles=dotenv/config --silent"
@@ -65,10 +66,11 @@
     "@strapi/plugin-users-permissions": "^4.6.1",
     "axios": "^0.27.2",
     "medusa-interfaces": "latest",
-    "typeorm": "^0.3.14"
+    "typeorm": "^0.3.16"
   },
   "dependencies": {
     "@types/bcrypt": "^5.0.0",
+    "axios": "^0.27.2",
     "axios-retry": "^3.3.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.1",
@@ -77,6 +79,7 @@
     "generate-password": "^1.7.0",
     "jsonwebtoken": "^8.5.1",
     "medusa-core-utils": "^1.1.37",
-    "medusa-test-utils": "^1.1.37"
+    "medusa-test-utils": "^1.1.37",
+    "update-notifier": "^6.0.2"
   }
 }
