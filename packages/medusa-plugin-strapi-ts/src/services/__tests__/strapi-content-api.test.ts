@@ -55,7 +55,7 @@ describe('StrapiService Tests', () => {
 			firstname: 'SuperUser',
 			email: 'support@medusa-commerce.com',
 		},
-		strapi_port: '1337',
+		strapi_port: parseInt('1337'),
 		strapi_secret: 'test',
 		strapi_public_key: undefined,
 		strapi_ignore_threshold: 0,

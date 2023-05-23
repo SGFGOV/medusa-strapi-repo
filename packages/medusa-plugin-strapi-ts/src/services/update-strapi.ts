@@ -198,9 +198,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 		this.options_ = options;
 		this.algorithm = this.options_.encryption_algorithm || 'aes-256-cbc'; // Using AES encryption
 		this.strapi_protocol = this.options_.strapi_protocol ?? 'https';
-		this.strapi_port = this.options_.strapi_port ?? (this.strapi_protocol == 'https' ? 443 : 1337);
+		this.strapi_port = this.options_.strapi_port ?? (this.strapi_protocol == 'https' ? undefined : 1337);
 		this.strapi_url =
-			`${this.strapi_protocol}://` + `${this.options_.strapi_host ?? 'localhost'}:${this.strapi_port}`;
+			`${this.strapi_protocol}://` +
+			`${this.options_.strapi_host ?? 'localhost'}` +
+			`${this.strapi_port ? ':' + this.strapi_port : ''}`;
 		this.encryption_key = this.options_.strapi_secret || this.options_.strapi_public_key;
 		UpdateStrapiService.isHealthy = false;
 		this.defaultUserEmail = options.strapi_default_user.email;
