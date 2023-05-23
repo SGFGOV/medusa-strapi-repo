@@ -121,6 +121,11 @@ function DatabaseConfiguration({ env }) {
 				user: env('DATABASE_USERNAME', 'postgres'),
 				password: env('DATABASE_PASSWORD', 'postgres'),
 				schema,
+				ssl: env('DATABASE_HOST', '127.0.0.1').includes('neon')
+					? env.bool('DATABASE_SSL', {
+							rejectUnauthorized: false,
+					  })
+					: undefined,
 			},
 		},
 	};
