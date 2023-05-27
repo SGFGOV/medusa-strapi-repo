@@ -23,6 +23,7 @@ import { IdMap, MockManager } from 'medusa-test-utils';
 import UpdateStrapiService, { StrapiResult } from '../update-strapi';
 import logger from '../__mocks__/logger';
 import axios, { AxiosError } from 'axios';
+import exp from 'constants';
 
 // This sets the mock adapter on the default instance
 
@@ -157,26 +158,31 @@ describe('StrapiService Tests', () => {
 		it(
 			'register or login admin with refresh by throwing an exception',
 			async () => {
-				const axiosSpy = jest.spyOn(axios, 'post').mockImplementationOnce(() => {
-					throw new LoginTokenExpiredError({
-						error: new AxiosError('test error', '401', {}, {}, {} as any),
-						response: {
-							status: 401,
-						},
-						message: 'test error',
+				if (!isMockEnabled()) {
+					const axiosSpy = jest.spyOn(axios, 'post').mockImplementationOnce(() => {
+						throw new LoginTokenExpiredError({
+							error: new AxiosError('test error', '401', {}, {}, {} as any),
+							response: {
+								status: 401,
+							},
+							message: 'test error',
+						});
 					});
-				});
 
-				await service.loginAsDefaultMedusaUser();
-				expect(axiosSpy).toBeCalled();
-				expect(service.strapiSuperAdminAuthToken).toBeDefined();
-				expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
-				const spy = jest.spyOn(service, 'executeLoginAsStrapiUser');
-				const spy_2 = jest.spyOn(service, 'retrieveRefreshedToken');
-				const roleId = await service.getType('products', defaultAuthInterface);
-				expect(spy).toBeCalledTimes(2);
-				expect(spy_2).toBeCalledTimes(2);
-				//	expect(roleId).toBeGreaterThan(0);
+					await service.loginAsDefaultMedusaUser();
+					expect(axiosSpy).toBeCalled();
+					expect(service.strapiSuperAdminAuthToken).toBeDefined();
+					expect(service.strapiSuperAdminAuthToken.length).toBeGreaterThan(0);
+					const spy = jest.spyOn(service, 'executeLoginAsStrapiUser');
+					const spy_2 = jest.spyOn(service, 'retrieveRefreshedToken');
+					const roleId = await service.getType('products', defaultAuthInterface);
+					expect(spy).toBeCalledTimes(2);
+					expect(spy_2).toBeCalledTimes(2);
+					//	expect(roleId).toBeGreaterThan(0);
+				} else {
+					console.warn('disabled when not connected to test server');
+					expect(1).toBe(1);
+				}
 			},
 			testTimeOut
 		);
@@ -184,14 +190,19 @@ describe('StrapiService Tests', () => {
 		it(
 			'register or login admin with refresh by resetting expiry time',
 			async () => {
-				const spy = jest.spyOn(service, 'executeLoginAsStrapiUser');
-				service.userTokens[testUserEmail].time = 0;
-				await service.registerOrLoginDefaultMedusaUser();
+				if (!isMockEnabled()) {
+					const spy = jest.spyOn(service, 'executeLoginAsStrapiUser');
+					service.userTokens[testUserEmail].time = 0;
+					await service.registerOrLoginDefaultMedusaUser();
 
-				service.userTokens[testUserEmail].time = 0;
-				await service.getType('products', defaultAuthInterface);
-				expect(spy).toBeCalledTimes(2);
-				//expect(roleId).toBeGreaterThan(0);
+					service.userTokens[testUserEmail].time = 0;
+					await service.getType('products', defaultAuthInterface);
+					expect(spy).toBeCalledTimes(2);
+					//expect(roleId).toBeGreaterThan(0);
+				} else {
+					console.warn('disabled when not connected to test server');
+					expect(1).toBe(1);
+				}
 			},
 			testTimeOut
 		);

@@ -17838,7 +17838,7 @@ parse-passwd@^1.0.0:
 parse-path@^5.0.0, parse-path@^7.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/parse-path/-/parse-path-5.0.0.tgz#f933152f3c6d34f4cf36cfc3d07b138ac113649d"
-  integrity sha512-qOpH55/+ZJ4jUu/oLO+ifUKjFPNZGfnPJtzvGzKN/4oLMil5m9OH4VpOj6++9/ytJcfks4kzH2hhi87GL/OU9A==
+  integrity "sha1-+TMVLzxtNPTPNs/D0HsTisETZJ0= sha512-qOpH55/+ZJ4jUu/oLO+ifUKjFPNZGfnPJtzvGzKN/4oLMil5m9OH4VpOj6++9/ytJcfks4kzH2hhi87GL/OU9A=="
   dependencies:
     protocols "^2.0.0"
 
@@ -17850,7 +17850,7 @@ parse-srcset@^1.0.2:
 parse-url@^6.0.0, parse-url@^8.1.0:
   version "8.1.0"
   resolved "https://registry.npmjs.org/parse-url/-/parse-url-8.1.0.tgz#972e0827ed4b57fc85f0ea6b0d839f0d8a57a57d"
-  integrity sha512-xDvOoLU5XRrcOZvnI6b8zA6n9O9ejNk/GExuz1yBuWUGn9KA97GI6HTs6u02wKara1CeVmZhH+0TZFdWScR89w==
+  integrity "sha1-ly4IJ+1LV/yF8OprDYOfDYpXpX0= sha512-xDvOoLU5XRrcOZvnI6b8zA6n9O9ejNk/GExuz1yBuWUGn9KA97GI6HTs6u02wKara1CeVmZhH+0TZFdWScR89w=="
   dependencies:
     parse-path "^7.0.0"
 
@@ -20099,9 +20099,9 @@ socket.io-adapter@~2.5.2:
     ws "~8.11.0"
 
 socket.io-parser@~4.2.1:
-  version "4.2.2"
-  resolved "https://registry.npmjs.org/socket.io-parser/-/socket.io-parser-4.2.2.tgz#1dd384019e25b7a3d374877f492ab34f2ad0d206"
-  integrity sha512-DJtziuKypFkMMHCm2uIshOYC7QaylbtzQwiMYDuCKy3OPkjLzu4B2vAhTlqipRHHzrI0NJeBAizTK7X+6m1jVw==
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/socket.io-parser/-/socket.io-parser-4.2.3.tgz#926bcc6658e2ae0883dc9dee69acbdc76e4e3667"
+  integrity "sha1-kmvMZljirgiD3J3uaay9x25ONmc= sha512-JMafRntWVO2DCJimKsRTh/wnqVvO4hrfwOqtO7f+uzwsQMuxO6VwImtYxaQ+ieoyshWOTJyV0fA21lccEXRPpQ=="
   dependencies:
     "@socket.io/component-emitter" "~3.1.0"
     debug "~4.3.1"
@@ -20514,7 +20514,7 @@ strapi-plugin-meilisearch@^0.8.2:
 strapi-plugin-multi-country-select@^1.1.0, "strapi-plugin-multi-country-select@npm:@sgftech/plugin-multi-country-select":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@sgftech/plugin-multi-country-select/-/plugin-multi-country-select-1.0.1.tgz#b3b28506f2b0847cfd600842056ff53938266e08"
-  integrity sha512-cRl9ODURHcXdvhDDVTo0xI1+/uxEXONReaKRnfxjBMaQniB+7ebNzdFhZfe9+t36IxLyBwSS5zAj5GKIGVzTGQ==
+  integrity "sha1-s7KFBvKwhHz9YAhCBW/1OTgmbgg= sha512-cRl9ODURHcXdvhDDVTo0xI1+/uxEXONReaKRnfxjBMaQniB+7ebNzdFhZfe9+t36IxLyBwSS5zAj5GKIGVzTGQ=="
   dependencies:
     i18n-iso-countries "^7.5.0"
 
