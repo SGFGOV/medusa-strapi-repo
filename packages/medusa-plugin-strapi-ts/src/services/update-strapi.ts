@@ -6,7 +6,10 @@ import { sleep } from '@medusajs/medusa/dist/utils/sleep';
 import qs from 'qs';
 import passwordGen from 'generate-password';
 import axiosRetry from 'axios-retry';
+import updateNotifier from 'update-notifier';
+//import packageJson from '../../package.json'
 
+//updateNotifier({ pkg: packageJson }).notify();
 let strapiRetryDelay: number;
 
 axiosRetry(axios as any, {
@@ -74,6 +77,9 @@ import {
 } from '../types/globals';
 import { EntityManager } from 'typeorm';
 import _ from 'lodash';
+import { TokenExpiredError } from 'jsonwebtoken';
+import { Http2ServerResponse } from 'http2';
+import { AxiosError } from 'axios';
 
 export type StrapiEntity = BaseEntity & { medusa_id?: string };
 export type AdminResult = { data: any; status: number };
@@ -130,6 +136,19 @@ export interface UpdateStrapiServiceParams {
 	logger: Logger;
 }
 
+export interface LoginTokenExpiredErrorParams extends Partial<StrapiSendParams> {
+	response?: { status: number };
+	message?: string;
+	error?: AxiosError;
+	time?: Date;
+}
+
+export class LoginTokenExpiredError extends AxiosError {
+	constructor(private readonly error: LoginTokenExpiredErrorParams) {
+		super(error.message, '401', error.error.config, error.error.request, error.error.response);
+	}
+}
+
 export class UpdateStrapiService extends TransactionBaseService {
 	protected manager_: EntityManager;
 	protected transactionManager_: EntityManager;
@@ -141,7 +160,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	eventBus_: EventBusService;
 	algorithm: string;
 	options_: StrapiMedusaPluginOptions;
-	protocol: string;
+	strapi_protocol: string;
 	strapi_url: string;
 	encryption_key: string;
 	userTokens: Tokens;
@@ -161,6 +180,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	productCategoryService: any;
 	private enableAdminDataLogging: boolean;
 	selfTestMode: boolean;
+	strapi_port: number;
 
 	constructor(container: UpdateStrapiServiceParams, options: StrapiMedusaPluginOptions) {
 		super(container);
@@ -177,10 +197,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 		this.options_ = options;
 		this.algorithm = this.options_.encryption_algorithm || 'aes-256-cbc'; // Using AES encryption
-		this.protocol = this.options_.strapi_protocol;
-		this.strapi_url = `${this.protocol ?? 'https'}://${this.options_.strapi_host ?? 'localhost'}:${
-			this.options_.strapi_port ?? 1337
-		}`;
+		this.strapi_protocol = this.options_.strapi_protocol ?? 'https';
+		this.strapi_port = this.options_.strapi_port ?? (this.strapi_protocol == 'https' ? undefined : 1337);
+		this.strapi_url =
+			`${this.strapi_protocol}://` +
+			`${this.options_.strapi_host ?? 'localhost'}` +
+			`${this.strapi_port ? ':' + this.strapi_port : ''}`;
 		this.encryption_key = this.options_.strapi_secret || this.options_.strapi_public_key;
 		UpdateStrapiService.isHealthy = false;
 		this.defaultUserEmail = options.strapi_default_user.email;
@@ -1195,22 +1217,28 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const config = {
 			url: `${this.strapi_url}/_health`,
 		};
-		this.logger.info('Checking strapi health');
+		this.logger.info(`Checking Strapi Health `);
 		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
 			this.logger.info('running in self test mode');
 			return true;
 		}
+
+		this.logger.debug(`check-url: ${config.url} `);
+
 		try {
 			let response = undefined;
-			let timeOut = process.env.STRAPI_HEALTH_CHECK_INTERVAL
-				? parseInt(process.env.STRAPI_HEALTH_CHECK_INTERVAL)
-				: 120e3;
+			let timeOut = this.options_.strapi_healthcheck_timeout ?? 120e3;
 			while (timeOut-- > 0) {
-				response = await axios.head(config.url);
+				try {
+					response = await axios.head(config.url);
+				} catch (e) {
+					this.logger.error(`health check error ${e.message}`);
+				}
 				if (response && response?.status) {
 					break;
 				}
-				await sleep(1000);
+				this.logger.error(`response from the server: ${response?.status ?? 'no-response'}`);
+				await sleep(3000);
 			}
 			UpdateStrapiService.lastHealthCheckTime = Date.now();
 			if (response) {
@@ -1235,9 +1263,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async checkStrapiHealth(): Promise<boolean> {
 		const currentTime = Date.now();
 
-		const timeInterval = process.env.STRAPI_HEALTH_CHECK_INTERVAL
-			? parseInt(process.env.STRAPI_HEALTH_CHECK_INTERVAL)
-			: 120e3;
+		const timeInterval = this.options_.strapi_healthcheck_timeout ?? 120e3;
 		const timeDifference = currentTime - (UpdateStrapiService.lastHealthCheckTime ?? 0);
 		const intervalElapsed = timeDifference > timeInterval;
 
@@ -1389,17 +1415,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	}
 
-	async strapiLoginSendDatalayer(
-		authInterface: AuthInterface = {
-			email: this.defaultUserEmail,
-			password: this.defaultUserPassword,
-		}
-	): Promise<UserCreds> {
+	async retrieveRefreshedToken(authInterface: AuthInterface, errorCode?: string | number) {
 		const { email } = authInterface;
-
 		const currentTime = Date.now();
 		const lastRetrived = this.userTokens[email.toLowerCase()];
-		if (lastRetrived) {
+		if (lastRetrived && errorCode != '401') {
 			if (!strapiRetryDelay) {
 				strapiRetryDelay = 180e3;
 			}
@@ -1421,9 +1441,19 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return this.userTokens[email.toLowerCase()];
 			}
 		} catch (error) {
-			this.logger.error(`${email} ` + 'successfully error loggin in in to Strapi');
+			this.logger.error(`${email} ` + 'error logging in in to Strapi');
 			this._axiosError(error);
 		}
+	}
+
+	async strapiLoginSendDatalayer(
+		authInterface: AuthInterface = {
+			email: this.defaultUserEmail,
+			password: this.defaultUserPassword,
+		}
+	): Promise<UserCreds> {
+		const refreshedCredentials = await this.retrieveRefreshedToken(authInterface);
+		return refreshedCredentials;
 	}
 
 	async executeLoginAsStrapiUser(
@@ -1665,6 +1695,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 				data: result.data.data ?? result.data,
 			};
 		} catch (e) {
+			if (e instanceof LoginTokenExpiredError) {
+				await this.retrieveRefreshedToken(authInterface, '401');
+				return this.strapiSendDataLayer(params);
+			}
 			this.logger.error(e.message);
 			return { status: 400 };
 		}
@@ -1738,10 +1772,40 @@ export class UpdateStrapiService extends TransactionBaseService {
 			this._axiosError(error, id, type, data, method, endPoint);
 		}
 	}
-	_axiosError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string): void {
+	_axiosError(error: AxiosError, id?: string, type?: string, data?: any, method?: Method, endPoint?: string): void {
 		if (endPoint) {
 			this.logger.info(`Endpoint Attempted: ${endPoint}`);
 		}
+		try {
+			if (error?.response?.status != 200) {
+				const errorCode = error?.response?.status ?? 'none';
+				switch (errorCode) {
+					case 401:
+						throw new LoginTokenExpiredError({
+							error,
+							response: error.response,
+							id,
+							type,
+							data,
+							method,
+							time: new Date(),
+						});
+						break;
+
+					default:
+						throw error;
+				}
+			}
+		} catch (e) {
+			if (e instanceof LoginTokenExpiredError) throw e;
+			else this.handleError(error, id, type, data, method, endPoint);
+		}
+	}
+	async refreshResend(error: any, id: string, type: string, data: any, method: string, endPoint: string) {
+		const credentials = await this.strapiLoginSendDatalayer();
+	}
+
+	handleError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string) {
 		const theError = `${(error as Error).message} `;
 		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
 		this.logger.error('Error occur while sending request to strapi', {
@@ -1757,7 +1821,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			},
 		});
 
-		if (!endPoint.includes('register-admin')) {
+		if (!endPoint?.includes('register-admin')) {
 			throw new Error(
 				`Error while trying ${method}` +
 					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,

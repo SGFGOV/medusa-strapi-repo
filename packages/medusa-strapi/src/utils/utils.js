@@ -283,6 +283,10 @@ async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
 				continue;
 			}
 
+			if (dataReceived[field] === null || dataReceived[field] === '') {
+				continue;
+			}
+
 			try {
 				const entity = await strapi.entityService.findMany(uid, {
 					filters,
@@ -444,7 +448,7 @@ async function controllerUpdate(ctx, strapi, uid) {
 			const currentEntity = await strapi.services[uid].findOne(entityId);
 			/** We store the hash of the last update request, and compare that to the hash received */
 			const inputHash = objectHash(inputData);
-			if ( inputHash == currentEntity.updateHash) {
+			if (inputHash == currentEntity.updateHash) {
 				return (ctx.body = {
 					data: currentEntity,
 				});

@@ -2,10 +2,11 @@
   "compilerOptions": {
 	  "experimentalDecorators": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "allowJs": false,
       "rootDir": "src",
       "baseUrl": "./",
-      "outDir": "./"
+      "outDir": "./dist"
 
   },
   "extends": "../../tsconfig.json",

@@ -107,6 +107,7 @@ function DatabaseConfiguration({ env }) {
 					rejectUnauthorized: false,
 					ca: getCertificate(),
 				}),
+				schema,
 			},
 		},
 	};
