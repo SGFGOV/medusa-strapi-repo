@@ -100,7 +100,7 @@ const strapiOptions =
     Install and fire away
 
 ### Start the interface
-
+ 
     inside your service you need to call if not autostart enabled
     inside your medusa project folder src/services
     ```
