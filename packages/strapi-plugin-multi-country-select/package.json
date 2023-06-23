@@ -1,0 +1,33 @@
+{
+    "name": "@sgftech/plugin-multi-country-select",
+    "description": "A strapi custom field for selecting multiple countries based on the ISO 3166-1 country code standard.",
+    "keywords": [
+        "strapi",
+        "strapi-plugin",
+        "custom-fields",
+        "country",
+        "multi-select"
+    ],
+    "version": "1.0.2",
+    "strapi": {
+        "name": "multi-country-select",
+        "description": "Multiple Countries Select custom field",
+        "kind": "plugin",
+        "displayName": "Multi-Countries Select"
+    },
+    "dependencies": {
+        "i18n-iso-countries": "^7.5.0"
+    },
+    "author": {
+        "name": "Govind Diwakar",
+        "url": "https://zayd.dev"
+    },
+    "license": "MIT",
+    "peerDependencies": {
+        "@strapi/strapi": "^4.10.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SGFGOV/medusa-strapi-repo/"
+      }
+}
