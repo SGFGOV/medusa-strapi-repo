@@ -110,21 +110,21 @@ node_modules
 .DS_store
 **/.DS_Store
 .env*
-index.js
+#index.js
 
 dist
 coverage
 
 medusa-plugin-strapi-ts/api/
-services/
-models/
-subscribers/
-migrations/
-loaders/
-utils/
-types/
-utils/*.js
-index.*
+medusa-plugin-strapi-ts/services/
+medusa-plugin-strapi-ts/models/
+medusa-plugin-strapi-ts/subscribers/
+medusa-plugin-strapi-ts/migrations/
+medusa-plugin-strapi-ts/loaders/
+medusa-plugin-strapi-ts/utils/
+medusa-plugin-strapi-ts/types/
+medusa-plugin-strapi-ts/utils/*.js
+medusa-plugin-strapi-ts/index.*
 
 !src/**
 
