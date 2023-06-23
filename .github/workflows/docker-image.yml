@@ -20,7 +20,7 @@ jobs:
     - name: Cancel Previous Runs
       uses: styfle/cancel-workflow-action@0.9.1
       with:
-        access_token: ${{ secrets.EXECUTION_TOKEN }}
+        access_token: ${{ secrets.GITHUB_TOKEN }}
     - name: List files 
       run: ls
       working-directory: ./packages/medusa-strapi
