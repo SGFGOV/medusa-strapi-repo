@@ -71,13 +71,13 @@ const strapiOptions =
 #### basic settings - Mandatory
         STRAPI_PROTOCOL: string;  - strapi protocol should be http or https
         STRAPI_SERVER_HOSTNAME: string; - strapi hostname
-        STRAPI_MEDUSA_USER: Service account username #necessary
+        STRAPI_MEDUSA_USER: Service account username #necessary - THIS IS MANDATORY AND SHOULDN'T exist in strapi
         STRAPI_MEDUSA_PASSWORD: Service account password
-        STRAPI_MEDUSA_EMAIL: Service account  - THIS IS MANDATORY AND SHOULDN"T exist in strapi
+        STRAPI_MEDUSA_EMAIL: Service account  - THIS IS MANDATORY AND SHOULDN'T exist in strapi
 
         the settings below are necessary to setup a user account
 
-        STRAPI_SUPER_USERNAME: The super user account details, inorder to register new accounts;
+        STRAPI_SUPER_USERNAME: The super user account details, in order to register new accounts;
         STRAPI_SUPER_PASSWORD: The super user account password
         STRAPI_SUPER_USER_EMAIL: The super user account email 
 
