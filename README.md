@@ -46,14 +46,14 @@ This mono repo houses 5 components. All are under the packages folder. You can r
 
 ## Version info
 
-We support strapi v4.9.2 at the moment with medusa version. 
+We support strapi v4.10.5 at the moment with medusa version. 
 [Changelog](CHANGELOG.md)
 
 ## Prerequisites
 
 - node >16.17.3
 - medusa>1.8
-- strapi > 4.9.2
+- strapi > 4.10.5
 
 ## Install
  
