@@ -66,12 +66,84 @@ const strapiOptions =
     }
 
 ```
+### strapi configuration  options
+
+#### basic settings - Mandatory
+        STRAPI_PROTOCOL: string;  - strapi protocol should be http or https
+        STRAPI_SERVER_HOSTNAME: string; - strapi hostname
+        STRAPI_MEDUSA_USER: Service account username
+        STRAPI_MEDUSA_PASSWORD: Service account password
+        STRAPI_MEDUSA_EMAIL: Service account 
+
+        the settings below are necessary to setup a user account
+
+        STRAPI_SUPER_USERNAME: The super user account details, inorder to register new accounts;
+        STRAPI_SUPER_PASSWORD: The super user account password
+        STRAPI_SUPER_USER_EMAIL: The super user account email 
+
+        STRAPI_PORT: number;
+        strapi_secret?: string; - a secret key to encrypt the jwt between medusa and strapi
+        strapi_public_key?: string; - a public key if the secret is not used
+
+#### Advanced options	
+        strapi_ignore_threshold: number; 
+        enable_marketplace?: boolean; ## experiment doesn't do anything at the moment
+        enable_auto_retry?: boolean; ## experiment doesn't do anything at the moment
+        encryption_algorithm: string;  ## experiment doesn't do anything at the moment
+        strapi_healthcheck_timeout?: number;
+        auto_start?: boolean; - starts the interface automatically along with medusa, not recommended as the medusa server may not be ready to sync as soon as strapi is ready
+        max_page_size?: number;
 
 
-## Usage
+## Using Strapi Plugin
 
-Install and fire away
+    Install and fire away
 
+### Start the interface
+
+    inside your service you need to call if not autostart enabled
+    inside your medusa project folder src/services
+    ```
+    class YourService extends TransactiontBaseService
+    {
+        constructor({
+            ...
+            UpdateStrapiService updateStrapiService
+            ...
+        })
+        {
+            ...
+            this.updateStrapiService = updateStrapiService
+            ...
+        }
+
+        // To Start the interface in not autostart enabled
+        .....
+
+            async startStrapiService(): Promise<unknown> {
+                return await this.updateStrapiService.startInterface();
+            }
+
+        // To use Strapi Services internally without using the api
+        async stapiAction():Promise<....>
+        {
+            this.updateStrapiService.theStrapiApiYouWishToCall(...);
+        }
+
+    }   
+    ```
+
+   
+#### Fetch content
+    you can fetch content using the api /strapi/content/<content-type>/<medusa_id>
+    ```
+    //e.g. to fetch a product with details like = {
+    //    ...
+    //   id:prod_12345
+    //   ...
+    // }
+    await axios.get("/strapi/content/products/prod_12345")
+     ```
 ## Known Issues
 
 1. the tests need to be made a lot more rigorous to catch edge cases
