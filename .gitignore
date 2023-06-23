@@ -240,9 +240,12 @@ dist
 *.tgz
 
 
-**/*.js
+!!packages/strapi-plugin-multi-country-select/*.js
+!!packages/strapi-plugin-multi-country-select/**/*.js
+
 **/*.d.ts
 **/*.js.map
 
 !babel.config.j
 node_modules/
+
