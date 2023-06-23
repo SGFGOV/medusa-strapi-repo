@@ -10742,15 +10742,15 @@ end-of-stream@^1.1.0, end-of-stream@^1.4.1:
   dependencies:
     once "^1.4.0"
 
-engine.io-parser@~5.0.3:
-  version "5.0.6"
-  resolved "https://registry.npmjs.org/engine.io-parser/-/engine.io-parser-5.0.6.tgz#7811244af173e157295dec9b2718dfe42a64ef45"
-  integrity sha512-tjuoZDMAdEhVnSFleYPCtdL2GXwVTGtNjoeJd9IhIG3C1xs9uwxqRNEu5WpnDZCaozwVlK/nuQhpodhXSIMaxw==
+engine.io-parser@~5.1.0:
+  version "5.1.0"
+  resolved "https://registry.npmjs.org/engine.io-parser/-/engine.io-parser-5.1.0.tgz#d593d6372d7f79212df48f807b8cace1ea1cb1b8"
+  integrity sha512-enySgNiK5tyZFynt3z7iqBR+Bto9EVVVvDFuTT0ioHCGbzirZVGDGiQjZzEp8hWl6hd5FSVytJGuScX1C1C35w==
 
 engine.io@^6.4.2, engine.io@~6.4.1:
-  version "6.4.2"
-  resolved "https://registry.npmjs.org/engine.io/-/engine.io-6.4.2.tgz#ffeaf68f69b1364b0286badddf15ff633476473f"
-  integrity sha512-FKn/3oMiJjrOEOeUub2WCox6JhxBXq/Zn3fZOMCBxKnNYtsdKjxhl7yR3fZhM9PV+rdE75SU5SYMc+2PGzo+Tg==
+  version "6.5.0"
+  resolved "https://registry.npmjs.org/engine.io/-/engine.io-6.5.0.tgz#02b9d9941c0d3ab2d46628e98ac3331dd533dff0"
+  integrity sha512-UlfoK1iD62Hkedw2TmuHdhDsZCGaAyp+LZ/AvnImjYBeWagA3qIEETum90d6shMeFZiDuGT66zVCdx1wKYKGGg==
   dependencies:
     "@types/cookie" "^0.4.1"
     "@types/cors" "^2.8.12"
@@ -10760,7 +10760,7 @@ engine.io@^6.4.2, engine.io@~6.4.1:
     cookie "~0.4.1"
     cors "~2.8.5"
     debug "~4.3.1"
-    engine.io-parser "~5.0.3"
+    engine.io-parser "~5.1.0"
     ws "~8.11.0"
 
 enhanced-resolve@^5.0.0, enhanced-resolve@^5.13.0:
@@ -17845,7 +17845,7 @@ parse-passwd@^1.0.0:
 parse-path@^5.0.0, parse-path@^7.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/parse-path/-/parse-path-5.0.0.tgz#f933152f3c6d34f4cf36cfc3d07b138ac113649d"
-  integrity "sha1-+TMVLzxtNPTPNs/D0HsTisETZJ0= sha512-qOpH55/+ZJ4jUu/oLO+ifUKjFPNZGfnPJtzvGzKN/4oLMil5m9OH4VpOj6++9/ytJcfks4kzH2hhi87GL/OU9A=="
+  integrity sha512-qOpH55/+ZJ4jUu/oLO+ifUKjFPNZGfnPJtzvGzKN/4oLMil5m9OH4VpOj6++9/ytJcfks4kzH2hhi87GL/OU9A==
   dependencies:
     protocols "^2.0.0"
 
@@ -17857,7 +17857,7 @@ parse-srcset@^1.0.2:
 parse-url@^6.0.0, parse-url@^8.1.0:
   version "8.1.0"
   resolved "https://registry.npmjs.org/parse-url/-/parse-url-8.1.0.tgz#972e0827ed4b57fc85f0ea6b0d839f0d8a57a57d"
-  integrity "sha1-ly4IJ+1LV/yF8OprDYOfDYpXpX0= sha512-xDvOoLU5XRrcOZvnI6b8zA6n9O9ejNk/GExuz1yBuWUGn9KA97GI6HTs6u02wKara1CeVmZhH+0TZFdWScR89w=="
+  integrity sha512-xDvOoLU5XRrcOZvnI6b8zA6n9O9ejNk/GExuz1yBuWUGn9KA97GI6HTs6u02wKara1CeVmZhH+0TZFdWScR89w==
   dependencies:
     parse-path "^7.0.0"
 
@@ -20521,7 +20521,7 @@ strapi-plugin-meilisearch@^0.8.2:
 strapi-plugin-multi-country-select@^1.1.0, "strapi-plugin-multi-country-select@npm:@sgftech/plugin-multi-country-select":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@sgftech/plugin-multi-country-select/-/plugin-multi-country-select-1.0.1.tgz#b3b28506f2b0847cfd600842056ff53938266e08"
-  integrity "sha1-s7KFBvKwhHz9YAhCBW/1OTgmbgg= sha512-cRl9ODURHcXdvhDDVTo0xI1+/uxEXONReaKRnfxjBMaQniB+7ebNzdFhZfe9+t36IxLyBwSS5zAj5GKIGVzTGQ=="
+  integrity sha512-cRl9ODURHcXdvhDDVTo0xI1+/uxEXONReaKRnfxjBMaQniB+7ebNzdFhZfe9+t36IxLyBwSS5zAj5GKIGVzTGQ==
   dependencies:
     i18n-iso-countries "^7.5.0"
 
