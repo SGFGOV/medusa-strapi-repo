@@ -10,27 +10,31 @@ This plugin decouples bootstrapping and configuration, allowing you greate flexi
 
 ## Getting Started
 
-On medusa you need to install the medusa-plugin-strapi-ts, and follow the setup instructions here[https://docs.medusajs.com/add-plugins/strapi/]
+On medusa you need to install the medusa-plugin-strapi-ts, and follow the setup instructions here https://docs.medusajs.com/add-plugins/strapi
 
 On strap in you need to install the strapi-plugin-medusajs
 You don't need to create an admin user, the plugin will create a default admin user for you if you don't have one already. You can configure the admin like any other plugin, via environment variables. 
 
-install via yarn
+Install via yarn
 
-yarn add strapi-plugin-medusajs
+```yarn add strapi-plugin-medusajs```
 
-then in your strapi project, enable like so
+In your strapi project, enable it
 
 ./config/plugins
 
 ```
-
-      // ...
-      'strapi-plugin-medusajs': {
-        enabled: true,
-      },
+module.exports = ({ env }) => ({
+    // ...
+    strapi-plugin-medusajs': true,
     // other plugins
+});
+```
 
+In your `.env` file. Add a `MEDUSA_STRAPI_SECRET` environment variable. Make sure it has the same value as jwt_secret config in your Medusajs project
+
+```
+MEDUSA_STRAPI_SECRET=<Same as medusajs jwt_secret>
 ```
 
 ## Troubleshooting
