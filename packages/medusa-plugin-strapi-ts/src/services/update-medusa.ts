@@ -5,10 +5,12 @@ import {
 	ProductVariantService,
 	Region,
 	RegionService,
+	TransactionBaseService,
 } from '@medusajs/medusa';
 import { Logger } from '@medusajs/medusa/dist/types/global';
 import { BaseService } from 'medusa-interfaces';
 import { addIgnore_, shouldIgnore_ } from '../utils/redis-key-manager';
+import { EntityManager } from 'typeorm';
 
 function isEmptyObject(obj): boolean {
 	// eslint-disable-next-line guard-for-in
@@ -18,20 +20,21 @@ function isEmptyObject(obj): boolean {
 	return true;
 }
 
-class UpdateMedusaService extends BaseService {
+class UpdateMedusaService extends TransactionBaseService {
 	productService_: ProductService;
 	productVariantService_: ProductVariantService;
 	redisClient_: any;
 	regionService_: RegionService;
 	logger: Logger;
-	constructor({ productService, productVariantService, regionService, redisClient, logger }) {
-		super();
-
-		this.productService_ = productService;
-		this.productVariantService_ = productVariantService;
-		this.redisClient_ = redisClient;
-		this.regionService_ = regionService;
-		this.logger = logger;
+	manager:EntityManager;
+	constructor(container:{manager,productService, productVariantService, regionService, redisClient, logger }) {
+		super(container);
+		this.manager = container.manager;
+		this.productService_ = container.productService;
+		this.productVariantService_ = container.productVariantService;
+		this.redisClient_ = container.redisClient;
+		this.regionService_ = container.regionService;
+		this.logger = container.logger;
 	}
 
 	async sendStrapiProductVariantToMedusa(variantEntry, variantId): Promise<ProductVariant> {
@@ -40,10 +43,11 @@ class UpdateMedusaService extends BaseService {
 			return;
 		}
 
-		try {
-			const variant = await this.productVariantService_.retrieve(variantId);
-			const update = {};
 
+			const result = await this.atomicPhase_(async(manager)=>{ 
+			const variant = await this.productVariantService_.withTransaction(manager).retrieve(variantId);
+			const update = {};
+			try {
 			if (variant.title !== variantEntry.title) {
 				update['title'] = variantEntry.title;
 			}
@@ -59,6 +63,8 @@ class UpdateMedusaService extends BaseService {
 			this.logger.error(error);
 			return;
 		}
+	})
+	return result
 	}
 
 	async sendStrapiProductToMedusa(productEntry, productId): Promise<Product> {
@@ -67,11 +73,12 @@ class UpdateMedusaService extends BaseService {
 			return;
 		}
 
-		try {
+		
 			// get entry from Strapi
 			// const productEntry = null
 
-			const product = await this.productService_.retrieve(productId);
+			const result =  await this.atomicPhase_(async (manager)=>{  
+				try {const product = await this.productService_.withTransaction(manager).retrieve(productId);
 
 			const update = {};
 
@@ -108,20 +115,21 @@ class UpdateMedusaService extends BaseService {
 					return await addIgnore_(productId, 'strapi', this.redisClient_);
 				});
 			}
+			return product
 		} catch (error) {
 			this.logger.error(error);
 			return;
 		}
-	}
+	})}
 
 	async sendStrapiRegionToMedusa(regionEntry, regionId): Promise<Region> {
 		const ignore = await shouldIgnore_(regionId, 'medusa', this.redisClient_);
 		if (ignore) {
 			return;
 		}
-
+		const result = await this.atomicPhase_(async (manager)=>{ 
 		try {
-			const region = await this.regionService_.retrieve(regionId);
+			const region = await this.regionService_.withTransaction(manager).retrieve(regionId);
 			const update = {};
 
 			if (region.name !== regionEntry.name) {
@@ -134,11 +142,15 @@ class UpdateMedusaService extends BaseService {
 				});
 				return updatedRegion;
 			}
-		} catch (error) {
+			return result
+		}
+		 catch (error) {
 			this.logger.error(error);
 			return;
 		}
+	})
 	}
+
 }
 
 export default UpdateMedusaService;

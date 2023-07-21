@@ -307,6 +307,30 @@ describe('StrapiService Tests', () => {
 			);
 
 			it(
+				'product creation and variant',
+				async () => {
+					const product_id = IdMap.getId('exists-3');
+					result = await service.createProductInStrapi(product_id, defaultAuthInterface);
+					expect(result).toBeDefined();
+					expect(result.status == 200 || result.status == 302).toBeTruthy();
+					expect(result.data?.medusa_id).toBeDefined();
+					expect(result.data).toMatchObject({
+						medusa_id: product_id,
+					});
+					expect(spy).toHaveBeenCalled();
+					if (result) {
+						const productGetResult = await service.getEntitiesFromStrapi({
+							authInterface: defaultAuthInterface,
+							strapiEntityType: 'products',
+						});
+						expect(productGetResult).toBeDefined();
+						expect(productGetResult.data.length > 0).toBeTruthy();
+					}
+				},
+				testTimeOut
+			);
+
+			it(
 				'product recreation',
 				async () => {
 					if (!isMockEnabled()) {
@@ -369,6 +393,25 @@ describe('StrapiService Tests', () => {
 				async () => {
 					result = await service.updateProductInStrapi(
 						{ id: IdMap.getId('exists'), title: 'new-title' },
+						defaultAuthInterface
+					);
+					expect(result).toBeDefined();
+					expect(result.status == 200 || result.status == 302).toBeTruthy();
+					if (!isMockEnabled()) {
+						expect(result).toMatchObject({
+							data: { title: 'new-title', medusa_id: IdMap.getId('exists') },
+						});
+					}
+
+					expect(spy).toHaveBeenCalled();
+				},
+				testTimeOut
+			);
+			it(
+				'attempt to update non existing product',
+				async () => {
+					result = await service.updateProductInStrapi(
+						{ id: IdMap.getId('exists-4'), title: 'new-title' },
 						defaultAuthInterface
 					);
 					expect(result).toBeDefined();
