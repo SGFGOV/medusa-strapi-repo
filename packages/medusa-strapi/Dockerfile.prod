@@ -16,6 +16,8 @@ ENV PATH /opt/node_modules/.bin:$PATH
 RUN yarn config set network-timeout 600000 -g && yarn install --production
 WORKDIR /opt/app
 COPY ./ .
+COPY ./public ./public
+COPY ./favicon.ico ./favicon.ico
 RUN yarn build
 
 

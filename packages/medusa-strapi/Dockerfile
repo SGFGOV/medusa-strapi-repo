@@ -1,4 +1,4 @@
-FROM strapi/base
+#FROM strapi/base
 
 
 #ARG AWS_DEFAULT_REGION 
@@ -11,9 +11,11 @@ FROM strapi/base
 #RUN echo $AWS_SESSION_TOKEN
 
 # Let WatchTower know to ignore this container for checking
-LABEL com.centurylinklabs.watchtower.enable="false"
+
 
 FROM naskio/strapi
+
+LABEL com.centurylinklabs.watchtower.enable="false"
 
 RUN  apt update 
 
@@ -41,7 +43,10 @@ RUN ls
 
 ENV NODE_ENV production
 
-RUN yarn install --ignore-platform --network-timeout 10000000 && yarn build
+RUN yarn install --ignore-platform --network-timeout 10000000 --force && yarn build
+
+COPY ./public ./public
+COPY ./favicon.ico ./favicon.ico
 
 RUN yarn cache clean
 

@@ -1,0 +1,5 @@
+.DS_Store
+node_modules
+*.lo
+!!strapi-admin.js
+!!strapi-server.js

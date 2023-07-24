@@ -12,6 +12,7 @@ export const testUserEmail = 'test15@test.com';
 
 export const regionService = {
 	count: jest.fn().mockImplementation(() => Promise.resolve(1)),
+	withTransaction: jest.fn().mockImplementation((manager) => this),
 	list: jest.fn().mockReturnValue(Promise.resolve()),
 	retrieve: jest
 		.fn()
@@ -84,6 +85,64 @@ export const productService = {
 				created_at: new Date().toISOString(),
 				updated_at: new Date().toISOString(),
 			}),
+			Promise.resolve({
+				id: IdMap.getId('exists-3'),
+				type: { id: 'dummy' },
+				title: 'test-product',
+				// variants: [{ id: IdMap.getId('exists') }]
+				options: [
+					{
+						id: IdMap.getId('exists-3'),
+						title: 'Color',
+					},
+				],
+				// collection_id: IdMap.getId('exists'),
+				collection: {
+					id: IdMap.getId('exists-3'),
+					handle: 'test-collection',
+					title: 'test-collection-title',
+				},
+				categories: [
+					{
+						id: IdMap.getId('exists-3'),
+						handle: 'test-category',
+						name: 'test-categpry-title',
+					},
+				],
+				variants: [
+					{
+						id: IdMap.getId('exists-3'),
+						product: {
+							id: IdMap.getId('exists-3'),
+							title: 'test-product',
+						},
+						title: 'test-product-variant',
+						inventory_quantity: 10,
+						allow_backorder: true,
+						manage_inventory: true,
+						options: [
+							{
+								created_at: '2023-01-26T11:47:16.096Z',
+								deleted_at: null,
+								medusa_id: IdMap.getId('exists-3'),
+								metadata: null,
+								option_id: IdMap.getId('exists-3'),
+								updated_at: '2023-01-26T11:47:16.096Z',
+								value: '12',
+							},
+						],
+						/* prices: [
+						{
+							region_id: "exists",
+							currency_code: "inr",
+							amount: 950
+						}
+					]*/
+					},
+				],
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
+			}),
 		]);
 	}),
 	count: jest.fn().mockImplementation(() => Promise.resolve(1)),
@@ -140,6 +199,7 @@ export const productService = {
 					updated_at: new Date().toISOString(),
 				});
 			}
+
 			return Promise.resolve(undefined);
 		})
 		.mockImplementation((id) => {
@@ -154,6 +214,37 @@ export const productService = {
 						id: IdMap.getId('exists'),
 						title: 'test',
 					},
+					variants: [
+						{
+							id: IdMap.getId('exists'),
+							product: {
+								id: IdMap.getId('exists'),
+								title: 'test-product',
+							},
+							title: 'test-product-variant',
+							inventory_quantity: 10,
+							allow_backorder: true,
+							manage_inventory: true,
+							options: [
+								{
+									created_at: '2023-01-26T11:47:16.096Z',
+									deleted_at: null,
+									medusa_id: IdMap.getId('exists'),
+									metadata: null,
+									option_id: IdMap.getId('exists'),
+									updated_at: '2023-01-26T11:47:16.096Z',
+									value: '12',
+								},
+							],
+							/* prices: [
+							{
+								region_id: "exists",
+								currency_code: "inr",
+								amount: 950
+							}
+						]*/
+						},
+					],
 				});
 			} else if (id === 'exists-2' || id == IdMap.getId('exists-2')) {
 				return Promise.resolve({
@@ -183,6 +274,114 @@ export const productService = {
 					created_at: new Date().toISOString(),
 					updated_at: new Date().toISOString(),
 				});
+			} else if (id == 'exists-3' || id == IdMap.getId('exists-3')) {
+				return {
+					id: IdMap.getId('exists-3'),
+					type: { id: 'dummy' },
+					title: 'test-product',
+					// variants: [{ id: IdMap.getId('exists') }]
+					options: [
+						{
+							id: IdMap.getId('exists-3'),
+							title: 'Color',
+						},
+					],
+					// collection_id: IdMap.getId('exists'),
+					collection: {
+						id: IdMap.getId('exists-3'),
+						handle: 'test-collection',
+						title: 'test-collection-title',
+					},
+					categories: [
+						{
+							id: IdMap.getId('exists-3'),
+							handle: 'test-category',
+							name: 'test-categpry-title',
+						},
+					],
+					variants: [
+						{
+							id: IdMap.getId('exists-3'),
+							product: {
+								id: IdMap.getId('exists-3'),
+								title: 'test-product',
+							},
+							title: 'test-product-variant',
+							inventory_quantity: 10,
+							allow_backorder: true,
+							manage_inventory: true,
+							options: [
+								{
+									created_at: '2023-01-26T11:47:16.096Z',
+									deleted_at: null,
+									medusa_id: IdMap.getId('exists-3'),
+									metadata: null,
+									option_id: IdMap.getId('exists-3'),
+									updated_at: '2023-01-26T11:47:16.096Z',
+									value: '12',
+								},
+							],
+							/* prices: [
+							{
+								region_id: "exists",
+								currency_code: "inr",
+								amount: 950
+							}
+						]*/
+						},
+					],
+				};
+			} else if (id == 'exists-4' || id == IdMap.getId('exists-4')) {
+				return {
+					id: IdMap.getId('exists-4'),
+					type: { id: 'dummy' },
+					title: 'test-product',
+					// variants: [{ id: IdMap.getId('exists') }]
+					options: [
+						{
+							id: IdMap.getId('exists-4'),
+							title: 'Color',
+						},
+					],
+					// collection_id: IdMap.getId('exists'),
+					collection: {
+						id: IdMap.getId('exists-4'),
+						handle: 'test-collection',
+						title: 'test-collection-title',
+					},
+
+					variants: [
+						{
+							id: IdMap.getId('exists-4'),
+							product: {
+								id: IdMap.getId('exists-4'),
+								title: 'test-product',
+							},
+							title: 'test-product-variant',
+							inventory_quantity: 10,
+							allow_backorder: true,
+							manage_inventory: true,
+							options: [
+								{
+									created_at: '2023-01-26T11:47:16.096Z',
+									deleted_at: null,
+									medusa_id: IdMap.getId('exists-4'),
+									metadata: null,
+									option_id: IdMap.getId('exists-4'),
+									updated_at: '2023-01-26T11:47:16.096Z',
+									value: '12',
+								},
+							],
+							/* prices: [
+							{
+								region_id: "exists",
+								currency_code: "inr",
+								amount: 950
+							}
+						]*/
+						},
+					],
+				};
 			}
 			return Promise.resolve(undefined);
 		}),
@@ -233,6 +432,7 @@ export const redisClient = {
 };
 export const productVariantService = {
 	list: jest.fn().mockReturnValue(Promise.resolve()),
+	withTransaction: jest.fn().mockImplementation((manager) => this),
 	retrieve: jest
 		.fn()
 		.mockImplementationOnce((id) => {

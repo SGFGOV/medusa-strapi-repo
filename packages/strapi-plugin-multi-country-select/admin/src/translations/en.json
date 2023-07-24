@@ -1,0 +1,6 @@
+{
+  "multi-country-select.label": "Multi Countries",
+  "multi-country-select.description": "Select multiple countries",
+  "multi-country-select.extra-options.label": "Add more options to the select menu",
+  "multi-country-select.extra-options.description": "One option per line, in the format value:label, e.g. \"UK:United Kingdom\". The label is the text that will be shown to the user, and the value is the value that will be submitted to the server."
+}

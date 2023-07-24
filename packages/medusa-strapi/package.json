@@ -25,7 +25,6 @@
     "@aws-sdk/protocol-http": "^3.78.0",
     "@aws-sdk/signature-v4": "^3.78.0",
     "@aws-sdk/util-format-url": "^3.78.0",
-    "@medusajs/medusa": "npm:@sgftech/medusa",
     "@notum-cz/strapi-plugin-content-versioning": "^0.4.7",
     "@offset-dev/strapi-calendar": "^0.0.9",
     "@sgftech/strapi-plugin-multi-country-select": "^1.0.1",
@@ -46,6 +45,7 @@
     "codemirror": "5.65.11",
     "css-loader": "^6.7.1",
     "download-file-sync": "^1.0.4",
+    "false": "^0.0.4",
     "fs": "^0.0.1-security",
     "i": "^0.3.7",
     "koa-passport": "^5.0.0",
@@ -55,7 +55,7 @@
     "pg": "8.6.0",
     "qs": "^6.11.0",
     "sentry": "^0.1.2",
-    "sharp": "^0.32.1",
+    "sharp": "^0.32.4",
     "strapi-google-translator": "^1.0.7",
     "strapi-html-editor": "^1.0.2",
     "strapi-middleware-cache": "^2.1.8",
@@ -66,7 +66,6 @@
     "strapi-plugin-local-image-sharp": "*",
     "strapi-plugin-medusajs": "^4.0.10",
     "strapi-plugin-meilisearch": "^0.8.2",
-    "strapi-plugin-multi-country-select": "^1.1.0",
     "strapi-plugin-multi-select": "^1.1.0",
     "strapi-plugin-sitemap": "^2.0.8",
     "strapi-plugin-sso-medusa": "^0.1.12",
@@ -116,7 +115,6 @@
     "@lezer/common": "^1.0.0"
   },
   "resolutions": {
-    "codemirror": "5.65.11",
-    "**/strapi-plugin-multi-country-select":"npm:@sgftech/strapi-plugin-multi-country-select"
+    "codemirror": "5.65.11"
   }
 }
