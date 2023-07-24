@@ -107,7 +107,7 @@ class UpdateMedusaService extends TransactionBaseService {
 				}
 
 				// Get the thumbnail, if present
-				if (productEntry.thumbnail) {
+				if (product.thumbnail) {
 					const thumb = null;
 					update['thumbnail'] = thumb;
 				}
