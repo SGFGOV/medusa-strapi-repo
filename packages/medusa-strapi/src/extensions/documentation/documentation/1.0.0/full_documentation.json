@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2023-07-24T06:16:38.046Z"
+    "x-generation-date": "2023-07-24T06:42:44.794Z"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -39,6 +39,13 @@
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "Error": {
         "type": "object",
