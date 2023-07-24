@@ -27,7 +27,7 @@
     },
     "country_compliance":{
       "type":"customField",
-      "customField": "plugin::@sgftech/multi-country-select.countries"
+      "customField": "plugin::multi-country-select.countries"
     },
 
     "legal_status":{
