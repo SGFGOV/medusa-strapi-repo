@@ -8,10 +8,10 @@ To install this plugin, you need to add an NPM dependency to your Strapi applica
 
 ```
 # Using Yarn
-yarn add strapi-plugin-multi-country-select
+yarn add @sgftech/strapi-plugin-multi-country-select
 
 # Or using NPM
-npm install strapi-plugin-multi-country-select
+npm install @sgftech/strapi-plugin-multi-country-select
 ```
 
 Then, you'll need to build your admin panel:
