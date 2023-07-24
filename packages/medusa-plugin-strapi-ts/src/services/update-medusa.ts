@@ -89,6 +89,7 @@ class UpdateMedusaService extends TransactionBaseService {
 				const subtitle = productEntry.subtitle;
 				const description = productEntry.description;
 				const handle = productEntry.handle;
+				const thumbnail = productEntry.thumbnail
 
 				if (product.title !== title) {
 					update['title'] = title;
@@ -107,10 +108,10 @@ class UpdateMedusaService extends TransactionBaseService {
 				}
 
 				// Get the thumbnail, if present
-				if (product.thumbnail) {
-					const thumb = null;
-					update['thumbnail'] = thumb;
+				if (product.thumbnail!== thumbnail ) {
+					update['thumbnail'] = thumbnail;
 				}
+
 
 				if (!isEmptyObject(update)) {
 					await this.productService_
