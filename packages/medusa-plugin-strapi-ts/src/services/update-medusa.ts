@@ -26,8 +26,8 @@ class UpdateMedusaService extends TransactionBaseService {
 	redisClient_: any;
 	regionService_: RegionService;
 	logger: Logger;
-	manager:EntityManager;
-	constructor(container:{manager,productService, productVariantService, regionService, redisClient, logger }) {
+	manager: EntityManager;
+	constructor(container: { manager; productService; productVariantService; regionService; redisClient; logger }) {
 		super(container);
 		this.manager = container.manager;
 		this.productService_ = container.productService;
@@ -43,28 +43,30 @@ class UpdateMedusaService extends TransactionBaseService {
 			return;
 		}
 
-
-			const result = await this.atomicPhase_(async(manager)=>{ 
+		const result = await this.atomicPhase_(async (manager) => {
 			const variant = await this.productVariantService_.withTransaction(manager).retrieve(variantId);
 			const update = {};
 			try {
-			if (variant.title !== variantEntry.title) {
-				update['title'] = variantEntry.title;
-			}
+				if (variant.title !== variantEntry.title) {
+					update['title'] = variantEntry.title;
+				}
 
-			if (!isEmptyObject(update)) {
-				const updatedVariant = await this.productVariantService_.update(variantId, update).then(async () => {
-					return await addIgnore_(variantId, 'strapi', this.redisClient_);
-				});
+				if (!isEmptyObject(update)) {
+					const updatedVariant = await this.productVariantService_
+						.withTransaction(manager)
+						.update(variantId, update)
+						.then(async () => {
+							return await addIgnore_(variantId, 'strapi', this.redisClient_);
+						});
 
-				return updatedVariant;
+					return updatedVariant;
+				}
+			} catch (error) {
+				this.logger.error(error);
+				return;
 			}
-		} catch (error) {
-			this.logger.error(error);
-			return;
-		}
-	})
-	return result
+		});
+		return result;
 	}
 
 	async sendStrapiProductToMedusa(productEntry, productId): Promise<Product> {
@@ -73,84 +75,89 @@ class UpdateMedusaService extends TransactionBaseService {
 			return;
 		}
 
-		
-			// get entry from Strapi
-			// const productEntry = null
+		// get entry from Strapi
+		// const productEntry = null
 
-			const result =  await this.atomicPhase_(async (manager)=>{  
-				try {const product = await this.productService_.withTransaction(manager).retrieve(productId);
+		const result = await this.atomicPhase_(async (manager) => {
+			try {
+				const product = await this.productService_.withTransaction(manager).retrieve(productId);
 
-			const update = {};
+				const update = {};
 
-			// update Medusa product with Strapi product fields
-			const title = productEntry.title;
-			const subtitle = productEntry.subtitle;
-			const description = productEntry.description;
-			const handle = productEntry.handle;
+				// update Medusa product with Strapi product fields
+				const title = productEntry.title;
+				const subtitle = productEntry.subtitle;
+				const description = productEntry.description;
+				const handle = productEntry.handle;
 
-			if (product.title !== title) {
-				update['title'] = title;
+				if (product.title !== title) {
+					update['title'] = title;
+				}
+
+				if (product.subtitle !== subtitle) {
+					update['subtitle'] = subtitle;
+				}
+
+				if (product.description !== description) {
+					update['description'] = description;
+				}
+
+				if (product.handle !== handle) {
+					update['handle'] = handle;
+				}
+
+				// Get the thumbnail, if present
+				if (productEntry.thumbnail) {
+					const thumb = null;
+					update['thumbnail'] = thumb;
+				}
+
+				if (!isEmptyObject(update)) {
+					await this.productService_
+						.withTransaction(manager)
+						.update(productId, update)
+						.then(async () => {
+							return await addIgnore_(productId, 'strapi', this.redisClient_);
+						});
+				}
+				return product;
+			} catch (error) {
+				this.logger.error(error);
+				return;
 			}
-
-			if (product.subtitle !== subtitle) {
-				update['subtitle'] = subtitle;
-			}
-
-			if (product.description !== description) {
-				update['description'] = description;
-			}
-
-			if (product.handle !== handle) {
-				update['handle'] = handle;
-			}
-
-			// Get the thumbnail, if present
-			if (productEntry.thumbnail) {
-				const thumb = null;
-				update['thumbnail'] = thumb;
-			}
-
-			if (!isEmptyObject(update)) {
-				await this.productService_.update(productId, update).then(async () => {
-					return await addIgnore_(productId, 'strapi', this.redisClient_);
-				});
-			}
-			return product
-		} catch (error) {
-			this.logger.error(error);
-			return;
-		}
-	})}
+		});
+	}
 
 	async sendStrapiRegionToMedusa(regionEntry, regionId): Promise<Region> {
 		const ignore = await shouldIgnore_(regionId, 'medusa', this.redisClient_);
 		if (ignore) {
 			return;
 		}
-		const result = await this.atomicPhase_(async (manager)=>{ 
-		try {
-			const region = await this.regionService_.withTransaction(manager).retrieve(regionId);
-			const update = {};
+		const result = await this.atomicPhase_(async (manager) => {
+			try {
+				const region = await this.regionService_.withTransaction(manager).retrieve(regionId);
+				const update = {};
 
-			if (region.name !== regionEntry.name) {
-				update['name'] = regionEntry.name;
-			}
+				if (region.name !== regionEntry.name) {
+					update['name'] = regionEntry.name;
+				}
 
-			if (!isEmptyObject(update)) {
-				const updatedRegion = await this.regionService_.update(regionId, update).then(async () => {
-					return await addIgnore_(regionId, 'strapi', this.redisClient_);
-				});
-				return updatedRegion;
+				if (!isEmptyObject(update)) {
+					const updatedRegion = await this.regionService_
+						.withTransaction(manager)
+						.update(regionId, update)
+						.then(async () => {
+							return await addIgnore_(regionId, 'strapi', this.redisClient_);
+						});
+					return updatedRegion;
+				}
+				return result;
+			} catch (error) {
+				this.logger.error(error);
+				return;
 			}
-			return result
-		}
-		 catch (error) {
-			this.logger.error(error);
-			return;
-		}
-	})
+		});
 	}
-
 }
 
 export default UpdateMedusaService;

@@ -859,7 +859,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		return { status: 400 };
 	}
 
-	async updateProductInStrapi(data:Partial<Product>, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
+	async updateProductInStrapi(
+		data: Partial<Product>,
+		authInterface: AuthInterface = this.defaultAuthInterface
+	): Promise<StrapiResult> {
 		const hasType = this.getType('products', authInterface)
 			.then(() => {
 				// this.logger.info(res.data)
@@ -889,7 +892,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			'height',
 			'weight',
 			'width',
-			'length'
+			'length',
 		];
 
 		// check if update contains any fields in Strapi to minimize runs
@@ -908,73 +911,76 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return { status: 400 };
 			}
 			try {
-			const product = await this.productService_.retrieve(data.id, {
-				relations: [
-					'options',
-					'variants',
-					'variants.prices',
-					'variants.options',
-					'type',
-					'collection',
-					'tags',
-					'images',
-				],
-				select: [
-					'id',
-					'title',
-					'subtitle',
-					'description',
-					'handle',
-					'is_giftcard',
-					'discountable',
-					'thumbnail',
-					'weight',
-					'length',
-					'height',
-					'width',
-					'hs_code',
-					'origin_country',
-					'mid_code',
-					'material',
-					'metadata',
-				],
-			});
+				const product = await this.productService_.retrieve(data.id, {
+					relations: [
+						'options',
+						'variants',
+						'variants.prices',
+						'variants.options',
+						'type',
+						'collection',
+						'tags',
+						'images',
+					],
+					select: [
+						'id',
+						'title',
+						'subtitle',
+						'description',
+						'handle',
+						'is_giftcard',
+						'discountable',
+						'thumbnail',
+						'weight',
+						'length',
+						'height',
+						'width',
+						'hs_code',
+						'origin_country',
+						'mid_code',
+						'material',
+						'metadata',
+					],
+				});
 
-
-			if (product) {
-				try {
-				return await this.adjustProductAndUpdateInStrapi(product, data, authInterface);
+				if (product) {
+					try {
+						const result = await this.adjustProductAndUpdateInStrapi(product, data, authInterface);
+						if (result.status == 200) {
+							return result;
+						} else {
+							return await this.createProductInStrapi(data.id, authInterface);
+						}
+					} catch (e) {
+						this.logger.error('unable to update product', 'e.message');
+						return { status: 400 };
+					}
+				} else {
+					try {
+						log("update failed as product doesn't exist, creating product instead");
+						return await this.createProductInStrapi(data.id, authInterface);
+					} catch (f) {
+						return { status: 400 };
+					}
 				}
-				catch (e)
-				{	this.logger.error("unable to update product","e.message")
+			} catch (e) {
+				try {
+					log("update failed as product doesn't exist, creating product instead");
+					return await this.createProductInStrapi(data.id, authInterface);
+				} catch (f) {
 					return { status: 400 };
 				}
 			}
-			else {
-			try {
-				log("update failed as product doesn't exist, creating product instead")
-				return await this.createProductInStrapi(data.id,authInterface)
-			}
-			catch (f){
-			return { status: 400 };
-			}
-		}
-		}
-		catch(e){
-			try {
-				log("update failed as product doesn't exist, creating product instead")
-				return await this.createProductInStrapi(data.id,authInterface)
-			}
-			catch (f){
-			return { status: 400 };
-			}
-		}
 		} catch (error) {
 			throw error;
 		}
 	}
 
-	private async adjustProductAndUpdateInStrapi(product: Product, data:Partial<Product>, authInterface: AuthInterface) {
+	private async adjustProductAndUpdateInStrapi(
+		product: Product,
+		data: Partial<Product>,
+		authInterface: AuthInterface
+	) {
 		// Medusa is not using consistent naming for product-*.
 		// We have to adjust it manually. For example: collection to product-collection
 		const dataToUpdate = { ...product, ...data };
@@ -1021,7 +1027,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			'origin_country',
 			'options',
 		];
-		let response = {status:400}
+		let response = { status: 400 };
 		// Update came directly from product variant service so only act on a couple
 		// of fields. When the update comes from the product we want to ensure
 		// references are set up correctly so we run through everything.
@@ -1040,37 +1046,34 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return { status: 400 };
 			}
 			try {
-			variant = await this.productVariantService_.retrieve(data.id, {
-				relations: ['prices', 'options'],
-			});
-			this.logger.info(JSON.stringify(variant));
-			try {
-			if (variant) {
-				// Update entry in Strapi
-				
-				 response = await this.updateEntryInStrapi({
-					type: 'product-variants',
-					id: variant.id,
-					authInterface,
-					data: { ...variant, ...data },
-					method: 'put',
+				variant = await this.productVariantService_.retrieve(data.id, {
+					relations: ['prices', 'options'],
 				});
-				this.logger.info('Variant Strapi Id - ', response);
-				return response;
-			}
-		}catch(e)
-		{
-			this.logger.info(JSON.stringify(variant));
-		}
+				this.logger.info(JSON.stringify(variant));
+				try {
+					if (variant) {
+						// Update entry in Strapi
 
-		}
-		catch (e){
-			if(!variant){
-				 response = await this.createProductVariantInStrapi(data.id,authInterface)
-				this.logger.info('Created Variant Strapi Id - ', response);
-				return response;
+						response = await this.updateEntryInStrapi({
+							type: 'product-variants',
+							id: variant.id,
+							authInterface,
+							data: { ...variant, ...data },
+							method: 'put',
+						});
+						this.logger.info('Variant Strapi Id - ', response);
+						return response;
+					}
+				} catch (e) {
+					this.logger.info(JSON.stringify(variant));
+				}
+			} catch (e) {
+				if (!variant) {
+					response = await this.createProductVariantInStrapi(data.id, authInterface);
+					this.logger.info('Created Variant Strapi Id - ', response);
+					return response;
+				}
 			}
-		}
 			return response;
 		} catch (error) {
 			this.logger.info('Failed to update product variant', data.id);
