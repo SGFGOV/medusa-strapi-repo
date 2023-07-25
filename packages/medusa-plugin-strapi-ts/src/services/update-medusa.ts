@@ -84,8 +84,15 @@ class UpdateMedusaService extends TransactionBaseService {
 
 				const update = {};
 
+				const entryKeys = Object.keys(productEntry);
+				for (const key of entryKeys) {
+					if (typeof productEntry[key] != 'object' && !Array.isArray(productEntry[key])) {
+						if (product[key] != productEntry[key] && key != 'medusa_id') update[key] = productEntry[key];
+					}
+				}
+
 				// update Medusa product with Strapi product fields
-				const title = productEntry.title;
+				/*const title = productEntry.title;
 				const subtitle = productEntry.subtitle;
 				const description = productEntry.description;
 				const handle = productEntry.handle;
@@ -110,7 +117,7 @@ class UpdateMedusaService extends TransactionBaseService {
 				if (productEntry.thumbnail) {
 					const thumb = null;
 					update['thumbnail'] = thumb;
-				}
+				}*/
 
 				if (!isEmptyObject(update)) {
 					await this.productService_
