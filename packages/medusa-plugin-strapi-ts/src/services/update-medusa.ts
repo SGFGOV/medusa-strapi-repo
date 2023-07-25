@@ -83,11 +83,13 @@ class UpdateMedusaService extends TransactionBaseService {
 				const product = await this.productService_.withTransaction(manager).retrieve(productId);
 
 				const update = {};
-
+				this.logger.debug('old data in medusa : ' + JSON.stringify(product));
+				this.logger.debug('data received from strapi : ' + JSON.stringify(productEntry));
 				const entryKeys = Object.keys(productEntry);
 				for (const key of entryKeys) {
-					if (typeof productEntry[key] != 'object' && !Array.isArray(productEntry[key])) {
-						if (product[key] != productEntry[key] && key != 'medusa_id') update[key] = productEntry[key];
+					if (!(productEntry[key] instanceof Object) && !Array.isArray(productEntry[key])) {
+						if (product[key] != productEntry[key] && key != 'medusa_id' && key != 'id')
+							update[key] = productEntry[key];
 					}
 				}
 
