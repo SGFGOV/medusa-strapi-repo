@@ -83,9 +83,18 @@ class UpdateMedusaService extends TransactionBaseService {
 				const product = await this.productService_.withTransaction(manager).retrieve(productId);
 
 				const update = {};
+				this.logger.debug('old data in medusa : ' + JSON.stringify(product));
+				this.logger.debug('data received from strapi : ' + JSON.stringify(productEntry));
+				const entryKeys = Object.keys(productEntry);
+				for (const key of entryKeys) {
+					if (!(productEntry[key] instanceof Object) && !Array.isArray(productEntry[key])) {
+						if (product[key] != productEntry[key] && key != 'medusa_id' && key != 'id')
+							update[key] = productEntry[key];
+					}
+				}
 
 				// update Medusa product with Strapi product fields
-				const title = productEntry.title;
+				/*const title = productEntry.title;
 				const subtitle = productEntry.subtitle;
 				const description = productEntry.description;
 				const handle = productEntry.handle;
@@ -110,7 +119,7 @@ class UpdateMedusaService extends TransactionBaseService {
 				if (productEntry.thumbnail) {
 					const thumb = null;
 					update['thumbnail'] = thumb;
-				}
+				}*/
 
 				if (!isEmptyObject(update)) {
 					await this.productService_
