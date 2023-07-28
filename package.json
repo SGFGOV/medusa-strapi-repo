@@ -59,6 +59,7 @@
     "**/sharp":"0.32.0",
     "**/class-validator":"^0.14.0",
     "**/engine.io":"^6.4.2",    
-    "**/strapi-plugin-multi-country-select":"npm:@sgftech/plugin-multi-country-select"
+    "**/strapi-plugin-multi-country-select":"npm:@sgftech/plugin-multi-country-select",
+    "**/typescript":"5.1.3"
   }
 }
