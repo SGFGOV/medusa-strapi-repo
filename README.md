@@ -90,9 +90,10 @@ We support strapi v4.10.5 at the moment with medusa version.
 
 ## Prerequisites
 
-- node >16.17.3
-- medusa>1.8
-- strapi > 4.10.5
+- node   > 16.17.3
+- medusa > 1.8
+- strapi > 4.11.7
+- postgres > 12
 
 ## Install
  
