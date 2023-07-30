@@ -682,7 +682,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		// eslint-disable-next-line no-useless-catch
 		try {
 			const region = await this.regionService_.retrieve(regionId, {
-				relations: ['	', 'payment_providers', 'fulfillment_providers', 'currency'],
+				relations: ['payment_providers', 'fulfillment_providers', 'currency'],
 				select: ['id', 'name', 'tax_rate', 'tax_code', 'metadata'],
 			});
 
