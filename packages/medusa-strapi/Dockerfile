@@ -48,8 +48,6 @@ RUN yarn install --ignore-platform --network-timeout 10000000 --force && yarn bu
 COPY ./public ./public
 COPY ./favicon.ico ./favicon.ico
 
-RUN yarn cache clean
-
 #EXPOSE 1337
 
 CMD ["yarn", "start"]

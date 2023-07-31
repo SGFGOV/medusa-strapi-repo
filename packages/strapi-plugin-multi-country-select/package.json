@@ -24,7 +24,7 @@
     },
     "license": "MIT",
     "peerDependencies": {
-        "@strapi/strapi": "^4.10.2"
+        "@strapi/strapi": "^4.11.7"
     },
     "repository": {
         "type": "git",

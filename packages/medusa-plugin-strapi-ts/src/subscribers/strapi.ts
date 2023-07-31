@@ -51,34 +51,30 @@ class StrapiSubscriber {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.updateProductVariantInStrapi(data, authInterace);
-		
 		});
 
-		this.eventBus_.subscribe(ProductService.Events.UPDATED, async (data:Product) => {
+		this.eventBus_.subscribe(ProductService.Events.UPDATED, async (data: Product) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.updateProductInStrapi(data);
-			if(data.variants.length>0)
-				{
-					const result = data.variants.map(async (value,index,array)=>{
-						await this.strapiService_.updateProductVariantInStrapi(value,authInterace)
-					})
-					await Promise.all(result)
-				}	
+			if (data.variants?.length > 0) {
+				const result = data.variants.map(async (value, index, array) => {
+					await this.strapiService_.updateProductVariantInStrapi(value, authInterace);
+				});
+				await Promise.all(result);
+			}
 		});
 
-		this.eventBus_.subscribe(ProductService.Events.CREATED, async (data:Product) => {
+		this.eventBus_.subscribe(ProductService.Events.CREATED, async (data: Product) => {
 			const authInterace: AuthInterface =
 				(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
 			await this.strapiService_.createProductInStrapi(data.id, authInterace);
-			if(data.variants.length>0)
-				{
-					const result = data.variants.map(async (value,index,array)=>{
-						await this.strapiService_.createProductVariantInStrapi(value.id,authInterace)
-					})
-					await Promise.all(result)
-				}	
-			
+			if (data.variants?.length > 0) {
+				const result = data.variants.map(async (value, index, array) => {
+					await this.strapiService_.createProductVariantInStrapi(value.id, authInterace);
+				});
+				await Promise.all(result);
+			}
 		});
 
 		this.eventBus_.subscribe(
@@ -172,7 +168,6 @@ class StrapiSubscriber {
 			await this.strapiService_.deleteRegionInStrapi(data, authInterace);
 		});
 	}
-	
 	async getLoggedInUserStrapiCreds(): Promise<AuthInterface> {
 		return this.loggedInUserAuth;
 	}

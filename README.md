@@ -11,9 +11,48 @@
   <a href="https://github.com/adrien2p/medusa-extender/blob/main/LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/adrien2p/medusa-extender?style=flat" height="20"/></a>
 </p>
 
-## Monorepo for all strapi components to sync with medusa
+# Monorepo for all strapi components to sync with medusa
 
 ### 🏠 [Homepage](README.md)
+
+## An Appeal
+## Medusa-Strapi: Embrace the Power of Empathy in Content Management! 🚀
+
+Hey there, Supporter! 👋
+
+Welcome to the world of Medusa-Strapi, the perfect companion to the MedusaJS e-commerce framework! As we set out to make a lasting impact in the digital realm, we invite you to join our journey and experience the magic of empathetic content management.
+
+Medusa-Strapi is not just any content management system; it's a heartfelt project that empowers creators and businesses to thrive alongside the MedusaJS e-commerce framework. Together, we're on a mission to simplify content management while embracing the principles of empathy and collaboration.
+
+### Why We Need Your Help:
+
+Through Medusa-Strapi, we've already witnessed the profound impact it's had on countless lives. Businesses can now craft compelling stories with ease, while developers find joy in building seamless experiences. Together, we've saved valuable hours, giving individuals the freedom to focus on what truly matters.
+
+### You Can Make a Difference:
+
+Your support, no matter the size - whether it's a generous $5 or a magnificent $10 - fuels our quest. With your backing, we can:
+
+- **Empower Dreams:** Behind every line of code lies a dream - the dream of a developer leaving an indelible mark, a small business flourishing, or a content creator inspiring the world. Your support brings these dreams to life, turning them into awe-inspiring realities.
+
+- **Craft Simplicity:** We believe in technology that empowers, not complicates. Your kindness helps us build an intuitive content management system, allowing businesses to effortlessly create and manage content.
+
+- **Celebrate Humanity:** Medusa-Strapi is not just software; it's a vibrant community driven by empathy. Your support strengthens these bonds, fostering a space where ideas flourish, and hearts unite.
+
+### Join Our Journey:
+
+Be a part of Medusa-Strapi's story and the FOSS movement. 🌟 Embrace the spirit of openness, collaboration, and shared growth. Together, let's empower this journey, making an indelible impact on countless lives.
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/SGFGOV/medusa-strapi-repo?label=Sponsor%20Medusa-Strapi&style=social)](https://github.com/sponsors/SGFGOV)
+
+Ready to join the ranks of change-makers? 🚀 Pledge your support or learn more at [github.com/SGFGOV/medusa-strapi-repo](https://github.com/SGFGOV/medusa-strapi-repo).
+
+Embrace the power of empathy in Medusa-Strapi's journey today! 💫
+
+With heartfelt gratitude,
+
+Govind
+Medusa-Strapi Team 🤝
+
 
 ## Introduction
 
@@ -46,14 +85,15 @@ This mono repo houses 5 components. All are under the packages folder. You can r
 
 ## Version info
 
-We support strapi v4.9.2 at the moment with medusa version. 
+We support strapi v4.10.5 at the moment with medusa version. 
 [Changelog](CHANGELOG.md)
 
 ## Prerequisites
 
-- node >16.17.3
-- medusa>1.8
-- strapi > 4.9.2
+- node   > 16.17.3
+- medusa > 1.8
+- strapi > 4.11.7
+- postgres > 12
 
 ## Install
  
