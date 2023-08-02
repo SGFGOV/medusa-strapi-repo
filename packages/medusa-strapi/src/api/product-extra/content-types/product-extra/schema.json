@@ -26,8 +26,7 @@
       "type": "json"
     },
     "country_compliance":{
-      "type":"customField",
-      "customField": "plugin::sgftech-multi-country-select.countries"
+      "type":"string"
     },
 
     "legal_status":{
