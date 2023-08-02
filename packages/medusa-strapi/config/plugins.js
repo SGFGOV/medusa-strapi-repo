@@ -116,7 +116,7 @@ module.exports = ({ env }) => ({
 	},
 	'multi-country-select': {
 		enabled: true,
-		resolve: `../../node_modules/@sgftech/plugin-multi-country-select`,
+		resolve: `@sgftech/plugin-multi-country-select`,
 	},
 	'strapi-google-translator': {
 		enabled: true,
