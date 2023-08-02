@@ -1,5 +1,5 @@
 {
-    "name": "@sgftech/plugin-multi-country-select",
+    "name": "strapi-plugin-sgftech-multi-country-select",
     "description": "A strapi custom field for selecting multiple countries based on the ISO 3166-1 country code standard.",
     "keywords": [
         "strapi",
@@ -10,7 +10,7 @@
     ],
     "version": "1.0.2",
     "strapi": {
-        "name": "multi-country-select",
+        "name": "sgftech-multi-country-select",
         "description": "Multiple Countries Select custom field",
         "kind": "plugin",
         "displayName": "Multi-Countries Select"

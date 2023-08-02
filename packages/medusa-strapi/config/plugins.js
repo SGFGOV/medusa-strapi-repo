@@ -114,9 +114,9 @@ module.exports = ({ env }) => ({
 	'generate-data': {
 		enabled: true,
 	},
-	'multi-country-select': {
+	'sgftech-multi-country-select': {
 		enabled: true,
-		resolve: `@sgftech/plugin-multi-country-select`,
+		//resolve: `@sgftech/plugin-multi-country-select`,
 	},
 	'strapi-google-translator': {
 		enabled: true,
