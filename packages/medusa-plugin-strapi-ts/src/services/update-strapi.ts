@@ -858,7 +858,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 		return { status: 400 };
 	}
-	
+
 	async updateProductsWithinCategoryInStrapi(
 		data,
 		authInterface: AuthInterface = this.defaultAuthInterface
@@ -936,8 +936,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			'type_id',
 			'collection',
 			'collection_id',
-			'category',
-			'category_id',
+			'categories',
 			'thumbnail',
 			'height',
 			'weight',

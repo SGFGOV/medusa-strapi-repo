@@ -132,24 +132,6 @@ class StrapiSubscriber {
 		);
 
 		this.eventBus_.subscribe(
-			ProductCategoryService.Events.PRODUCTS_ADDED,
-			async (data: BaseEntity & { data: Record<string, unknown> }) => {
-				const authInterace: AuthInterface =
-					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
-				await this.strapiService_.updateProductsWithinCategoryInStrapi(data.id, authInterace);
-			}
-		);
-
-		this.eventBus_.subscribe(
-			ProductCategoryService.Events.PRODUCTS_REMOVED,
-			async (data: BaseEntity & { data: Record<string, unknown> }) => {
-				const authInterace: AuthInterface =
-					(await this.getLoggedInUserStrapiCreds()) ?? this.strapiService_.defaultAuthInterface;
-				await this.strapiService_.updateProductsWithinCategoryInStrapi(data.id, authInterace);
-			}
-		);
-
-		this.eventBus_.subscribe(
 			ProductCategoryService.Events.UPDATED,
 			async (data: BaseEntity & { data: Record<string, unknown> }) => {
 				const authInterace: AuthInterface =
