@@ -858,6 +858,54 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 		return { status: 400 };
 	}
+	
+	async updateProductsWithinCategoryInStrapi(
+		data,
+		authInterface: AuthInterface = this.defaultAuthInterface
+	): Promise<StrapiResult> {
+		const hasType = this.getType('products', authInterface)
+			.then(() => {
+				return true;
+			})
+			.catch(() => {
+				return false;
+			});
+		if (!hasType) {
+			return { status: 400 };
+		}
+
+		const updateFields = ['productIds', 'productCategory'];
+
+		if (!this.verifyDataContainsFields(data, updateFields)) {
+			return { status: 400 };
+		}
+		try {
+			for (const productId of data.productIds) {
+				const ignore = await this.shouldIgnore_(productId, 'strapi');
+				if (ignore) {
+					this.logger.info(
+						'Strapi has just added this product to category which triggered this function. IGNORING... '
+					);
+					continue;
+				}
+
+				const product = await this.productService_.retrieve(productId, {
+					relations: ['category'],
+					select: ['id'],
+				});
+
+				if (product) {
+					// we're sending requests sequentially as the Strapi is having problems with deadlocks otherwise
+					await this.adjustProductAndUpdateInStrapi(product, data, authInterface);
+				}
+			}
+			return { status: 200 };
+		} catch (error) {
+			this.logger.error('Error updating products in category', error);
+			throw error;
+		}
+		return { status: 400 };
+	}
 
 	async updateProductInStrapi(
 		data: Partial<Product>,
@@ -888,6 +936,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 			'type_id',
 			'collection',
 			'collection_id',
+			'category',
+			'category_id',
 			'thumbnail',
 			'height',
 			'weight',
@@ -919,6 +969,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 						'variants.options',
 						'type',
 						'collection',
+						'categories',
 						'tags',
 						'images',
 					],
