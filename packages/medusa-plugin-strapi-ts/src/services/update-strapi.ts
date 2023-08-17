@@ -874,7 +874,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return { status: 400 };
 		}
 
-		const updateFields = ['productIds', 'productCategory'];
+		const updateFields = ['productIds', 'productCategories'];
 
 		if (!this.verifyDataContainsFields(data, updateFields)) {
 			return { status: 400 };
