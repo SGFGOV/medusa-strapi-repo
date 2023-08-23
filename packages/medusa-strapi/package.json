@@ -124,7 +124,7 @@
       "**/@strapi/utils":"4.12.5",
       "**/semver":"^7.5.2",
       "**/word-wrap":"^1.2.4",
-      "**/fast-xml-parse":"^4.2.4"
+      "**/fast-xml-parser":"^4.2.4"
   }
 
 }
