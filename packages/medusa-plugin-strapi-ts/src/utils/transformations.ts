@@ -14,6 +14,9 @@ export async function transformMedusaToStrapiProduct(product: Product): Promise<
 	if (productToSend.collection) {
 		productToSend['product-collections'] = _.cloneDeep(productToSend.collection);
 	}
+	if (productToSend.categories) {
+		productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
+	}
 	if (productToSend.profile) {
 		productToSend['shipping-profiles'] = _.cloneDeep(productToSend.profile);
 		delete productToSend.profile;
