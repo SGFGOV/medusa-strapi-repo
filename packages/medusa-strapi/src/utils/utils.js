@@ -105,6 +105,23 @@ async function controllerfindOne(ctx, strapi, uid) {
 	}
 	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
+
+async function controllerfindMany(ctx, strapi, uid) {
+	try {
+		const entity = await strapi.entityService.findMany(uid, ctx.query);
+		strapi.log.debug(`requested  ${uid} query: ${JSON.stringify(ctx.query)}`);
+		if (entity && entity.length > 0) {
+			return (ctx.body = { data: entity });
+		}
+		return ctx.notFound(ctx);
+	} catch (e) {
+		handleError(strapi, e);
+		return ctx.internalServerError(ctx);
+	}
+
+	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
+}
+
 async function uploadFile(strapi, uid, fileData, processedData, fieldName = 'files') {
 	const service = strapi.service('plugin::upload.upload');
 	const id = processedData.id;
@@ -130,8 +147,8 @@ async function controllerCreate(ctx, strapi, uid) {
 	delete ctx.request.body?.data?.id;
 	let processedData;
 
-    let data = _.cloneDeep(ctx.request.body.data ?? ctx.request.body);
-    strapi.log.info(`Medusa is creating entity ${uid} on Strapi`, {data: data});
+	let data = _.cloneDeep(ctx.request.body.data ?? ctx.request.body);
+	strapi.log.info(`Medusa is creating entity ${uid} on Strapi`, { data: data });
 	try {
 		if (typeof data == 'string') {
 			data = JSON.parse(data);
@@ -160,7 +177,7 @@ async function getStrapiIdFromMedusaId(uid, strapi, medusa_id) {
 
 function findContentUid(name, strapi) {
 	let objectUid;
-    name = name.replace('_', '-');
+	name = name.replace('_', '-');
 	const contentTypes = Object.keys(strapi.contentTypes);
 	for (const contentType of contentTypes) {
 		const value = strapi.contentTypes[contentType];
@@ -240,19 +257,19 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, cal
 				if (callBack) {
 					await callBack(dataReceived);
 				}
-        } catch (e) {
-        switch (e.name) {
-          case 'ValidationError':
-            strapi.log.error(
-              `Cannot create ${uid}. Validation errors occured on ${
-                dataReceived["medusa_id"]
-              }: ${e.details.errors.map((error) => error.message + " ")}`
-            );
-            break;
-          default:
-				    strapi.log.error(`unable to create ${uid} ${e.message} ${dataReceived['medusa_id']}`);
-            break;
-        }
+			} catch (e) {
+				switch (e.name) {
+					case 'ValidationError':
+						strapi.log.error(
+							`Cannot create ${uid}. Validation errors occured on ${
+								dataReceived['medusa_id']
+							}: ${e.details.errors.map((error) => error.message + ' ')}`
+						);
+						break;
+					default:
+						strapi.log.error(`unable to create ${uid} ${e.message} ${dataReceived['medusa_id']}`);
+						break;
+				}
 				// throw e;
 			}
 		} catch (e) {
@@ -275,13 +292,13 @@ async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
 			const filters = {};
 			filters[field] = dataReceived[field];
 
-      // we're not iterating over empty fields as they're not unique
+			// we're not iterating over empty fields as they're not unique
 
-      if (dataReceived[field] === null || dataReceived[field] === '') {
-        continue;
-      }
+			if (dataReceived[field] === null || dataReceived[field] === '') {
+				continue;
+			}
 
-      try {
+			try {
 				const entity = await strapi.entityService.findMany(uid, {
 					filters,
 					fields: ['id', ...uniqueFields],
@@ -431,14 +448,14 @@ async function controllerDelete(ctx, strapi, uid) {
 async function controllerUpdate(ctx, strapi, uid) {
 	const { id: medusa_id } = ctx.params;
 	delete ctx.request.body?.data?.id;
-    const data = ctx.request.body.data;
+	const data = ctx.request.body.data || ctx.request.body;
 
-    strapi.log.info(`Medusa is updating entity ${medusa_id} of type ${uid} in Strapi`, {data: data});
+	strapi.log.info(`Medusa is updating entity ${medusa_id} of type ${uid} in Strapi`, { data: data });
 
 	try {
 		const entityId = await getStrapiIdFromMedusaId(uid, strapi, medusa_id);
 		if (entityId) {
-		    const processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
+			const processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
 			const result = await strapi.services[uid].update(entityId, {
 				data: processedData,
 			});
@@ -446,7 +463,7 @@ async function controllerUpdate(ctx, strapi, uid) {
 				data: result,
 			});
 		} else {
-		    strapi.log.warn(`Cannot update entity ${medusa_id} of type ${uid} as it doesnt exist in strapi`);
+			strapi.log.warn(`Cannot update entity ${medusa_id} of type ${uid} as it doesnt exist in strapi`);
 			return ctx.notFound(ctx);
 		}
 	} catch (e) {
@@ -459,7 +476,7 @@ function createMedusaDefaultController(uid) {
 	return createCoreController(uid, {
 		async find(ctx) {
 			// eslint-disable-next-line no-undef
-			return await strapi.entityService.findMany(uid, { fields: ['id'] });
+			return await controllerfindMany(ctx, strapi, uid);
 		},
 
 		async findOne(ctx) {

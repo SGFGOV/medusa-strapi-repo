@@ -82,6 +82,7 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { Http2ServerResponse } from 'http2';
 import { AxiosError } from 'axios';
 import { log } from 'console';
+import { url } from 'inspector';
 
 export type StrapiEntity = BaseEntity & { medusa_id?: string };
 export type AdminResult = { data: any; status: number };
@@ -109,6 +110,7 @@ export type StrapiResult = {
 	data?: any | any[];
 	meta?: Record<string, any>;
 	status: number;
+	query?: string;
 };
 const IGNORE_THRESHOLD = 3; // seconds
 
@@ -348,6 +350,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				authInterface: params.authInterface,
 				method: 'GET',
 				id: params.id,
+				query: params.urlQuery ? qs.stringify(params.urlQuery) : undefined,
 			};
 
 			const result = await this.getEntriesInStrapi(getEntityParams);
@@ -999,7 +1002,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 						if (result.status == 200) {
 							return result;
 						} else {
-							return await this.createProductInStrapi(data.id, authInterface);
+							await this.createProductInStrapi(data.id, authInterface);
+							const result = await this.adjustProductAndUpdateInStrapi(product, data, authInterface);
+							return result;
 						}
 					} catch (e) {
 						this.logger.error('unable to update product', 'e.message');
@@ -1110,6 +1115,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 							authInterface,
 							data: { ...variant, ...data },
 							method: 'put',
+							query: data.query,
 						});
 						this.logger.info('Variant Strapi Id - ', response);
 						return response;
@@ -1447,12 +1453,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 		this.logger.info('found user: ' + JSON.stringify(fetchedUser));
 
-		const result = await this.executeStrapiSend(
-			'delete',
-			'users',
-			this.userTokens[authInterface.email].token,
-			fetchedUser.id?.toString()
-		);
+		const result = await this.executeStrapiSend({
+			method: 'delete',
+			type: 'users',
+			token: this.userTokens[authInterface.email].token,
+			id: fetchedUser.id?.toString(),
+		});
 		return { data: result.data.data ?? result.data, status: result.status };
 	}
 
@@ -1689,11 +1695,15 @@ export class UpdateStrapiService extends TransactionBaseService {
 				id: command.data.id,
 				data: undefined,
 				authInterface: command.authInterface,
+				query: command.query,
 			});
-			return await this.processStrapiEntry({
+			const putResult = await this.processStrapiEntry({
 				...command,
 				method: 'put',
+				id: command.data.id,
+				query: undefined,
 			});
+			return putResult;
 		} catch (e) {
 			this.logger.error(
 				`entity doesn't exist in strapi :${e.message} : ${command.id}` + ' , update not possible'
@@ -1769,7 +1779,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	/* @todo enable api based access */
 	/* automatically converts "id" into medusa "id"*/
 	async strapiSendDataLayer(params: StrapiSendParams): Promise<StrapiResult> {
-		const { method, type, id, data, authInterface } = params;
+		const { method, type, id, data, authInterface, query } = params;
 
 		const userCreds = await this.strapiLoginSendDatalayer(authInterface);
 		if (!userCreds) {
@@ -1785,18 +1795,41 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 
 		try {
-			const result = await this.executeStrapiSend(method, type, userCreds.token, id, { data: dataToSend });
+			const result = await this.executeStrapiSend({
+				method,
+				type,
+				token: userCreds.token,
+				id,
+				data: dataToSend,
+				query,
+			});
 			return {
 				id: result.data.id ?? result.data.data?.id,
 				medusa_id: result.data.medusa_id ?? result.data.data?.medusa_id,
 				status: result.status,
 				data: result.data.data ?? result.data,
+				query,
 			};
 		} catch (e) {
 			if (e instanceof LoginTokenExpiredError) {
 				await this.retrieveRefreshedToken(authInterface, '401');
-				return this.strapiSendDataLayer(params);
+				return await this.strapiSendDataLayer(params);
 			}
+			if (e instanceof AxiosError) {
+				if (method.toLowerCase() == 'get' && e.response.status == 404) {
+					this.logger.info(`unable to find ${type} id: ${id ?? 'any'} ${e.message}`);
+					return {
+						id: undefined,
+						medusa_id: undefined,
+						status: e.response.status,
+						data: undefined,
+						query,
+					};
+				} else {
+					this._axiosError(e, id, type, data, method);
+				}
+			}
+
 			this.logger.error(e.message);
 			return { status: 400 };
 		}
@@ -1820,20 +1853,44 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	}
 
-	async executeStrapiSend(
-		method: Method,
-		type: string,
-		token: string,
-		id?: string,
-		data?: any
-	): Promise<AxiosResponse> {
+	async executeStrapiSend({
+		method,
+		type,
+		token,
+		id,
+		data,
+		query,
+	}: {
+		method: Method;
+		type: string;
+		token: string;
+		id?: string;
+		data?: any;
+		query?: string;
+	}): Promise<AxiosResponse> {
 		let endPoint: string = undefined;
 		await this.waitForHealth();
-		if (method != 'POST' && method != 'post') {
-			endPoint = `${this.strapi_url}/api/${type}${id ? '/' + id : '/'}`;
-		} else {
-			endPoint = `${this.strapi_url}/api/${type}`;
+		let tail = '';
+		//	if (method.toLowerCase() != 'post') {
+		if (method.toLowerCase() != 'post') {
+			if (
+				id &&
+				id != '' &&
+				id?.trim().toLocaleLowerCase() != 'me' &&
+				type.toLowerCase() != 'users' &&
+				method.toLowerCase() == 'get'
+			) {
+				tail = `?${this.appendIdToStrapiFilter(query, id)}`;
+			} else {
+				tail = id ? `/${id}` : '';
+			}
+			if (tail == '' && query) tail = `?${query}`;
 		}
+		//	}
+		endPoint = `${this.strapi_url}/api/${type}${tail}`;
+		/*} else {
+			endPoint = `${this.strapi_url}/api/${type}`;
+		}*/
 		this.logger.info(`User endpoint: ${endPoint}`);
 		const basicConfig = {
 			method: method,
@@ -1853,15 +1910,14 @@ export class UpdateStrapiService extends TransactionBaseService {
 			  };
 
 		try {
-			this.logger.info(`User Endpoint firing: ${endPoint}`);
+			this.logger.info(`User Endpoint firing: ${endPoint} method: ${method} query:${query}`);
 			const result = await axios(config);
-			this.logger.info(`User Endpoint fired: ${endPoint}`);
+			this.logger.info(`User Endpoint fired: ${endPoint} method : ${method} query:${query}`);
 			// console.log("attempting action:"+result);
 			if (result.status >= 200 && result.status < 300) {
 				this.logger.info(
-					`Strapi Ok : method: ${method}, id:${id}, type:${type}, data:${JSON.stringify(data)}, :status:${
-						result.status
-					}`
+					`Strapi Ok : method: ${method}, id:${id}, type:${type},` +
+						` data:${JSON.stringify(data)}, :status:${result.status} query:${query}`
 				);
 			}
 
@@ -1869,6 +1925,24 @@ export class UpdateStrapiService extends TransactionBaseService {
 		} catch (error) {
 			this._axiosError(error, id, type, data, method, endPoint);
 		}
+	}
+	appendIdToStrapiFilter(query: string, id?: string): string {
+		const urlQuery = qs.parse(query) as any;
+		const idFromUrlParams = urlQuery?.filters?.id;
+		const medusaIdFromUrlParams = urlQuery?.fitlers?.medusa_id;
+		if ((idFromUrlParams || medusaIdFromUrlParams) && id) {
+			throw new Error('Multiple Ids in the Request');
+		}
+		id = id ?? medusaIdFromUrlParams ?? idFromUrlParams;
+		const originalFilters = urlQuery.filters;
+		const newFilters = id
+			? {
+					...originalFilters,
+					medusa_id: id,
+			  }
+			: undefined;
+		urlQuery.filters = newFilters;
+		return qs.stringify(urlQuery);
 	}
 	_axiosError(error: AxiosError, id?: string, type?: string, data?: any, method?: Method, endPoint?: string): void {
 		if (endPoint) {
@@ -1906,25 +1980,30 @@ export class UpdateStrapiService extends TransactionBaseService {
 	handleError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string) {
 		const theError = `${(error as Error).message} `;
 		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
-		this.logger.error('Error occur while sending request to strapi', {
-			'error.message': theError,
-			request: {
-				url: endPoint || 'none',
-				data: JSON.stringify(data) || 'none',
-				method: method || 'none',
-			},
-			response: {
-				body: JSON.stringify(responseData),
-				status: error?.response?.status ?? 'none',
-			},
-		});
+		data.password = data.password ? '#' : undefined;
+		this.logger.error(
+			'Error occur while sending request to strapi:  ' +
+				JSON.stringify({
+					'error.message': theError,
+					request: {
+						url: endPoint || 'none',
+						data: JSON.stringify(data) || 'none',
+						method: method || 'none',
+					},
+					response: {
+						body: JSON.stringify(responseData),
+						status: error?.response?.status ?? 'none',
+					},
+				})
+		);
 
 		if (!endPoint?.includes('register-admin')) {
-			throw new Error(
+			this.logger.error(
 				`Error while trying ${method}` +
 					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
 			);
+			throw error;
 		}
 	}
 	async executeStrapiAdminSend(
@@ -2113,7 +2192,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			type: 'users',
 			id: undefined,
 			action: undefined,
-			query: this._createStrapiRestQuery({
+			query: this.createStrapiRestQuery({
 				fields: ['email'],
 				filters: {
 					email: `${email}`.toLocaleLowerCase(),
@@ -2274,8 +2353,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 		return found;
 	}
-
-	_createStrapiRestQuery(strapiQuery: StrapiQueryInterface): string {
+	/**
+	 * This function allows you to create a strapi query
+	 */
+	createStrapiRestQuery(strapiQuery: StrapiQueryInterface): string {
 		const { sort, filters, populate, fields, pagination, publicationState, locale } = strapiQuery;
 
 		const query = qs.stringify(

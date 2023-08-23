@@ -15,43 +15,6 @@
 
 ### 🏠 [Homepage](README.md)
 
-## An Appeal
-## Medusa-Strapi: Embrace the Power of Empathy in Content Management! 🚀
-
-Hey there, Supporter! 👋
-
-Welcome to the world of Medusa-Strapi, the perfect companion to the MedusaJS e-commerce framework! As we set out to make a lasting impact in the digital realm, we invite you to join our journey and experience the magic of empathetic content management.
-
-Medusa-Strapi is not just any content management system; it's a heartfelt project that empowers creators and businesses to thrive alongside the MedusaJS e-commerce framework. Together, we're on a mission to simplify content management while embracing the principles of empathy and collaboration.
-
-### Why We Need Your Help:
-
-Through Medusa-Strapi, we've already witnessed the profound impact it's had on countless lives. Businesses can now craft compelling stories with ease, while developers find joy in building seamless experiences. Together, we've saved valuable hours, giving individuals the freedom to focus on what truly matters.
-
-### You Can Make a Difference:
-
-Your support, no matter the size - whether it's a generous $5 or a magnificent $10 - fuels our quest. With your backing, we can:
-
-- **Empower Dreams:** Behind every line of code lies a dream - the dream of a developer leaving an indelible mark, a small business flourishing, or a content creator inspiring the world. Your support brings these dreams to life, turning them into awe-inspiring realities.
-
-- **Craft Simplicity:** We believe in technology that empowers, not complicates. Your kindness helps us build an intuitive content management system, allowing businesses to effortlessly create and manage content.
-
-- **Celebrate Humanity:** Medusa-Strapi is not just software; it's a vibrant community driven by empathy. Your support strengthens these bonds, fostering a space where ideas flourish, and hearts unite.
-
-### Join Our Journey:
-
-Be a part of Medusa-Strapi's story and the FOSS movement. 🌟 Embrace the spirit of openness, collaboration, and shared growth. Together, let's empower this journey, making an indelible impact on countless lives.
-
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/SGFGOV/medusa-strapi-repo?label=Sponsor%20Medusa-Strapi&style=social)](https://github.com/sponsors/SGFGOV)
-
-Ready to join the ranks of change-makers? 🚀 Pledge your support or learn more at [github.com/SGFGOV/medusa-strapi-repo](https://github.com/SGFGOV/medusa-strapi-repo).
-
-Embrace the power of empathy in Medusa-Strapi's journey today! 💫
-
-With heartfelt gratitude,
-
-Govind
-Medusa-Strapi Team 🤝
 
 
 ## Introduction
@@ -97,7 +60,9 @@ We support strapi v4.10.5 at the moment with medusa version.
 
 ## Install
  
-This is the easiest bit
+This is the easiest 
+
+#### NOTE: Please don't use create strapi-app, there will be too many configuration changes
 
 1. Clone the repo. 
 2. Go to the medusa-strapi folder inside <yourrepo>/packages/medusa-strapi
@@ -144,3 +109,37 @@ Give a ⭐️ if this project helped you! Catch me on discord @govdiw
 As you might have guessed by now that considerable time and effort has gone into make this product useful to the community at large, and I'd love to keep maintaining and upgrading this. However, As much as we love FOSS software, nothing in this world is truly free. Please help by [sponsoring or supporting the project]. (https://github.com/sponsors/SGFGOV)
 
 ***
+## An Appeal
+## Medusa-Strapi: Embrace the Power of Empathy in Content Management! 🚀
+
+Hey there, Supporter! 👋
+
+Welcome to the world of Medusa-Strapi, the perfect companion to the MedusaJS e-commerce framework! As we set out to make a lasting impact in the digital realm, we invite you to join our journey and experience the magic of empathetic content management.
+
+Medusa-Strapi is not just any content management system; it's a heartfelt project that empowers creators and businesses to thrive alongside the MedusaJS e-commerce framework. Together, we're on a mission to simplify content management while embracing the principles of empathy and collaboration.
+
+### Why We Need Your Help:
+
+Through Medusa-Strapi, we've already witnessed the profound impact it's had on countless lives. Businesses can now craft compelling stories with ease, while developers find joy in building seamless experiences. Together, we've saved valuable hours, giving individuals the freedom to focus on what truly matters.
+
+### You Can Make a Difference:
+
+Your support, no matter the size - whether it's a generous $5 or a magnificent $10 - fuels our quest. With your backing, we can:
+
+- **Empower Dreams:** Behind every line of code lies a dream - the dream of a developer leaving an indelible mark, a small business flourishing, or a content creator inspiring the world. Your support brings these dreams to life, turning them into awe-inspiring realities.
+
+- **Craft Simplicity:** We believe in technology that empowers, not complicates. Your kindness helps us build an intuitive content management system, allowing businesses to effortlessly create and manage content.
+
+- **Celebrate Humanity:** Medusa-Strapi is not just software; it's a vibrant community driven by empathy. Your support strengthens these bonds, fostering a space where ideas flourish, and hearts unite.
+
+### Join Our Journey:
+
+Be a part of Medusa-Strapi's story and the FOSS movement. 🌟 Embrace the spirit of openness, collaboration, and shared growth. Together, let's empower this journey, making an indelible impact on countless lives.
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/SGFGOV/medusa-strapi-repo?label=Sponsor%20Medusa-Strapi&style=social)](https://github.com/sponsors/SGFGOV)
+
+
+With heartfelt gratitude,
+
+SGFGOV
+Medusa-Strapi Team 🤝

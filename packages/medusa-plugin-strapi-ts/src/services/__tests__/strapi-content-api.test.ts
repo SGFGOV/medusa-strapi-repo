@@ -2,6 +2,7 @@ import StrapiService from '../update-strapi';
 import { jest, describe, expect, beforeEach, it, beforeAll, afterAll } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 import supertest from 'supertest';
+import qs from 'qs';
 import {
 	regionService,
 	productService,
@@ -257,6 +258,32 @@ describe('StrapiService Tests', () => {
 
 			expect(result?.body).toBeDefined();
 			expect(result?.body.error).toBeUndefined();
+			// Check the response type and length
+			// Check the response data
+		},
+		timeOut
+	);
+
+	it(
+		'GET  any /content/products?=query',
+		async () => {
+			const query = qs.stringify({
+				fields: ['id', 'handle', 'medusa_id'],
+				filters: {
+					medusa_id: IdMap.getId('exists'),
+				},
+				populate: '*',
+			});
+			const result = await supertest(app)
+				.get(`/strapi/content/products?${query}`)
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			expect(result?.body).toBeDefined();
+			expect(result?.body.error).toBeUndefined();
+			if (!isMockEnabled()) {
+				expect(result.body.data[0].medusa_id).toBe(IdMap.getId('exists'));
+			}
 			// Check the response type and length
 			// Check the response data
 		},
