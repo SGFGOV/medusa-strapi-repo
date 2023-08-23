@@ -1980,6 +1980,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	handleError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string) {
 		const theError = `${(error as Error).message} `;
 		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
+		data.password = data.password ? '#' : data.password;
 		this.logger.error(
 			'Error occur while sending request to strapi: ' +
 				JSON.stringify({
