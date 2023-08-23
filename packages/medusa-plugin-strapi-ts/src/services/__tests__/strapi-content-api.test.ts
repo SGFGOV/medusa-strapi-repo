@@ -2,6 +2,7 @@ import StrapiService from '../update-strapi';
 import { jest, describe, expect, beforeEach, it, beforeAll, afterAll } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 import supertest from 'supertest';
+import qs from 'qs';
 import {
 	regionService,
 	productService,
@@ -252,6 +253,26 @@ describe('StrapiService Tests', () => {
 		async () => {
 			const result = await supertest(app)
 				.get('/strapi/content/products')
+				.set('Accept', 'application/json')
+				.expect(200);
+
+			expect(result?.body).toBeDefined();
+			expect(result?.body.error).toBeUndefined();
+			// Check the response type and length
+			// Check the response data
+		},
+		timeOut
+	);
+
+	it(
+		'GET  any /content?=query',
+		async () => {
+			const query = qs.stringify({
+				fields: ['id', 'handle'],
+				populate: '*',
+			});
+			const result = await supertest(app)
+				.get(`/strapi/content/products?${query}`)
 				.set('Accept', 'application/json')
 				.expect(200);
 

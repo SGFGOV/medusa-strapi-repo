@@ -16,11 +16,15 @@ export default async (req: Request, res: Response) => {
 
 	const strapiEntityType = req.params.type;
 	const id = req.params.id;
+	const urlParams = req.params;
+	const urlQuery = req.query as unknown as URLSearchParams;
 
 	const strapiParams: GetFromStrapiParams = {
 		authInterface,
 		strapiEntityType: strapiEntityType,
 		id,
+		urlParams,
+		urlQuery,
 	};
 
 	const data = await updateStrapiService.getEntitiesFromStrapi(strapiParams);

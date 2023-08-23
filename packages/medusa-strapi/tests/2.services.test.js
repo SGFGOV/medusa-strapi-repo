@@ -110,7 +110,10 @@ describe('Testing strapi ', () => {
 							const entityCreated = await service.create({ data: data });
 							expect(entityCreated.id).toBeDefined();
 							let entityRead = await service.findOne(entityCreated.id);
+							let entityReadAll = await service.find({ medusa_id: entityCreated.id });
 							expect(entityRead.id).toBeDefined();
+							expect(entityReadAll.length > 0).toBeTruthy();
+
 							const entityUpdated = await service.update(entityCreated.id, {
 								data: data,
 							});
@@ -120,6 +123,8 @@ describe('Testing strapi ', () => {
 							expect(entityDeleted.id).toBeDefined();
 							try {
 								entityRead = await service.findOne(entityCreated.id);
+								let entityReadAll = await service.find({ medusa_id: entityCreated.id });
+								expect(entityReadAll.length == 0).toBeTruthy();
 							} catch (e) {
 								entityRead = undefined;
 							}

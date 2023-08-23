@@ -20,6 +20,9 @@ export default (app, options, config: ConfigModule) => {
         contentRouter.options('/:type',cors(config.projectConfig.store_cors));*/
 	}
 	contentRouter.use(utils);
+	app.set('query parser', (queryString) => {
+		return new URLSearchParams(queryString);
+	});
 	contentRouter.get('/:type/:id', fetchContent);
 	contentRouter.get('/:type', fetchContent);
 
