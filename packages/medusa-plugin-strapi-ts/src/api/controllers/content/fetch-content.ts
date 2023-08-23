@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { GetFromStrapiParams, AuthInterface } from '../../../types/globals';
 import UpdateStrapiService from '../../../services/update-strapi';
-import { ConfigModule } from '@medusajs/medusa/dist/types/global';
 
 export default async (req: Request, res: Response) => {
 	const updateStrapiService = req.scope.resolve('updateStrapiService') as UpdateStrapiService;
@@ -17,7 +16,7 @@ export default async (req: Request, res: Response) => {
 	const strapiEntityType = req.params.type;
 	const id = req.params.id;
 	const urlParams = req.params;
-	const urlQuery = req.query as unknown as URLSearchParams;
+	const urlQuery = req.query;
 
 	const strapiParams: GetFromStrapiParams = {
 		authInterface,

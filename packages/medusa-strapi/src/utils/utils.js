@@ -448,7 +448,7 @@ async function controllerDelete(ctx, strapi, uid) {
 async function controllerUpdate(ctx, strapi, uid) {
 	const { id: medusa_id } = ctx.params;
 	delete ctx.request.body?.data?.id;
-	const data = ctx.request.body;
+	const data = ctx.request.body.data || ctx.request.body;
 
 	strapi.log.info(`Medusa is updating entity ${medusa_id} of type ${uid} in Strapi`, { data: data });
 

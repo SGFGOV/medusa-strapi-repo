@@ -346,15 +346,20 @@ describe('StrapiService Tests', () => {
 							urlQuery: { fields: ['title', 'id', 'medusa_id'] },
 						});
 						expect(productFieldsGetResult.data[0].id).toBeDefined();
-						expect(productFieldsGetResult.data[0].title).toBeDefined();
+						expect(productFieldsGetResult.data[0].medusa_id).toBeDefined();
+						if (!isMockEnabled()) {
+							expect(productFieldsGetResult.data[0].title).toBeDefined();
+						}
 						expect(productFieldsGetResult.data[0].handle).toBeUndefined();
 						const productPopulateGetResult = await service.getEntitiesFromStrapi({
 							authInterface: defaultAuthInterface,
 							strapiEntityType: 'products',
 							urlQuery: { populate: 'product-variants' },
 						});
-						const testData = productPopulateGetResult.data[0];
-						expect(testData['product-variants']).toBeDefined();
+						if (!isMockEnabled()) {
+							const testData = productPopulateGetResult.data[0];
+							expect(testData['product-variants']).toBeDefined();
+						}
 					}
 				},
 

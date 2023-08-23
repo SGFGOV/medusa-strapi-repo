@@ -87,7 +87,7 @@ describe('StrapiService Tests', () => {
 		redisClient,
 		productVariantService: productVariantService as any,
 		logger: logger as any,
-	})
+	});
 
 	const entry = {
 		unpublish: jest.fn(async () => {
@@ -151,7 +151,7 @@ describe('StrapiService Tests', () => {
 			container.register('manager', asFunction(() => MockManager).singleton());
 			container.register('updateStrapiService', asFunction(() => service).singleton());
 			container.register('updateMedusaService', asFunction(() => medusaService).singleton());
-			
+
 			container.register('eventBusService', asFunction(() => eventBusService).singleton());
 			container.register('logger', asFunction(() => logger).singleton());
 			container.register(
@@ -260,25 +260,23 @@ describe('StrapiService Tests', () => {
 		timeOut
 	);
 
-	
-	
-	it("POST  hooks update medusa", async () => {
+	it('POST  hooks update medusa', async () => {
 		const strapiSignal = {
-			message: "UPDATE MEDUSA",
+			message: 'UPDATE MEDUSA',
 			code: 200,
 			data: {
-				type:"product",
-				data:{
-					id:"exists-3",
-					title:"new-test-title"
-				}
-			}
+				type: 'product',
+				data: {
+					id: 'exists-3',
+					title: 'new-test-title',
+				},
+			},
 		};
-		const encoded = jwt.sign(strapiSignal, "test_secret");
+		const encoded = jwt.sign(strapiSignal, 'test_secret');
 		const result = await supertest(app)
-			.post("/strapi/hooks/strapi-signal")
+			.post('/strapi/hooks/strapi-signal')
 			.send({ signedMessage: encoded })
-			.set("Accept", "application/json");
+			.set('Accept', 'application/json');
 
 		expect(result.status).toBe(200);
 		expect(result?.body).toBeDefined();
