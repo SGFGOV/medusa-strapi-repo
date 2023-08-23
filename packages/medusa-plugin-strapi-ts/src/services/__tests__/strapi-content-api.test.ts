@@ -265,10 +265,13 @@ describe('StrapiService Tests', () => {
 	);
 
 	it(
-		'GET  any /content?=query',
+		'GET  any /content/products?=query',
 		async () => {
 			const query = qs.stringify({
-				fields: ['id', 'handle'],
+				fields: ['id', 'handle', 'medusa_id'],
+				filters: {
+					medusa_id: IdMap.getId('exists'),
+				},
 				populate: '*',
 			});
 			const result = await supertest(app)
@@ -278,6 +281,9 @@ describe('StrapiService Tests', () => {
 
 			expect(result?.body).toBeDefined();
 			expect(result?.body.error).toBeUndefined();
+			if (!isMockEnabled()) {
+				expect(result.body.data[0].medusa_id).toBe(IdMap.getId('exists'));
+			}
 			// Check the response type and length
 			// Check the response data
 		},
