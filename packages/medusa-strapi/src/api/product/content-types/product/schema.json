@@ -49,7 +49,7 @@
         "published",
         "rejected"
       ],
-      "default": "draft",
+      "default": "published",
       "required": true
     },
     "thumbnail": {
