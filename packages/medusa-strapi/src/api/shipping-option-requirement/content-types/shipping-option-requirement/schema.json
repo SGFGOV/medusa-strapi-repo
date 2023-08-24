@@ -32,11 +32,11 @@
     "amount": {
       "type": "decimal"
     },
-    "shipping-options": {
+    "shipping_options": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-option.shipping-option",
-      "mappedBy": "shipping-option-requirements"
+      "mappedBy": "shipping_option_requirements"
     }
   }
 }

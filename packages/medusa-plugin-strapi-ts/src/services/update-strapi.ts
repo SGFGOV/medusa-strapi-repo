@@ -425,19 +425,19 @@ export class UpdateStrapiService extends TransactionBaseService {
 			 */
 			if (product) {
 				const productToSend = _.cloneDeep(product);
-				productToSend['product-type'] = _.cloneDeep(productToSend.type);
+				productToSend['product_type'] = _.cloneDeep(productToSend.type);
 				delete productToSend.type;
-				productToSend['product-tags'] = _.cloneDeep(productToSend.tags);
+				productToSend['product_tags'] = _.cloneDeep(productToSend.tags);
 				delete productToSend.tags;
-				productToSend['product-options'] = _.cloneDeep(productToSend.options);
+				productToSend['product_options'] = _.cloneDeep(productToSend.options);
 				delete productToSend.options;
-				productToSend['product-variants'] = _.cloneDeep(productToSend.variants);
+				productToSend['product_variants'] = _.cloneDeep(productToSend.variants);
 				delete productToSend.variants;
 
-				productToSend['product-collection'] = _.cloneDeep(productToSend.collection);
+				productToSend['product_collection'] = _.cloneDeep(productToSend.collection);
 				delete productToSend.collection;
 
-				productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
+				productToSend['product_categories'] = _.cloneDeep(productToSend.categories);
 				delete productToSend.categories;
 
 				const result = await this.createEntryInStrapi({
@@ -634,7 +634,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			// this.logger.info(variant)
 			if (variant) {
 				const variantToSend = _.cloneDeep(variant);
-				variantToSend['money-amount'] = _.cloneDeep(variantToSend.prices);
+				variantToSend['money_amount'] = _.cloneDeep(variantToSend.prices);
 				delete variantToSend.prices;
 
 				/* const variantOptionValues = variantToSend.options;
@@ -642,7 +642,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					this.convertOptionValueToMedusaReference(variantOption);
 				}*/
 
-				variantToSend['product-option-value'] = _.cloneDeep(variantToSend.options);
+				variantToSend['product_option_value'] = _.cloneDeep(variantToSend.options);
 
 				return await this.createEntryInStrapi({
 					type: 'product-variants',
@@ -662,10 +662,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		for (const key of keys) {
 			if (key != 'medusa_id' && key.includes('_id')) {
 				const medusaService = key.split('_')[0];
-				const api = `product-${medusaService}`;
+				const fieldName = `product_${medusaService}`;
 				const value = data[key];
 
-				data[api] = {
+				data[fieldName] = {
 					medusa_id: value,
 				};
 			}
@@ -1043,7 +1043,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const keysToUpdate = ['collection', 'categories', 'type', 'tags', 'variants', 'options'];
 		for (const key of keysToUpdate) {
 			if (key in dataToUpdate) {
-				dataToUpdate[`product-${key}`] = dataToUpdate[key];
+				dataToUpdate[`product_${key}`] = dataToUpdate[key];
 				delete dataToUpdate[key];
 			}
 		}
@@ -1980,7 +1980,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	handleError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string) {
 		const theError = `${(error as Error).message} `;
 		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
-		data.password = data.password ? '#' : undefined;
+		if (data) data.password = data?.password ? '#' : undefined;
 		this.logger.error(
 			'Error occur while sending request to strapi:  ' +
 				JSON.stringify({

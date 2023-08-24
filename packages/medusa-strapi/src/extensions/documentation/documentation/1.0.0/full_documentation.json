@@ -14,7 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "x-generation-date": "2023-08-23T08:05:06.254Z"
+    "x-generation-date": "2023-08-24T02:10:48.270Z"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -25,7 +25,7 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:1337/api",
+      "url": "http://0.0.0.0:1337/api",
       "description": "Development server"
     }
   ],
@@ -7082,7 +7082,7 @@
                         "type": "string"
                       },
                       "metadata": {},
-                      "fulfillment-providers": {
+                      "fulfillment_providers": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -7122,7 +7122,7 @@
                                         }
                                       }
                                     },
-                                    "shipping-options": {
+                                    "shipping_options": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -7161,7 +7161,7 @@
                                                   },
                                                   "data": {},
                                                   "metadata": {},
-                                                  "shipping-option-requirements": {
+                                                  "shipping_option_requirements": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -7189,7 +7189,7 @@
                                                                   "type": "number",
                                                                   "format": "float"
                                                                 },
-                                                                "shipping-options": {
+                                                                "shipping_options": {
                                                                   "type": "object",
                                                                   "properties": {
                                                                     "data": {
@@ -7565,7 +7565,7 @@
                                                       }
                                                     }
                                                   },
-                                                  "shipping-profiles": {
+                                                  "shipping_profiles": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -7594,7 +7594,7 @@
                                                                   ]
                                                                 },
                                                                 "metadata": {},
-                                                                "shipping-options": {
+                                                                "shipping_options": {
                                                                   "type": "object",
                                                                   "properties": {
                                                                     "data": {
@@ -7699,7 +7699,7 @@
                                                       }
                                                     }
                                                   },
-                                                  "fulfillment-providers": {
+                                                  "fulfillment_providers": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -7889,7 +7889,7 @@
                           }
                         }
                       },
-                      "payment-provider": {
+                      "payment_provider": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -8276,7 +8276,7 @@
                           }
                         }
                       },
-                      "shipping-options": {
+                      "shipping_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -8657,7 +8657,7 @@
                           "type": "string"
                         },
                         "metadata": {},
-                        "fulfillment-providers": {
+                        "fulfillment_providers": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -8697,7 +8697,7 @@
                                           }
                                         }
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -8736,7 +8736,7 @@
                                                     },
                                                     "data": {},
                                                     "metadata": {},
-                                                    "shipping-option-requirements": {
+                                                    "shipping_option_requirements": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -8764,7 +8764,7 @@
                                                                     "type": "number",
                                                                     "format": "float"
                                                                   },
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -9140,7 +9140,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "shipping-profiles": {
+                                                    "shipping_profiles": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -9169,7 +9169,7 @@
                                                                     ]
                                                                   },
                                                                   "metadata": {},
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -9274,7 +9274,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "fulfillment-providers": {
+                                                    "fulfillment_providers": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -9464,7 +9464,7 @@
                             }
                           }
                         },
-                        "payment-provider": {
+                        "payment_provider": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -9851,7 +9851,7 @@
                             }
                           }
                         },
-                        "shipping-options": {
+                        "shipping_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -10090,7 +10090,7 @@
                   "example": "string or id"
                 }
               },
-              "shipping-options": {
+              "shipping_options": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -10220,7 +10220,7 @@
                           "type": "string"
                         },
                         "metadata": {},
-                        "fulfillment-providers": {
+                        "fulfillment_providers": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -10260,7 +10260,7 @@
                                           }
                                         }
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -10299,7 +10299,7 @@
                                                     },
                                                     "data": {},
                                                     "metadata": {},
-                                                    "shipping-option-requirements": {
+                                                    "shipping_option_requirements": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -10327,7 +10327,7 @@
                                                                     "type": "number",
                                                                     "format": "float"
                                                                   },
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -10703,7 +10703,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "shipping-profiles": {
+                                                    "shipping_profiles": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -10732,7 +10732,7 @@
                                                                     ]
                                                                   },
                                                                   "metadata": {},
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -10837,7 +10837,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "fulfillment-providers": {
+                                                    "fulfillment_providers": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -11027,7 +11027,7 @@
                             }
                           }
                         },
-                        "payment-provider": {
+                        "payment_provider": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -11414,7 +11414,7 @@
                             }
                           }
                         },
-                        "shipping-options": {
+                        "shipping_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -11519,7 +11519,7 @@
               }
             }
           },
-          "shipping-options": {
+          "shipping_options": {
             "type": "object",
             "properties": {
               "data": {
@@ -11835,7 +11835,7 @@
                       },
                       "metadata": {},
                       "metafields": {},
-                      "product-variants": {
+                      "product_variants": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -11925,7 +11925,7 @@
                                         }
                                       }
                                     },
-                                    "money-amount": {
+                                    "money_amount": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -11953,7 +11953,7 @@
                                                   "pattern": "^\\d*$",
                                                   "example": "123456789"
                                                 },
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -12308,7 +12308,7 @@
                                         }
                                       }
                                     },
-                                    "product-option-value": {
+                                    "product_option_value": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -12327,7 +12327,7 @@
                                                   "type": "string"
                                                 },
                                                 "metadata": {},
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -12347,7 +12347,7 @@
                                                     }
                                                   }
                                                 },
-                                                "product-option": {
+                                                "product_option": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -12368,7 +12368,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-option-values": {
+                                                              "product_option_values": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -12656,7 +12656,7 @@
                           }
                         }
                       },
-                      "product-options": {
+                      "product_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -12799,7 +12799,7 @@
                           }
                         }
                       },
-                      "product-collection": {
+                      "product_collection": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -12925,7 +12925,7 @@
                           }
                         }
                       },
-                      "product-categories": {
+                      "product_categories": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -13054,7 +13054,7 @@
                           }
                         }
                       },
-                      "product-type": {
+                      "product_type": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -13177,7 +13177,7 @@
                           }
                         }
                       },
-                      "product-tags": {
+                      "product_tags": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -13303,7 +13303,7 @@
                           }
                         }
                       },
-                      "product-medias": {
+                      "product_medias": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -13811,7 +13811,7 @@
                           }
                         }
                       },
-                      "product-metafield": {
+                      "product_metafield": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -13929,7 +13929,7 @@
                           }
                         }
                       },
-                      "product-documents": {
+                      "product_documents": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -14194,7 +14194,7 @@
                           }
                         }
                       },
-                      "product-legal": {
+                      "product_legal": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -14708,7 +14708,7 @@
               },
               "metadata": {},
               "metafields": {},
-              "product-variants": {
+              "product_variants": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -14722,7 +14722,7 @@
                   "example": "string or id"
                 }
               },
-              "product-options": {
+              "product_options": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -14750,7 +14750,7 @@
                   "example": "string or id"
                 }
               },
-              "product-collection": {
+              "product_collection": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -14761,7 +14761,7 @@
                 ],
                 "example": "string or id"
               },
-              "product-categories": {
+              "product_categories": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -14775,7 +14775,7 @@
                   "example": "string or id"
                 }
               },
-              "product-type": {
+              "product_type": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -14786,7 +14786,7 @@
                 ],
                 "example": "string or id"
               },
-              "product-tags": {
+              "product_tags": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -14800,7 +14800,7 @@
                   "example": "string or id"
                 }
               },
-              "product-medias": {
+              "product_medias": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -14814,7 +14814,7 @@
                   "example": "string or id"
                 }
               },
-              "product-metafield": {
+              "product_metafield": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -14825,7 +14825,7 @@
                 ],
                 "example": "string or id"
               },
-              "product-documents": {
+              "product_documents": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -14839,7 +14839,7 @@
                   "example": "string or id"
                 }
               },
-              "product-legal": {
+              "product_legal": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -15009,7 +15009,7 @@
           },
           "metadata": {},
           "metafields": {},
-          "product-variants": {
+          "product_variants": {
             "type": "object",
             "properties": {
               "data": {
@@ -15157,7 +15157,7 @@
                                     },
                                     "metadata": {},
                                     "metafields": {},
-                                    "product-variants": {
+                                    "product_variants": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -15177,7 +15177,7 @@
                                         }
                                       }
                                     },
-                                    "product-options": {
+                                    "product_options": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -15198,7 +15198,7 @@
                                                     "type": "string"
                                                   },
                                                   "metadata": {},
-                                                  "product-option-values": {
+                                                  "product_option_values": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -15217,7 +15217,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-variants": {
+                                                              "product_variants": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -15237,7 +15237,7 @@
                                                                   }
                                                                 }
                                                               },
-                                                              "product-option": {
+                                                              "product_option": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -15817,7 +15817,7 @@
                                         }
                                       }
                                     },
-                                    "product-collection": {
+                                    "product_collection": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -15943,7 +15943,7 @@
                                         }
                                       }
                                     },
-                                    "product-categories": {
+                                    "product_categories": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -16072,7 +16072,7 @@
                                         }
                                       }
                                     },
-                                    "product-type": {
+                                    "product_type": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -16195,7 +16195,7 @@
                                         }
                                       }
                                     },
-                                    "product-tags": {
+                                    "product_tags": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -16321,7 +16321,7 @@
                                         }
                                       }
                                     },
-                                    "product-medias": {
+                                    "product_medias": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -16829,7 +16829,7 @@
                                         }
                                       }
                                     },
-                                    "product-metafield": {
+                                    "product_metafield": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -16947,7 +16947,7 @@
                                         }
                                       }
                                     },
-                                    "product-documents": {
+                                    "product_documents": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -17212,7 +17212,7 @@
                                         }
                                       }
                                     },
-                                    "product-legal": {
+                                    "product_legal": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -17546,7 +17546,7 @@
                             }
                           }
                         },
-                        "money-amount": {
+                        "money_amount": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -17574,7 +17574,7 @@
                                       "pattern": "^\\d*$",
                                       "example": "123456789"
                                     },
-                                    "product-variants": {
+                                    "product_variants": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -17678,7 +17678,7 @@
                             }
                           }
                         },
-                        "product-option-value": {
+                        "product_option_value": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -17780,7 +17780,7 @@
               }
             }
           },
-          "product-options": {
+          "product_options": {
             "type": "object",
             "properties": {
               "data": {
@@ -17820,7 +17820,7 @@
               }
             }
           },
-          "product-collection": {
+          "product_collection": {
             "type": "object",
             "properties": {
               "data": {
@@ -17837,7 +17837,7 @@
               }
             }
           },
-          "product-categories": {
+          "product_categories": {
             "type": "object",
             "properties": {
               "data": {
@@ -17857,7 +17857,7 @@
               }
             }
           },
-          "product-type": {
+          "product_type": {
             "type": "object",
             "properties": {
               "data": {
@@ -17874,7 +17874,7 @@
               }
             }
           },
-          "product-tags": {
+          "product_tags": {
             "type": "object",
             "properties": {
               "data": {
@@ -17894,7 +17894,7 @@
               }
             }
           },
-          "product-medias": {
+          "product_medias": {
             "type": "object",
             "properties": {
               "data": {
@@ -17914,7 +17914,7 @@
               }
             }
           },
-          "product-metafield": {
+          "product_metafield": {
             "type": "object",
             "properties": {
               "data": {
@@ -17931,7 +17931,7 @@
               }
             }
           },
-          "product-documents": {
+          "product_documents": {
             "type": "object",
             "properties": {
               "data": {
@@ -17951,7 +17951,7 @@
               }
             }
           },
-          "product-legal": {
+          "product_legal": {
             "type": "object",
             "properties": {
               "data": {
@@ -18922,7 +18922,7 @@
                       },
                       "metadata": {},
                       "metafields": {},
-                      "product-variants": {
+                      "product_variants": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -19012,7 +19012,7 @@
                                         }
                                       }
                                     },
-                                    "money-amount": {
+                                    "money_amount": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -19040,7 +19040,7 @@
                                                   "pattern": "^\\d*$",
                                                   "example": "123456789"
                                                 },
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -19144,7 +19144,7 @@
                                         }
                                       }
                                     },
-                                    "product-option-value": {
+                                    "product_option_value": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -19163,7 +19163,7 @@
                                                   "type": "string"
                                                 },
                                                 "metadata": {},
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -19183,7 +19183,7 @@
                                                     }
                                                   }
                                                 },
-                                                "product-option": {
+                                                "product_option": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -19204,7 +19204,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-option-values": {
+                                                              "product_option_values": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -19492,7 +19492,7 @@
                           }
                         }
                       },
-                      "product-options": {
+                      "product_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -19635,7 +19635,7 @@
                           }
                         }
                       },
-                      "product-collection": {
+                      "product_collection": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -19761,7 +19761,7 @@
                           }
                         }
                       },
-                      "product-categories": {
+                      "product_categories": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -19890,7 +19890,7 @@
                           }
                         }
                       },
-                      "product-type": {
+                      "product_type": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -20013,7 +20013,7 @@
                           }
                         }
                       },
-                      "product-tags": {
+                      "product_tags": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -20139,7 +20139,7 @@
                           }
                         }
                       },
-                      "product-medias": {
+                      "product_medias": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -20410,7 +20410,7 @@
                           }
                         }
                       },
-                      "product-metafield": {
+                      "product_metafield": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -20528,7 +20528,7 @@
                           }
                         }
                       },
-                      "product-documents": {
+                      "product_documents": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -20793,7 +20793,7 @@
                           }
                         }
                       },
-                      "product-legal": {
+                      "product_legal": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -21452,7 +21452,7 @@
                         },
                         "metadata": {},
                         "metafields": {},
-                        "product-variants": {
+                        "product_variants": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -21542,7 +21542,7 @@
                                           }
                                         }
                                       },
-                                      "money-amount": {
+                                      "money_amount": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -21570,7 +21570,7 @@
                                                     "pattern": "^\\d*$",
                                                     "example": "123456789"
                                                   },
-                                                  "product-variants": {
+                                                  "product_variants": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -21925,7 +21925,7 @@
                                           }
                                         }
                                       },
-                                      "product-option-value": {
+                                      "product_option_value": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -21944,7 +21944,7 @@
                                                     "type": "string"
                                                   },
                                                   "metadata": {},
-                                                  "product-variants": {
+                                                  "product_variants": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -21964,7 +21964,7 @@
                                                       }
                                                     }
                                                   },
-                                                  "product-option": {
+                                                  "product_option": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -21985,7 +21985,7 @@
                                                                   "type": "string"
                                                                 },
                                                                 "metadata": {},
-                                                                "product-option-values": {
+                                                                "product_option_values": {
                                                                   "type": "object",
                                                                   "properties": {
                                                                     "data": {
@@ -22273,7 +22273,7 @@
                             }
                           }
                         },
-                        "product-options": {
+                        "product_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -22416,7 +22416,7 @@
                             }
                           }
                         },
-                        "product-collection": {
+                        "product_collection": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -22542,7 +22542,7 @@
                             }
                           }
                         },
-                        "product-categories": {
+                        "product_categories": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -22671,7 +22671,7 @@
                             }
                           }
                         },
-                        "product-type": {
+                        "product_type": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -22794,7 +22794,7 @@
                             }
                           }
                         },
-                        "product-tags": {
+                        "product_tags": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -22920,7 +22920,7 @@
                             }
                           }
                         },
-                        "product-medias": {
+                        "product_medias": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -23428,7 +23428,7 @@
                             }
                           }
                         },
-                        "product-metafield": {
+                        "product_metafield": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -23546,7 +23546,7 @@
                             }
                           }
                         },
-                        "product-documents": {
+                        "product_documents": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -23811,7 +23811,7 @@
                             }
                           }
                         },
-                        "product-legal": {
+                        "product_legal": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -25097,7 +25097,7 @@
                       },
                       "metadata": {},
                       "metafields": {},
-                      "product-variants": {
+                      "product_variants": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -25187,7 +25187,7 @@
                                         }
                                       }
                                     },
-                                    "money-amount": {
+                                    "money_amount": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -25215,7 +25215,7 @@
                                                   "pattern": "^\\d*$",
                                                   "example": "123456789"
                                                 },
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -25319,7 +25319,7 @@
                                         }
                                       }
                                     },
-                                    "product-option-value": {
+                                    "product_option_value": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -25338,7 +25338,7 @@
                                                   "type": "string"
                                                 },
                                                 "metadata": {},
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -25358,7 +25358,7 @@
                                                     }
                                                   }
                                                 },
-                                                "product-option": {
+                                                "product_option": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -25379,7 +25379,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-option-values": {
+                                                              "product_option_values": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -25667,7 +25667,7 @@
                           }
                         }
                       },
-                      "product-options": {
+                      "product_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -25810,7 +25810,7 @@
                           }
                         }
                       },
-                      "product-collection": {
+                      "product_collection": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -25936,7 +25936,7 @@
                           }
                         }
                       },
-                      "product-categories": {
+                      "product_categories": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -26065,7 +26065,7 @@
                           }
                         }
                       },
-                      "product-type": {
+                      "product_type": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -26188,7 +26188,7 @@
                           }
                         }
                       },
-                      "product-tags": {
+                      "product_tags": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -26314,7 +26314,7 @@
                           }
                         }
                       },
-                      "product-medias": {
+                      "product_medias": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -26585,7 +26585,7 @@
                           }
                         }
                       },
-                      "product-metafield": {
+                      "product_metafield": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -26703,7 +26703,7 @@
                           }
                         }
                       },
-                      "product-documents": {
+                      "product_documents": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -26968,7 +26968,7 @@
                           }
                         }
                       },
-                      "product-legal": {
+                      "product_legal": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -27588,7 +27588,7 @@
                       },
                       "metadata": {},
                       "metafields": {},
-                      "product-variants": {
+                      "product_variants": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -27678,7 +27678,7 @@
                                         }
                                       }
                                     },
-                                    "money-amount": {
+                                    "money_amount": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -27706,7 +27706,7 @@
                                                   "pattern": "^\\d*$",
                                                   "example": "123456789"
                                                 },
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -28061,7 +28061,7 @@
                                         }
                                       }
                                     },
-                                    "product-option-value": {
+                                    "product_option_value": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -28080,7 +28080,7 @@
                                                   "type": "string"
                                                 },
                                                 "metadata": {},
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -28100,7 +28100,7 @@
                                                     }
                                                   }
                                                 },
-                                                "product-option": {
+                                                "product_option": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -28121,7 +28121,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-option-values": {
+                                                              "product_option_values": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -28409,7 +28409,7 @@
                           }
                         }
                       },
-                      "product-options": {
+                      "product_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -28552,7 +28552,7 @@
                           }
                         }
                       },
-                      "product-collection": {
+                      "product_collection": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -28678,7 +28678,7 @@
                           }
                         }
                       },
-                      "product-categories": {
+                      "product_categories": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -28807,7 +28807,7 @@
                           }
                         }
                       },
-                      "product-type": {
+                      "product_type": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -28930,7 +28930,7 @@
                           }
                         }
                       },
-                      "product-tags": {
+                      "product_tags": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -29056,7 +29056,7 @@
                           }
                         }
                       },
-                      "product-medias": {
+                      "product_medias": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -29564,7 +29564,7 @@
                           }
                         }
                       },
-                      "product-metafield": {
+                      "product_metafield": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -29682,7 +29682,7 @@
                           }
                         }
                       },
-                      "product-documents": {
+                      "product_documents": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -29947,7 +29947,7 @@
                           }
                         }
                       },
-                      "product-legal": {
+                      "product_legal": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -30576,7 +30576,7 @@
                         },
                         "metadata": {},
                         "metafields": {},
-                        "product-variants": {
+                        "product_variants": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -30666,7 +30666,7 @@
                                           }
                                         }
                                       },
-                                      "money-amount": {
+                                      "money_amount": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -30694,7 +30694,7 @@
                                                     "pattern": "^\\d*$",
                                                     "example": "123456789"
                                                   },
-                                                  "product-variants": {
+                                                  "product_variants": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -31049,7 +31049,7 @@
                                           }
                                         }
                                       },
-                                      "product-option-value": {
+                                      "product_option_value": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -31068,7 +31068,7 @@
                                                     "type": "string"
                                                   },
                                                   "metadata": {},
-                                                  "product-variants": {
+                                                  "product_variants": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -31088,7 +31088,7 @@
                                                       }
                                                     }
                                                   },
-                                                  "product-option": {
+                                                  "product_option": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -31109,7 +31109,7 @@
                                                                   "type": "string"
                                                                 },
                                                                 "metadata": {},
-                                                                "product-option-values": {
+                                                                "product_option_values": {
                                                                   "type": "object",
                                                                   "properties": {
                                                                     "data": {
@@ -31397,7 +31397,7 @@
                             }
                           }
                         },
-                        "product-options": {
+                        "product_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -31540,7 +31540,7 @@
                             }
                           }
                         },
-                        "product-collection": {
+                        "product_collection": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -31666,7 +31666,7 @@
                             }
                           }
                         },
-                        "product-categories": {
+                        "product_categories": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -31795,7 +31795,7 @@
                             }
                           }
                         },
-                        "product-type": {
+                        "product_type": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -31918,7 +31918,7 @@
                             }
                           }
                         },
-                        "product-tags": {
+                        "product_tags": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -32044,7 +32044,7 @@
                             }
                           }
                         },
-                        "product-medias": {
+                        "product_medias": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -32552,7 +32552,7 @@
                             }
                           }
                         },
-                        "product-metafield": {
+                        "product_metafield": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -32670,7 +32670,7 @@
                             }
                           }
                         },
-                        "product-documents": {
+                        "product_documents": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -32935,7 +32935,7 @@
                             }
                           }
                         },
-                        "product-legal": {
+                        "product_legal": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -33457,7 +33457,7 @@
                 ],
                 "example": "string or id"
               },
-              "money-amount": {
+              "money_amount": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -33468,7 +33468,7 @@
                 ],
                 "example": "string or id"
               },
-              "product-option-value": {
+              "product_option_value": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -33698,7 +33698,7 @@
                       },
                       "metadata": {},
                       "metafields": {},
-                      "product-variants": {
+                      "product_variants": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -33788,7 +33788,7 @@
                                         }
                                       }
                                     },
-                                    "money-amount": {
+                                    "money_amount": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -33816,7 +33816,7 @@
                                                   "pattern": "^\\d*$",
                                                   "example": "123456789"
                                                 },
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -34171,7 +34171,7 @@
                                         }
                                       }
                                     },
-                                    "product-option-value": {
+                                    "product_option_value": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -34190,7 +34190,7 @@
                                                   "type": "string"
                                                 },
                                                 "metadata": {},
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -34210,7 +34210,7 @@
                                                     }
                                                   }
                                                 },
-                                                "product-option": {
+                                                "product_option": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -34231,7 +34231,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-option-values": {
+                                                              "product_option_values": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -34519,7 +34519,7 @@
                           }
                         }
                       },
-                      "product-options": {
+                      "product_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -34662,7 +34662,7 @@
                           }
                         }
                       },
-                      "product-collection": {
+                      "product_collection": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -34788,7 +34788,7 @@
                           }
                         }
                       },
-                      "product-categories": {
+                      "product_categories": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -34917,7 +34917,7 @@
                           }
                         }
                       },
-                      "product-type": {
+                      "product_type": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -35040,7 +35040,7 @@
                           }
                         }
                       },
-                      "product-tags": {
+                      "product_tags": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -35166,7 +35166,7 @@
                           }
                         }
                       },
-                      "product-medias": {
+                      "product_medias": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -35674,7 +35674,7 @@
                           }
                         }
                       },
-                      "product-metafield": {
+                      "product_metafield": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -35792,7 +35792,7 @@
                           }
                         }
                       },
-                      "product-documents": {
+                      "product_documents": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -36057,7 +36057,7 @@
                           }
                         }
                       },
-                      "product-legal": {
+                      "product_legal": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -36391,7 +36391,7 @@
               }
             }
           },
-          "money-amount": {
+          "money_amount": {
             "type": "object",
             "properties": {
               "data": {
@@ -36408,7 +36408,7 @@
               }
             }
           },
-          "product-option-value": {
+          "product_option_value": {
             "type": "object",
             "properties": {
               "data": {
@@ -36554,7 +36554,7 @@
                 "type": "string"
               },
               "metadata": {},
-              "fulfillment-providers": {
+              "fulfillment_providers": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -36568,7 +36568,7 @@
                   "example": "string or id"
                 }
               },
-              "payment-provider": {
+              "payment_provider": {
                 "oneOf": [
                   {
                     "type": "integer"
@@ -36604,7 +36604,7 @@
                   "example": "string or id"
                 }
               },
-              "shipping-options": {
+              "shipping_options": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -36715,7 +36715,7 @@
             "type": "string"
           },
           "metadata": {},
-          "fulfillment-providers": {
+          "fulfillment_providers": {
             "type": "object",
             "properties": {
               "data": {
@@ -36763,7 +36763,7 @@
                                         "type": "string"
                                       },
                                       "metadata": {},
-                                      "fulfillment-providers": {
+                                      "fulfillment_providers": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -36783,7 +36783,7 @@
                                           }
                                         }
                                       },
-                                      "payment-provider": {
+                                      "payment_provider": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -37421,7 +37421,7 @@
                                           }
                                         }
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -37460,7 +37460,7 @@
                                                     },
                                                     "data": {},
                                                     "metadata": {},
-                                                    "shipping-option-requirements": {
+                                                    "shipping_option_requirements": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -37488,7 +37488,7 @@
                                                                     "type": "number",
                                                                     "format": "float"
                                                                   },
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -37613,7 +37613,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "shipping-profiles": {
+                                                    "shipping_profiles": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -37642,7 +37642,7 @@
                                                                     ]
                                                                   },
                                                                   "metadata": {},
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -37747,7 +37747,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "fulfillment-providers": {
+                                                    "fulfillment_providers": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -37937,7 +37937,7 @@
                             }
                           }
                         },
-                        "shipping-options": {
+                        "shipping_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -38042,7 +38042,7 @@
               }
             }
           },
-          "payment-provider": {
+          "payment_provider": {
             "type": "object",
             "properties": {
               "data": {
@@ -38096,7 +38096,7 @@
               }
             }
           },
-          "shipping-options": {
+          "shipping_options": {
             "type": "object",
             "properties": {
               "data": {
@@ -38257,7 +38257,7 @@
               },
               "data": {},
               "metadata": {},
-              "shipping-option-requirements": {
+              "shipping_option_requirements": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -38285,7 +38285,7 @@
                   "example": "string or id"
                 }
               },
-              "shipping-profiles": {
+              "shipping_profiles": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -38299,7 +38299,7 @@
                   "example": "string or id"
                 }
               },
-              "fulfillment-providers": {
+              "fulfillment_providers": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -38422,7 +38422,7 @@
           },
           "data": {},
           "metadata": {},
-          "shipping-option-requirements": {
+          "shipping_option_requirements": {
             "type": "object",
             "properties": {
               "data": {
@@ -38450,7 +38450,7 @@
                           "type": "number",
                           "format": "float"
                         },
-                        "shipping-options": {
+                        "shipping_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -38489,7 +38489,7 @@
                                       },
                                       "data": {},
                                       "metadata": {},
-                                      "shipping-option-requirements": {
+                                      "shipping_option_requirements": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -38537,7 +38537,7 @@
                                                       "type": "string"
                                                     },
                                                     "metadata": {},
-                                                    "fulfillment-providers": {
+                                                    "fulfillment_providers": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -38577,7 +38577,7 @@
                                                                       }
                                                                     }
                                                                   },
-                                                                  "shipping-options": {
+                                                                  "shipping_options": {
                                                                     "type": "object",
                                                                     "properties": {
                                                                       "data": {
@@ -38933,7 +38933,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "payment-provider": {
+                                                    "payment_provider": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -39320,7 +39320,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "shipping-options": {
+                                                    "shipping_options": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -39425,7 +39425,7 @@
                                           }
                                         }
                                       },
-                                      "shipping-profiles": {
+                                      "shipping_profiles": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -39454,7 +39454,7 @@
                                                       ]
                                                     },
                                                     "metadata": {},
-                                                    "shipping-options": {
+                                                    "shipping_options": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -39559,7 +39559,7 @@
                                           }
                                         }
                                       },
-                                      "fulfillment-providers": {
+                                      "fulfillment_providers": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -39769,7 +39769,7 @@
               }
             }
           },
-          "shipping-profiles": {
+          "shipping_profiles": {
             "type": "object",
             "properties": {
               "data": {
@@ -39789,7 +39789,7 @@
               }
             }
           },
-          "fulfillment-providers": {
+          "fulfillment_providers": {
             "type": "object",
             "properties": {
               "data": {
@@ -39934,7 +39934,7 @@
                 "type": "number",
                 "format": "float"
               },
-              "shipping-options": {
+              "shipping_options": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -40041,7 +40041,7 @@
             "type": "number",
             "format": "float"
           },
-          "shipping-options": {
+          "shipping_options": {
             "type": "object",
             "properties": {
               "data": {
@@ -40080,7 +40080,7 @@
                         },
                         "data": {},
                         "metadata": {},
-                        "shipping-option-requirements": {
+                        "shipping_option_requirements": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -40108,7 +40108,7 @@
                                         "type": "number",
                                         "format": "float"
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -40492,7 +40492,7 @@
                                         "type": "string"
                                       },
                                       "metadata": {},
-                                      "fulfillment-providers": {
+                                      "fulfillment_providers": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -40532,7 +40532,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "shipping-options": {
+                                                    "shipping_options": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -40637,7 +40637,7 @@
                                           }
                                         }
                                       },
-                                      "payment-provider": {
+                                      "payment_provider": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -41024,7 +41024,7 @@
                                           }
                                         }
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -41129,7 +41129,7 @@
                             }
                           }
                         },
-                        "shipping-profiles": {
+                        "shipping_profiles": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -41158,7 +41158,7 @@
                                         ]
                                       },
                                       "metadata": {},
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -41263,7 +41263,7 @@
                             }
                           }
                         },
-                        "fulfillment-providers": {
+                        "fulfillment_providers": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -41497,7 +41497,7 @@
                 ]
               },
               "metadata": {},
-              "shipping-options": {
+              "shipping_options": {
                 "type": "array",
                 "items": {
                   "oneOf": [
@@ -41608,7 +41608,7 @@
             ]
           },
           "metadata": {},
-          "shipping-options": {
+          "shipping_options": {
             "type": "object",
             "properties": {
               "data": {
@@ -41647,7 +41647,7 @@
                         },
                         "data": {},
                         "metadata": {},
-                        "shipping-option-requirements": {
+                        "shipping_option_requirements": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -41675,7 +41675,7 @@
                                         "type": "number",
                                         "format": "float"
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -42059,7 +42059,7 @@
                                         "type": "string"
                                       },
                                       "metadata": {},
-                                      "fulfillment-providers": {
+                                      "fulfillment_providers": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -42099,7 +42099,7 @@
                                                         }
                                                       }
                                                     },
-                                                    "shipping-options": {
+                                                    "shipping_options": {
                                                       "type": "object",
                                                       "properties": {
                                                         "data": {
@@ -42204,7 +42204,7 @@
                                           }
                                         }
                                       },
-                                      "payment-provider": {
+                                      "payment_provider": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -42591,7 +42591,7 @@
                                           }
                                         }
                                       },
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -42696,7 +42696,7 @@
                             }
                           }
                         },
-                        "shipping-profiles": {
+                        "shipping_profiles": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -42725,7 +42725,7 @@
                                         ]
                                       },
                                       "metadata": {},
-                                      "shipping-options": {
+                                      "shipping_options": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -42830,7 +42830,7 @@
                             }
                           }
                         },
-                        "fulfillment-providers": {
+                        "fulfillment_providers": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -43255,7 +43255,7 @@
                         },
                         "metadata": {},
                         "metafields": {},
-                        "product-variants": {
+                        "product_variants": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -43345,7 +43345,7 @@
                                           }
                                         }
                                       },
-                                      "money-amount": {
+                                      "money_amount": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -43373,7 +43373,7 @@
                                                     "pattern": "^\\d*$",
                                                     "example": "123456789"
                                                   },
-                                                  "product-variants": {
+                                                  "product_variants": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -43728,7 +43728,7 @@
                                           }
                                         }
                                       },
-                                      "product-option-value": {
+                                      "product_option_value": {
                                         "type": "object",
                                         "properties": {
                                           "data": {
@@ -43747,7 +43747,7 @@
                                                     "type": "string"
                                                   },
                                                   "metadata": {},
-                                                  "product-variants": {
+                                                  "product_variants": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -43767,7 +43767,7 @@
                                                       }
                                                     }
                                                   },
-                                                  "product-option": {
+                                                  "product_option": {
                                                     "type": "object",
                                                     "properties": {
                                                       "data": {
@@ -43788,7 +43788,7 @@
                                                                   "type": "string"
                                                                 },
                                                                 "metadata": {},
-                                                                "product-option-values": {
+                                                                "product_option_values": {
                                                                   "type": "object",
                                                                   "properties": {
                                                                     "data": {
@@ -44076,7 +44076,7 @@
                             }
                           }
                         },
-                        "product-options": {
+                        "product_options": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -44219,7 +44219,7 @@
                             }
                           }
                         },
-                        "product-collection": {
+                        "product_collection": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -44345,7 +44345,7 @@
                             }
                           }
                         },
-                        "product-categories": {
+                        "product_categories": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -44474,7 +44474,7 @@
                             }
                           }
                         },
-                        "product-type": {
+                        "product_type": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -44597,7 +44597,7 @@
                             }
                           }
                         },
-                        "product-tags": {
+                        "product_tags": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -44723,7 +44723,7 @@
                             }
                           }
                         },
-                        "product-medias": {
+                        "product_medias": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -45231,7 +45231,7 @@
                             }
                           }
                         },
-                        "product-metafield": {
+                        "product_metafield": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -45349,7 +45349,7 @@
                             }
                           }
                         },
-                        "product-documents": {
+                        "product_documents": {
                           "type": "object",
                           "properties": {
                             "data": {
@@ -45614,7 +45614,7 @@
                             }
                           }
                         },
-                        "product-legal": {
+                        "product_legal": {
                           "type": "object",
                           "properties": {
                             "data": {

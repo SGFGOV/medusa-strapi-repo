@@ -35,7 +35,7 @@
     "sale_amount": {
       "type": "biginteger"
     },
-    "product-variants": {
+    "product_variants": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",

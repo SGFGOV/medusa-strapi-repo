@@ -220,7 +220,12 @@ export async function sendSignalToMedusa(
 			data: result.data,
 		};
 	} catch (error) {
-		strapi.log.error(`unable to send message to medusa server  ${(error as Error).message}`);
+		if(process.env.NODE_ENV != "test"){
+			strapi.log.error(`unable to send message to medusa server  ${(error as Error).message}`);
+		}
+		else{
+			strapi.log.warn(`unable to send message to medusa server  ${(error as Error).message}`);
+		}
 	}
 }
 

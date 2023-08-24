@@ -33,7 +33,7 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::product.product",
-      "inversedBy": "product-tags"
+      "inversedBy": "product_tags"
     }
   }
 }

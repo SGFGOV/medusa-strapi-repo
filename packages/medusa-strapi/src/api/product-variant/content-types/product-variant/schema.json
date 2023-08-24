@@ -88,19 +88,19 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
-      "inversedBy": "product-variants"
+      "inversedBy": "product_variants"
     },
-    "money-amount": {
+    "money_amount": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::money-amount.money-amount",
-      "inversedBy": "product-variants"
+      "inversedBy": "product_variants"
     },
-    "product-option-value": {
+    "product_option_value": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product-option-value.product-option-value",
-      "inversedBy": "product-variants"
+      "inversedBy": "product_variants"
     }
   }
 }
