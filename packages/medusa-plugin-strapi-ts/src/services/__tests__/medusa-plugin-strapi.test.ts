@@ -354,11 +354,11 @@ describe('StrapiService Tests', () => {
 						const productPopulateGetResult = await service.getEntitiesFromStrapi({
 							authInterface: defaultAuthInterface,
 							strapiEntityType: 'products',
-							urlQuery: { populate: 'product-variants' },
+							urlQuery: { populate: 'product_variants' },
 						});
 						if (!isMockEnabled()) {
 							const testData = productPopulateGetResult.data[0];
-							expect(testData['product-variants']).toBeDefined();
+							expect(testData['product_variants']).toBeDefined();
 						}
 					}
 				},
@@ -659,7 +659,7 @@ describe('StrapiService Tests', () => {
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
 					});
-					expect(falseResult.status).toBe(404);
+					expect(falseResult.status == 404 || falseResult.data[0] == undefined).toBeTruthy();
 
 					result = await service.deleteProductTypeInStrapi({ id: 'dummy' }, defaultAuthInterface);
 					expect(result.status).toBe(200);

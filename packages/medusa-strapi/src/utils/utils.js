@@ -249,6 +249,7 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, cal
 					strapi.log.debug(`${uid} creating, ${JSON.stringify(dataReceived)}`);
 					const newEntity = await strapi.entityService.create(uid, {
 						data: dataReceived,
+						populate: '*',
 					});
 					dataReceived['id'] = newEntity.id;
 				} else {
