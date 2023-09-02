@@ -439,7 +439,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 				productToSend['product_categories'] = _.cloneDeep(productToSend.categories);
 				delete productToSend.categories;
-
+				this.logger.info(`creating product in strapi - ${JSON.stringify(productToSend)}`);
 				const result = await this.createEntryInStrapi({
 					type: 'products',
 					authInterface,
