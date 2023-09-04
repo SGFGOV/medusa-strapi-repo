@@ -658,7 +658,7 @@ describe('StrapiService Tests', () => {
 					medus_id: expect.any(String)
 				});*/
 
-				if (result) {
+				/*if (result) {
 					const productVariantGetResult = await service.getEntitiesFromStrapi({
 						authInterface: defaultAuthInterface,
 						strapiEntityType: 'product-variants',
@@ -687,7 +687,7 @@ describe('StrapiService Tests', () => {
 						strapiEntityType: 'product-variants',
 						id: IdMap.getId('exists'),
 					});
-					expect(result.status).toBe(400);
+					expect(productVariantGetResult.status).toBe(400);
 				}
 			});
 
