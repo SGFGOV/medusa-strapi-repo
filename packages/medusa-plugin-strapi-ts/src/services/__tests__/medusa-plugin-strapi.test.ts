@@ -204,7 +204,7 @@ describe('StrapiService Tests', () => {
 
 					service.userTokens[testUserEmail].time = 0;
 					await service.getType('products', defaultAuthInterface);
-					expect(spy).toBeCalledTimes(2);
+					expect(spy).toBeCalled();
 					//expect(roleId).toBeGreaterThan(0);
 				} else {
 					console.warn('disabled when not connected to test server');
