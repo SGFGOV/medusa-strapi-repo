@@ -329,8 +329,8 @@ describe('StrapiService Tests', () => {
 						medusa_id: product_id,
 					});
 					if (!isMockEnabled()) {
-						expect(result.data?.['product-variants']).toBeDefined();
-						expect(result.data?.['product-variants'].length > 0).toBeTruthy();
+						expect(result.data?.['product_variants']).toBeDefined();
+						expect(result.data?.['product_variants'].length > 0).toBeTruthy();
 					}
 					expect(spy).toHaveBeenCalled();
 					if (result) {
@@ -699,11 +699,11 @@ describe('region checks', () => {
 		if (!isMockEnabled()) {
 			const defaultAuthInterface = service.defaultAuthInterface;
 			try {
-				result = await service.getEntitiesFromStrapi({
+				result = (await service.getEntitiesFromStrapi({
 					strapiEntityType: 'regions',
 					authInterface: defaultAuthInterface,
 					id: IdMap.getId('exists'),
-				});
+				})) as StrapiResult;
 			} catch (e) {
 				console.error(`region clean up error ${e.message}`);
 			}
@@ -756,20 +756,20 @@ describe('region checks', () => {
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();
 			if (!isMockEnabled()) {
-				result = await service.getEntitiesFromStrapi({
+				result = (await service.getEntitiesFromStrapi({
 					id: IdMap.getId('exists'),
 					authInterface: defaultAuthInterface,
 					strapiEntityType: 'regions',
-				});
+				})) as StrapiResult;
 				expect(result).toMatchObject({
 					data: [{ name: 'new-name', medusa_id: IdMap.getId('exists') }],
 				});
 			}
-			result = await service.getEntitiesFromStrapi({
+			result = (await service.getEntitiesFromStrapi({
 				strapiEntityType: 'regions',
 				authInterface: defaultAuthInterface,
 				id: IdMap.getId('exists'),
-			});
+			})) as StrapiResult;
 			expect(result.status).toBe(200);
 		},
 		testTimeOut

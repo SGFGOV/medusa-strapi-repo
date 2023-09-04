@@ -95,8 +95,9 @@ export type AdminGetResult = {
 	};
 	status: number;
 };
-export type StrapiGetResult = {
-	data: any[];
+
+export type MedusaGetResult<T> = {
+	data: T;
 	meta?: any;
 
 	status: number;
@@ -112,6 +113,17 @@ export type StrapiResult = {
 	status: number;
 	query?: string;
 };
+
+export type StrapiGetResult =
+	| StrapiResult
+	| {
+			data: any[];
+			meta?: any;
+
+			status: number;
+			medusa_id?: string;
+			id?: number | string;
+	  };
 const IGNORE_THRESHOLD = 3; // seconds
 
 export interface StrapiQueryInterface {
@@ -1741,12 +1753,35 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return dataToSend;
 		}
 
-		if (key.includes('_')) {
-			dataToSend[key.replace('_', '-')] = dataToSend[key];
+		if (key.includes('-')) {
+			dataToSend[key.replace('-', '_')] = dataToSend[key];
 			delete dataToSend[key];
 		}
 
 		return dataToSend;
+	}
+	private translateRelationNamesToMedusaFormat(dataReceived: StrapiGetResult, key: string): StrapiGetResult {
+		let testObject = null;
+
+		if (_.isArray(dataReceived[key])) {
+			if (dataReceived[key].length > 0) {
+				testObject = dataReceived[key][0];
+			}
+		} else {
+			testObject = dataReceived[key];
+		}
+
+		// if the object is a not empty array or object without id or medusa_id, it's not relation
+		if (testObject && !this.isEntity(testObject)) {
+			return dataReceived;
+		}
+
+		if (key.includes('_') && key != 'meudsa_id') {
+			dataReceived[key.replace('_', '-')] = dataReceived[key];
+			delete dataReceived[key];
+		}
+
+		return dataReceived;
 	}
 
 	translateDataToStrapiFormat(dataToSend: StrapiEntity): StrapiEntity {
@@ -1773,6 +1808,32 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 		}
 		return dataToSend as BaseEntity & { medusa_id?: string };
+	}
+
+	translateDataToMedusaFormat(dataReceived: StrapiGetResult): MedusaGetResult<typeof dataReceived.data> {
+		const keys = Object.keys(dataReceived);
+		const keysToIgnore = ['id', 'created_at', 'updated_at', 'deleted_at'];
+
+		for (const key of keys) {
+			if (_.isArray(dataReceived[key])) {
+				for (const element of dataReceived[key]) {
+					this.isEntity(element) && this.translateDataToStrapiFormat(element);
+				}
+				this.translateRelationNamesToMedusaFormat(dataReceived, key);
+			}
+
+			if (dataReceived[key] instanceof Object && this.isEntity(dataReceived[key])) {
+				this.translateDataToStrapiFormat(dataReceived[key]);
+				this.translateRelationNamesToMedusaFormat(dataReceived, key);
+			} else if (key == 'medusa_id') {
+				dataReceived['id'] = dataReceived[key];
+			}
+
+			if (this.isEntity(dataReceived) && keysToIgnore.includes(key)) {
+				delete dataReceived[key];
+			}
+		}
+		return dataReceived as MedusaGetResult<typeof dataReceived.data>;
 	}
 
 	/* using cached tokens */

@@ -103,7 +103,6 @@ async function controllerfindOne(ctx, strapi, uid) {
 		handleError(strapi, e);
 		return ctx.internalServerError(ctx);
 	}
-	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
 
 async function controllerfindMany(ctx, strapi, uid) {
@@ -118,8 +117,6 @@ async function controllerfindMany(ctx, strapi, uid) {
 		handleError(strapi, e);
 		return ctx.internalServerError(ctx);
 	}
-
-	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
 
 async function uploadFile(strapi, uid, fileData, processedData, fieldName = 'files') {
