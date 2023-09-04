@@ -515,12 +515,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: expect.any(String) },
-					medus_id: expect.any(String)
-				});*/
-
 				if (result) {
 					const productVariantGetResult = await service.getEntitiesFromStrapi({
 						authInterface: defaultAuthInterface,
@@ -550,12 +544,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: expect.any(String) },
-					medus_id: expect.any(String)
-				});*/
-
 				if (result) {
 					const productCategoryResult = await service.getEntitiesFromStrapi({
 						authInterface: defaultAuthInterface,
@@ -572,11 +560,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: "test-product-variant-2" },
-					medus_id: expect.any(String)
-				});*/
 				expect(spy).toHaveBeenCalled();
 			});
 		});
@@ -652,33 +635,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: expect.any(String) },
-					medus_id: expect.any(String)
-				});*/
-
-				/*if (result) {
-					const productVariantGetResult = await service.getEntitiesFromStrapi({
-						authInterface: defaultAuthInterface,
-						strapiEntityType: 'product-variants',
-					});
-					expect(productVariantGetResult).toBeDefined();
-					expect(productVariantGetResult.data.length > 0).toBeTruthy();
-				}
-
-				result = await service.updateProductVariantInStrapi(
-					{ id: IdMap.getId('exists'), title: 'test-product-variant-2' },
-					defaultAuthInterface
-				);
-				expect(result).toBeDefined();
-				expect(result.status == 200 || result.status == 302).toBeTruthy();
-
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: "test-product-variant-2" },
-					medus_id: expect.any(String)
-				});*/
 				expect(spy).toHaveBeenCalled();
 				if (!isMockEnabled()) {
 					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
