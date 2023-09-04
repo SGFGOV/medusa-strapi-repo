@@ -687,7 +687,7 @@ describe('StrapiService Tests', () => {
 						strapiEntityType: 'product-variants',
 						id: IdMap.getId('exists'),
 					});
-					expect(productVariantGetResult.status).toBe(400);
+					expect(productVariantGetResult.status).toBe(404);
 				}
 			});
 
