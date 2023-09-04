@@ -36,15 +36,17 @@ module.exports = {
       }
     );*/
 	},
-	async afterDelete(event) {
+	async beforeDelete(event) {
 		const { params, result, model, action, state } = event;
 		const { data, where, select, populate } = event.params;
 
-		const deleteOptions = result.product_options?.map(async (option) => {
+		const entity = await strapi.entityService.findOne('api::product.product', where.id, { populate: '*' });
+
+		const deleteOptions = entity.product_options?.map(async (option) => {
 			await strapi.entityService.delete('api::product-option.product-option', option.id);
 		});
 
-		const deleteVariants = result.product_variants?.map(async (variant) => {
+		const deleteVariants = entity.product_variants?.map(async (variant) => {
 			await strapi.entityService.delete('api::product-variant.product-variant', variant.id);
 		});
 		if (deleteOptions) await Promise.all(deleteOptions);

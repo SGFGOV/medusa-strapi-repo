@@ -544,6 +544,7 @@ describe('StrapiService Tests', () => {
 				});*/
 				expect(spy).toHaveBeenCalled();
 			});
+
 			it('create  and update product category in strapi', async () => {
 				result = await service.createCategoryInStrapi(IdMap.getId('exists'), defaultAuthInterface);
 				expect(result).toBeDefined();
@@ -643,6 +644,50 @@ describe('StrapiService Tests', () => {
 				} else {
 					console.warn('disabled when not connected to test server');
 					expect(true).toBe(true);
+				}
+			});
+
+			it('create  and update product variant in strapi and cascade delete', async () => {
+				result = await service.createProductVariantInStrapi(IdMap.getId('exists'), defaultAuthInterface);
+				expect(result).toBeDefined();
+				expect(result.status == 200 || result.status == 302).toBeTruthy();
+
+				/* expect(result.data).toMatchObject({
+					id: expect.any(Number),
+					data: { title: expect.any(String) },
+					medus_id: expect.any(String)
+				});*/
+
+				if (result) {
+					const productVariantGetResult = await service.getEntitiesFromStrapi({
+						authInterface: defaultAuthInterface,
+						strapiEntityType: 'product-variants',
+					});
+					expect(productVariantGetResult).toBeDefined();
+					expect(productVariantGetResult.data.length > 0).toBeTruthy();
+				}
+
+				result = await service.updateProductVariantInStrapi(
+					{ id: IdMap.getId('exists'), title: 'test-product-variant-2' },
+					defaultAuthInterface
+				);
+				expect(result).toBeDefined();
+				expect(result.status == 200 || result.status == 302).toBeTruthy();
+
+				/* expect(result.data).toMatchObject({
+					id: expect.any(Number),
+					data: { title: "test-product-variant-2" },
+					medus_id: expect.any(String)
+				});*/
+				expect(spy).toHaveBeenCalled();
+				if (!isMockEnabled()) {
+					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
+					const productVariantGetResult = await service.getEntitiesFromStrapi({
+						authInterface: defaultAuthInterface,
+						strapiEntityType: 'product-variants',
+						id: IdMap.getId('exists'),
+					});
+					expect(result.status).toBe(400);
 				}
 			});
 
