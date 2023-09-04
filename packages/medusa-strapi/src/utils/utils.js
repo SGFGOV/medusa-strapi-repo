@@ -433,7 +433,7 @@ async function controllerDelete(ctx, strapi, uid) {
 		if (!entityId) {
 			return ctx.notFound(ctx);
 		}
-		const result = await strapi.services[uid].delete(entityId);
+		const result = await strapi.services[uid].delete(entityId, { populate: '*' });
 		if (result) {
 			return (ctx.body = { deletedData: result });
 		}
