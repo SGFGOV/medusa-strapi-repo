@@ -530,12 +530,6 @@ describe('StrapiService Tests', () => {
 				);
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
-
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: "test-product-variant-2" },
-					medus_id: expect.any(String)
-				});*/
 				expect(spy).toHaveBeenCalled();
 			});
 
