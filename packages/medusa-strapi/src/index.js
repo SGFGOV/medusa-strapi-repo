@@ -8,7 +8,9 @@ module.exports = {
 	 *
 	 * This gives you an opportunity to extend code.
 	 */
-	register(/* { strapi }*/) {},
+	register({ strapi }) {
+		strapi.log.info(`starting strapi in dir ${strapi.dirs.dist.config}`);
+	},
 
 	/**
 	 * An asynchronous bootstrap function that runs before

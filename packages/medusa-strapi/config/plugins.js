@@ -52,6 +52,7 @@ module.exports = ({ env }) => ({
 		enabled: true,
 	},
 	'users-permissions': {
+		enabled: true,
 		config: {
 			jwt: {
 				expiresIn: '1h',
@@ -77,9 +78,11 @@ module.exports = ({ env }) => ({
 	},
 
 	upload: {
+		enabled: true,
 		config: env('NODE_ENV') == 'test' ? providerConfigLocal : providerConfigAws(env),
 	},
 	email: {
+		enabled: true,
 		config: {
 			provider: 'sendgrid',
 			providerOptions: {
@@ -98,16 +101,15 @@ module.exports = ({ env }) => ({
 			sendMetadata: true,
 		},
 	},
-	meilisearch: !env('MEILISEARCH_HOST')
-		? undefined
-		: {
-				config: {
-					// Your meili host
-					host: env('MEILISEARCH_HOST'),
-					// Your master key or private key
-					apiKey: env('MEILISEARCH_MASTER_KEY'),
-				},
-		  },
+	meilisearch: {
+		enabled: true,
+		config: {
+			// Your meili host
+			host: env('MEILISEARCH_HOST'),
+			// Your master key or private key
+			apiKey: env('MEILISEARCH_MASTER_KEY'),
+		},
+	},
 	'content-versioning': {
 		enabled: true,
 	},
