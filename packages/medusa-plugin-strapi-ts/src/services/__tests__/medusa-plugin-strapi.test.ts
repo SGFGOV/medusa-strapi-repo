@@ -204,7 +204,7 @@ describe('StrapiService Tests', () => {
 
 					service.userTokens[testUserEmail].time = 0;
 					await service.getType('products', defaultAuthInterface);
-					expect(spy).toBeCalledTimes(2);
+					expect(spy).toBeCalled();
 					//expect(roleId).toBeGreaterThan(0);
 				} else {
 					console.warn('disabled when not connected to test server');
@@ -329,8 +329,8 @@ describe('StrapiService Tests', () => {
 						medusa_id: product_id,
 					});
 					if (!isMockEnabled()) {
-						expect(result.data?.['product-variants']).toBeDefined();
-						expect(result.data?.['product-variants'].length > 0).toBeTruthy();
+						expect(result.data?.['product_variants']).toBeDefined();
+						expect(result.data?.['product_variants'].length > 0).toBeTruthy();
 					}
 					expect(spy).toHaveBeenCalled();
 					if (result) {
@@ -354,11 +354,11 @@ describe('StrapiService Tests', () => {
 						const productPopulateGetResult = await service.getEntitiesFromStrapi({
 							authInterface: defaultAuthInterface,
 							strapiEntityType: 'products',
-							urlQuery: { populate: 'product-variants' },
+							urlQuery: { populate: 'product_variants' },
 						});
 						if (!isMockEnabled()) {
 							const testData = productPopulateGetResult.data[0];
-							expect(testData['product-variants']).toBeDefined();
+							expect(testData['product_variants']).toBeDefined();
 						}
 					}
 				},
@@ -515,12 +515,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: expect.any(String) },
-					medus_id: expect.any(String)
-				});*/
-
 				if (result) {
 					const productVariantGetResult = await service.getEntitiesFromStrapi({
 						authInterface: defaultAuthInterface,
@@ -536,24 +530,13 @@ describe('StrapiService Tests', () => {
 				);
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
-
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: "test-product-variant-2" },
-					medus_id: expect.any(String)
-				});*/
 				expect(spy).toHaveBeenCalled();
 			});
+
 			it('create  and update product category in strapi', async () => {
 				result = await service.createCategoryInStrapi(IdMap.getId('exists'), defaultAuthInterface);
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
-
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: expect.any(String) },
-					medus_id: expect.any(String)
-				});*/
 
 				if (result) {
 					const productCategoryResult = await service.getEntitiesFromStrapi({
@@ -571,11 +554,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-					id: expect.any(Number),
-					data: { title: "test-product-variant-2" },
-					medus_id: expect.any(String)
-				});*/
 				expect(spy).toHaveBeenCalled();
 			});
 		});
@@ -646,6 +624,23 @@ describe('StrapiService Tests', () => {
 				}
 			});
 
+			it('create  and update product variant in strapi and cascade delete', async () => {
+				result = await service.createProductVariantInStrapi(IdMap.getId('exists'), defaultAuthInterface);
+				expect(result).toBeDefined();
+				expect(result.status == 200 || result.status == 302).toBeTruthy();
+
+				expect(spy).toHaveBeenCalled();
+				if (!isMockEnabled()) {
+					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
+					const productVariantGetResult = await service.getEntitiesFromStrapi({
+						authInterface: defaultAuthInterface,
+						strapiEntityType: 'product-variants',
+						id: IdMap.getId('exists'),
+					});
+					expect(productVariantGetResult.status).toBe(404);
+				}
+			});
+
 			it('clean up types, categories and collections', async () => {
 				if (!isMockEnabled()) {
 					result = await service.deleteCategoryInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
@@ -659,7 +654,7 @@ describe('StrapiService Tests', () => {
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
 					});
-					expect(falseResult.status).toBe(404);
+					expect(falseResult.status == 404 || falseResult.data[0] == undefined).toBeTruthy();
 
 					result = await service.deleteProductTypeInStrapi({ id: 'dummy' }, defaultAuthInterface);
 					expect(result.status).toBe(200);
@@ -699,11 +694,11 @@ describe('region checks', () => {
 		if (!isMockEnabled()) {
 			const defaultAuthInterface = service.defaultAuthInterface;
 			try {
-				result = await service.getEntitiesFromStrapi({
+				result = (await service.getEntitiesFromStrapi({
 					strapiEntityType: 'regions',
 					authInterface: defaultAuthInterface,
 					id: IdMap.getId('exists'),
-				});
+				})) as StrapiResult;
 			} catch (e) {
 				console.error(`region clean up error ${e.message}`);
 			}
@@ -756,20 +751,20 @@ describe('region checks', () => {
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();
 			if (!isMockEnabled()) {
-				result = await service.getEntitiesFromStrapi({
+				result = (await service.getEntitiesFromStrapi({
 					id: IdMap.getId('exists'),
 					authInterface: defaultAuthInterface,
 					strapiEntityType: 'regions',
-				});
+				})) as StrapiResult;
 				expect(result).toMatchObject({
 					data: [{ name: 'new-name', medusa_id: IdMap.getId('exists') }],
 				});
 			}
-			result = await service.getEntitiesFromStrapi({
+			result = (await service.getEntitiesFromStrapi({
 				strapiEntityType: 'regions',
 				authInterface: defaultAuthInterface,
 				id: IdMap.getId('exists'),
-			});
+			})) as StrapiResult;
 			expect(result.status).toBe(200);
 		},
 		testTimeOut

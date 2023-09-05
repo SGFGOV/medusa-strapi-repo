@@ -29,17 +29,17 @@
     "metadata": {
       "type": "json"
     },
-    "product-option-values": {
+    "product_option_values": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product-option-value.product-option-value",
-      "inversedBy": "product-option"
+      "inversedBy": "product_option"
     },
     "product": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
-      "inversedBy": "product-options"
+      "inversedBy": "product_options"
     }
   }
 }

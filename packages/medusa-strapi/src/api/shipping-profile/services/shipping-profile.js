@@ -1,68 +1,65 @@
-"use strict";
+'use strict';
 
-const { createNestedEntity } = require("../../../utils/utils");
+const { createNestedEntity } = require('../../../utils/utils');
 
-const handleError = require("../../../utils/utils").handleError;
-const getStrapiDataByMedusaId =
-  require("../../../utils/utils").getStrapiDataByMedusaId;
+const handleError = require('../../../utils/utils').handleError;
+const getStrapiDataByMedusaId = require('../../../utils/utils').getStrapiDataByMedusaId;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-const uid = "api::shipping-profile.shipping-profile";
+const uid = 'api::shipping-profile.shipping-profile';
 
-const { createCoreService } = require("@strapi/strapi").factories;
+const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService(uid, ({ strapi }) => ({
-  async bootstrap(data) {
-    strapi.log.debug("Syncing Shipping Profile....");
-    try {
-      if (data && data.length) {
-        for (const shipping_profile of data) {
-          if (!shipping_profile.medusa_id) {
-            shipping_profile.medusa_id = shipping_profile.id.toString();
-            delete shipping_profile.id;
-          }
+	async bootstrap(data) {
+		strapi.log.debug('Syncing Shipping Profile....');
+		try {
+			if (data && data.length) {
+				for (const shipping_profile of data) {
+					if (!shipping_profile.medusa_id) {
+						shipping_profile.medusa_id = shipping_profile.id.toString();
+						delete shipping_profile.id;
+					}
 
-          const found = await getStrapiDataByMedusaId(
-            uid,
-            strapi,
-            shipping_profile.medusa_id,
-            ["id", "medusa_id"]
-          );
+					const found = await getStrapiDataByMedusaId(uid, strapi, shipping_profile.medusa_id, [
+						'id',
+						'medusa_id',
+					]);
 
-          if (found) {
-            continue;
-          }
-          try {
-            const shippingOptionStrapiEntity = await createNestedEntity(
-              uid,
-              strapi,
-              shipping_profile,
-              (data) => {
-                strapi.log.debug(`synced:${JSON.stringify(data)}`);
-              }
-            );
-            if (shippingOptionStrapiEntity) {
-              strapi.log.info("Shipping Option created");
-            }
-          } catch (e) {
-            strapi.log.error(
-              `unable to sync shipping option ${uid} ${shipping_profile} because : ${e.message}`
-            );
-            handleError(strapi, e);
-            return false;
-          }
-        }
-      }
-      strapi.log.info("Shipping Profile Synced");
-      return true;
-    } catch (e) {
-      handleError(strapi, e);
-      return false;
-    }
-  },
-  /*
+					if (found) {
+						continue;
+					}
+					try {
+						const shippingOptionStrapiEntity = await createNestedEntity(
+							uid,
+							strapi,
+							shipping_profile,
+							(data) => {
+								strapi.log.debug(`synced:${JSON.stringify(data)}`);
+							}
+						);
+						if (shippingOptionStrapiEntity) {
+							strapi.log.info('Shipping Option created');
+						}
+					} catch (e) {
+						strapi.log.error(
+							`unable to sync shipping option ${uid} ${shipping_profile} because : ${e.message}`
+						);
+						handleError(strapi, e);
+						return false;
+					}
+				}
+			}
+			strapi.log.info('Shipping Profile Synced');
+			return true;
+		} catch (e) {
+			handleError(strapi, e);
+			return false;
+		}
+	},
+	/*
   async handleManyToOneRelation(shippingProfile, caller) {
     if (shippingProfile.id) {
       shippingProfile.medusa_id = shippingProfile.id;
@@ -106,7 +103,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
     })
   )[0];
 },*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+	async delete(strapi_id, params = {}) {
+		return await strapi.entityService.delete(uid, strapi_id, params);
+	},
 }));

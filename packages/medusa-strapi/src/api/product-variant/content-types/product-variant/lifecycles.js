@@ -1,16 +1,16 @@
-"use strict";
+'use strict';
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#lifecycle-hooks)
  * to customize this model
  */
 
-const axios = require("axios");
+const axios = require('axios');
 
 module.exports = {
-  async afterUpdate(result, params, data) {
-    let medusaReady = false;
-    /* while (!medusaReady) {
+	async afterUpdate(result, params, data) {
+		let medusaReady = false;
+		/* while (!medusaReady) {
       try {
         const response = await axios.head(
           `${process.env.MEDUSA_BACKEND_URL}/health`
@@ -21,10 +21,9 @@ module.exports = {
         return;
       }
     }*/
-    const respondViaPlugin =
-      strapi.plugins["strapi-plugin-medusajs"].service("setup");
-    return await respondViaPlugin.sendResult("productVariant", result.result);
-    /*
+		const respondViaPlugin = strapi.plugins['strapi-plugin-medusajs'].service('setup');
+		return await respondViaPlugin.sendResult('productVariant', result.result);
+		/*
     await axios.post(
       `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
@@ -39,5 +38,5 @@ module.exports = {
         },
       }
     );*/
-  },
+	},
 };

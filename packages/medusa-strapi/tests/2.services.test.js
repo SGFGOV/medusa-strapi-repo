@@ -46,8 +46,9 @@ function clearRequireCache() {
 	});
 }
 
-function getSchemaFromApi(strapi, apiName) {
+function getSchemaFromApi(strapi, apiNameOrig) {
 	const PATH = `${__dirname}/../src/api`;
+	const apiName = apiNameOrig.replace('_', '-');
 	for (const key of Object.keys(strapi.contentTypes)) {
 		if (
 			strapi.contentTypes[key].info.pluralName == apiName ||

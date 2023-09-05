@@ -1,25 +1,23 @@
-"use strict";
+'use strict';
 /**
  *  product-variant controller
  */
 
 function performCleanups(productVariantBody) {
-  Object.keys(productVariantBody).forEach(
-    (key) =>
-      productVariantBody[key] === undefined && delete productVariantBody[key]
-  );
-  //  delete productVariantBody.product;
-  // delete productVariantBody.product_id;
-  // Since strapi doesn't allow us to create a model with name "length". We have created it with name "product_variant_length".
-  productVariantBody.product_variant_length = productVariantBody.length;
-  delete productVariantBody.length;
+	Object.keys(productVariantBody).forEach(
+		(key) => productVariantBody[key] === undefined && delete productVariantBody[key]
+	);
+	//  delete productVariantBody.product;
+	// delete productVariantBody.product_id;
+	// Since strapi doesn't allow us to create a model with name "length". We have created it with name "product_variant_length".
+	productVariantBody.product_variant_length = productVariantBody.length;
+	delete productVariantBody.length;
 }
 
-const { createCoreController } = require("@strapi/strapi").factories;
+const { createCoreController } = require('@strapi/strapi').factories;
 
-const createMedusaDefaultController =
-  require("../../../utils/utils").createMedusaDefaultController;
-const uid = "api::product-variant.product-variant";
+const createMedusaDefaultController = require('../../../utils/utils').createMedusaDefaultController;
+const uid = 'api::product-variant.product-variant';
 module.exports = createMedusaDefaultController(uid);
 
 /*

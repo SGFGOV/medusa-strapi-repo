@@ -45,7 +45,7 @@ class UpdateMedusaService extends TransactionBaseService {
 
 		const result = await this.atomicPhase_(async (manager) => {
 			const variant = await this.productVariantService_.withTransaction(manager).retrieve(variantId);
-			const update = {};
+			const update: Partial<ProductVariant> = {};
 			try {
 				if (variant.title !== variantEntry.title) {
 					update['title'] = variantEntry.title;
