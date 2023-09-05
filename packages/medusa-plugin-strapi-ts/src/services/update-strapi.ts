@@ -95,8 +95,9 @@ export type AdminGetResult = {
 	};
 	status: number;
 };
-export type StrapiGetResult = {
-	data: any[];
+
+export type MedusaGetResult<T> = {
+	data: T;
 	meta?: any;
 
 	status: number;
@@ -112,6 +113,17 @@ export type StrapiResult = {
 	status: number;
 	query?: string;
 };
+
+export type StrapiGetResult =
+	| StrapiResult
+	| {
+			data: any[];
+			meta?: any;
+
+			status: number;
+			medusa_id?: string;
+			id?: number | string;
+	  };
 const IGNORE_THRESHOLD = 3; // seconds
 
 export interface StrapiQueryInterface {
@@ -425,21 +437,21 @@ export class UpdateStrapiService extends TransactionBaseService {
 			 */
 			if (product) {
 				const productToSend = _.cloneDeep(product);
-				productToSend['product-type'] = _.cloneDeep(productToSend.type);
+				productToSend['product_type'] = _.cloneDeep(productToSend.type);
 				delete productToSend.type;
-				productToSend['product-tags'] = _.cloneDeep(productToSend.tags);
+				productToSend['product_tags'] = _.cloneDeep(productToSend.tags);
 				delete productToSend.tags;
-				productToSend['product-options'] = _.cloneDeep(productToSend.options);
+				productToSend['product_options'] = _.cloneDeep(productToSend.options);
 				delete productToSend.options;
-				productToSend['product-variants'] = _.cloneDeep(productToSend.variants);
+				productToSend['product_variants'] = _.cloneDeep(productToSend.variants);
 				delete productToSend.variants;
 
-				productToSend['product-collection'] = _.cloneDeep(productToSend.collection);
+				productToSend['product_collection'] = _.cloneDeep(productToSend.collection);
 				delete productToSend.collection;
 
-				productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
+				productToSend['product_categories'] = _.cloneDeep(productToSend.categories);
 				delete productToSend.categories;
-
+				this.logger.info(`creating product in strapi - ${JSON.stringify(productToSend)}`);
 				const result = await this.createEntryInStrapi({
 					type: 'products',
 					authInterface,
@@ -634,7 +646,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			// this.logger.info(variant)
 			if (variant) {
 				const variantToSend = _.cloneDeep(variant);
-				variantToSend['money-amount'] = _.cloneDeep(variantToSend.prices);
+				variantToSend['money_amount'] = _.cloneDeep(variantToSend.prices);
 				delete variantToSend.prices;
 
 				/* const variantOptionValues = variantToSend.options;
@@ -642,7 +654,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					this.convertOptionValueToMedusaReference(variantOption);
 				}*/
 
-				variantToSend['product-option-value'] = _.cloneDeep(variantToSend.options);
+				variantToSend['product_option_value'] = _.cloneDeep(variantToSend.options);
 
 				return await this.createEntryInStrapi({
 					type: 'product-variants',
@@ -662,10 +674,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		for (const key of keys) {
 			if (key != 'medusa_id' && key.includes('_id')) {
 				const medusaService = key.split('_')[0];
-				const api = `product-${medusaService}`;
+				const fieldName = `product_${medusaService}`;
 				const value = data[key];
 
-				data[api] = {
+				data[fieldName] = {
 					medusa_id: value,
 				};
 			}
@@ -1043,7 +1055,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const keysToUpdate = ['collection', 'categories', 'type', 'tags', 'variants', 'options'];
 		for (const key of keysToUpdate) {
 			if (key in dataToUpdate) {
-				dataToUpdate[`product-${key}`] = dataToUpdate[key];
+				dataToUpdate[`product_${key}`] = dataToUpdate[key];
 				delete dataToUpdate[key];
 			}
 		}
@@ -1741,12 +1753,35 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return dataToSend;
 		}
 
-		if (key.includes('_')) {
-			dataToSend[key.replace('_', '-')] = dataToSend[key];
+		if (key.includes('-')) {
+			dataToSend[key.replace('-', '_')] = dataToSend[key];
 			delete dataToSend[key];
 		}
 
 		return dataToSend;
+	}
+	private translateRelationNamesToMedusaFormat(dataReceived: StrapiGetResult, key: string): StrapiGetResult {
+		let testObject = null;
+
+		if (_.isArray(dataReceived[key])) {
+			if (dataReceived[key].length > 0) {
+				testObject = dataReceived[key][0];
+			}
+		} else {
+			testObject = dataReceived[key];
+		}
+
+		// if the object is a not empty array or object without id or medusa_id, it's not relation
+		if (testObject && !this.isEntity(testObject)) {
+			return dataReceived;
+		}
+
+		if (key.includes('_') && key != 'meudsa_id') {
+			dataReceived[key.replace('_', '-')] = dataReceived[key];
+			delete dataReceived[key];
+		}
+
+		return dataReceived;
 	}
 
 	translateDataToStrapiFormat(dataToSend: StrapiEntity): StrapiEntity {
@@ -1773,6 +1808,32 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 		}
 		return dataToSend as BaseEntity & { medusa_id?: string };
+	}
+
+	translateDataToMedusaFormat(dataReceived: StrapiGetResult): MedusaGetResult<typeof dataReceived.data> {
+		const keys = Object.keys(dataReceived);
+		const keysToIgnore = ['id', 'created_at', 'updated_at', 'deleted_at'];
+
+		for (const key of keys) {
+			if (_.isArray(dataReceived[key])) {
+				for (const element of dataReceived[key]) {
+					this.isEntity(element) && this.translateDataToStrapiFormat(element);
+				}
+				this.translateRelationNamesToMedusaFormat(dataReceived, key);
+			}
+
+			if (dataReceived[key] instanceof Object && this.isEntity(dataReceived[key])) {
+				this.translateDataToStrapiFormat(dataReceived[key]);
+				this.translateRelationNamesToMedusaFormat(dataReceived, key);
+			} else if (key == 'medusa_id') {
+				dataReceived['id'] = dataReceived[key];
+			}
+
+			if (this.isEntity(dataReceived) && keysToIgnore.includes(key)) {
+				delete dataReceived[key];
+			}
+		}
+		return dataReceived as MedusaGetResult<typeof dataReceived.data>;
 	}
 
 	/* using cached tokens */
@@ -1980,7 +2041,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	handleError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string) {
 		const theError = `${(error as Error).message} `;
 		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
-		data.password = data.password ? '#' : undefined;
+		if (data) data.password = data?.password ? '#' : undefined;
 		this.logger.error(
 			'Error occur while sending request to strapi:  ' +
 				JSON.stringify({

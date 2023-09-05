@@ -1,61 +1,51 @@
-"use strict";
+'use strict';
 
-const { createNestedEntity } = require("../../../utils/utils");
+const { createNestedEntity } = require('../../../utils/utils');
 
-const handleError = require("../../../utils/utils").handleError;
-const getStrapiDataByMedusaId =
-  require("../../../utils/utils").getStrapiDataByMedusaId;
+const handleError = require('../../../utils/utils').handleError;
+const getStrapiDataByMedusaId = require('../../../utils/utils').getStrapiDataByMedusaId;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-const uid = "api::fulfillment-provider.fulfillment-provider";
+const uid = 'api::fulfillment-provider.fulfillment-provider';
 
-const { createCoreService } = require("@strapi/strapi").factories;
+const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService(uid, ({ strapi }) => ({
-  async bootstrap(data) {
-    strapi.log.debug("Syncing Fulfillment Providers....");
-    try {
-      if (data && data.length) {
-        for (const fulfillmentProvider of data) {
-          if (!fulfillmentProvider.medusa_id) {
-            fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
-            delete fulfillmentProvider.id;
-          }
+	async bootstrap(data) {
+		strapi.log.debug('Syncing Fulfillment Providers....');
+		try {
+			if (data && data.length) {
+				for (const fulfillmentProvider of data) {
+					if (!fulfillmentProvider.medusa_id) {
+						fulfillmentProvider.medusa_id = fulfillmentProvider.id.toString();
+						delete fulfillmentProvider.id;
+					}
 
-          const medusa_id = fulfillmentProvider.medusa_id;
-          const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, [
-            "id",
-            "medusa_id",
-          ]);
-          if (found) {
-            continue;
-          }
-          try {
-            const fulfillmentProviderEntity = await createNestedEntity(
-              uid,
-              strapi,
-              fulfillmentProvider
-            );
-            if (fulfillmentProviderEntity) {
-              strapi.log.info("created fulfillment provider");
-            }
-          } catch (e) {
-            strapi.log.error(
-              `unable to sync fulfillment provider ${uid} ${fulfillmentProvider}`
-            );
-          }
-        }
-      }
-      strapi.log.info("Fulfillment Providers synced");
-      return true;
-    } catch (e) {
-      handleError(strapi, e);
-      return false;
-    }
-  },
-  /*
+					const medusa_id = fulfillmentProvider.medusa_id;
+					const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, ['id', 'medusa_id']);
+					if (found) {
+						continue;
+					}
+					try {
+						const fulfillmentProviderEntity = await createNestedEntity(uid, strapi, fulfillmentProvider);
+						if (fulfillmentProviderEntity) {
+							strapi.log.info('created fulfillment provider');
+						}
+					} catch (e) {
+						strapi.log.error(`unable to sync fulfillment provider ${uid} ${fulfillmentProvider}`);
+					}
+				}
+			}
+			strapi.log.info('Fulfillment Providers synced');
+			return true;
+		} catch (e) {
+			handleError(strapi, e);
+			return false;
+		}
+	},
+	/*
   async handleManyToManyRelation(fulfillmentProviders) {
   const strapiFulfillmentProvidersIds = [];
 

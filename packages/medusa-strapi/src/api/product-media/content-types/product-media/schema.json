@@ -43,7 +43,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product.product",
-      "inversedBy": "product-medias"
+      "inversedBy": "product_medias"
     }
   }
 }

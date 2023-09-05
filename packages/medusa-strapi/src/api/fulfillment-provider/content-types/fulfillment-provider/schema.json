@@ -33,7 +33,7 @@
       "target": "api::region.region",
       "mappedBy": "regions"
     },
-    "shipping-options": {
+    "shipping_options": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-option.shipping-option",

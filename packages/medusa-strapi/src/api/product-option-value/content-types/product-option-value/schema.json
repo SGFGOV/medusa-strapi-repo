@@ -28,13 +28,13 @@
     "metadata": {
       "type": "json"
     },
-    "product-variants": {
+    "product_variants": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "product-option-value"
     },
-    "product-option": {
+    "product_option": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-option.product-option",

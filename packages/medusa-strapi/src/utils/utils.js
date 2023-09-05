@@ -103,7 +103,6 @@ async function controllerfindOne(ctx, strapi, uid) {
 		handleError(strapi, e);
 		return ctx.internalServerError(ctx);
 	}
-	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
 
 async function controllerfindMany(ctx, strapi, uid) {
@@ -118,8 +117,6 @@ async function controllerfindMany(ctx, strapi, uid) {
 		handleError(strapi, e);
 		return ctx.internalServerError(ctx);
 	}
-
-	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
 
 async function uploadFile(strapi, uid, fileData, processedData, fieldName = 'files') {
@@ -249,6 +246,7 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, cal
 					strapi.log.debug(`${uid} creating, ${JSON.stringify(dataReceived)}`);
 					const newEntity = await strapi.entityService.create(uid, {
 						data: dataReceived,
+						populate: '*',
 					});
 					dataReceived['id'] = newEntity.id;
 				} else {
@@ -435,7 +433,7 @@ async function controllerDelete(ctx, strapi, uid) {
 		if (!entityId) {
 			return ctx.notFound(ctx);
 		}
-		const result = await strapi.services[uid].delete(entityId);
+		const result = await strapi.services[uid].delete(entityId, { populate: '*' });
 		if (result) {
 			return (ctx.body = { deletedData: result });
 		}

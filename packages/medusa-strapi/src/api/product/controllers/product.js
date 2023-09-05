@@ -1,15 +1,14 @@
 /* eslint-disable no-undef */
-"use strict";
-const handleError = require("../../../utils/utils").handleError;
-const controllerfindOne = require("../../../utils/utils").controllerfindOne;
+'use strict';
+const handleError = require('../../../utils/utils').handleError;
+const controllerfindOne = require('../../../utils/utils').controllerfindOne;
 
 /**
  *  product controller
  */
 
-const createMedusaDefaultController =
-  require("../../../utils/utils").createMedusaDefaultController;
-const uid = "api::product.product";
+const createMedusaDefaultController = require('../../../utils/utils').createMedusaDefaultController;
+const uid = 'api::product.product';
 module.exports = createMedusaDefaultController(uid);
 /*
 module.exports = createCoreController("api::product.product", {
@@ -49,7 +48,7 @@ module.exports = createCoreController("api::product.product", {
       return ctx.internalServerError(ctx, e);
     }
   },*/
-  /* async update(ctx) {
+/* async update(ctx) {
     try {
       const { id: medusaId } = ctx.params;
       const productBody = ctx.request.body.data || ctx.request.body;
@@ -85,7 +84,7 @@ module.exports = createCoreController("api::product.product", {
       return ctx.internalServerError(ctx, e);
     }
   },*/
- /* async delete(ctx) {
+/* async delete(ctx) {
     try {
       const { id: medusaId } = ctx.params;
       const product = await strapi.services["api::product.product"].findOne({

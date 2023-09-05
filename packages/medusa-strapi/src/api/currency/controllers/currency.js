@@ -1,6 +1,5 @@
-"use strict";
-const createMedusaDefaultController =
-  require("../../../utils/utils").createMedusaDefaultController;
+'use strict';
+const createMedusaDefaultController = require('../../../utils/utils').createMedusaDefaultController;
 
-const uid = "api::currency.currency";
+const uid = 'api::currency.currency';
 module.exports = createMedusaDefaultController(uid);

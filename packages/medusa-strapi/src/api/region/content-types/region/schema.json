@@ -36,13 +36,13 @@
     "metadata": {
       "type": "json"
     },
-    "fulfillment-providers": {
+    "fulfillment_providers": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::fulfillment-provider.fulfillment-provider",
       "inversedBy": "regions"
     },
-    "payment-provider": {
+    "payment_provider": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::payment-provider.payment-provider",
@@ -60,7 +60,7 @@
       "target": "api::country.country",
       "mappedBy": "region"
     },
-    "shipping-options": {
+    "shipping_options": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-option.shipping-option",

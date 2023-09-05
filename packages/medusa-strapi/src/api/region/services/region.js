@@ -1,59 +1,51 @@
-"use strict";
+'use strict';
 
-const { createNestedEntity } = require("../../../utils/utils");
+const { createNestedEntity } = require('../../../utils/utils');
 
-const handleError = require("../../../utils/utils").handleError;
-const getStrapiDataByMedusaId =
-  require("../../../utils/utils").getStrapiDataByMedusaId;
+const handleError = require('../../../utils/utils').handleError;
+const getStrapiDataByMedusaId = require('../../../utils/utils').getStrapiDataByMedusaId;
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-const uid = "api::region.region";
+const uid = 'api::region.region';
 
-const { createCoreService } = require("@strapi/strapi").factories;
+const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService(uid, ({ strapi }) => ({
-  async bootstrap(data) {
-    strapi.log.debug("Syncing Region....");
-    try {
-      if (data && data.length) {
-        for (const region of data) {
-          if (!region.medusa_id) {
-            region.medusa_id = region.id.toString();
-          }
+	async bootstrap(data) {
+		strapi.log.debug('Syncing Region....');
+		try {
+			if (data && data.length) {
+				for (const region of data) {
+					if (!region.medusa_id) {
+						region.medusa_id = region.id.toString();
+					}
 
-          const found = await getStrapiDataByMedusaId(
-            uid,
-            strapi,
-            region.medusa_id,
-            ["id", "medusa_id"]
-          );
+					const found = await getStrapiDataByMedusaId(uid, strapi, region.medusa_id, ['id', 'medusa_id']);
 
-          if (found) {
-            continue;
-          }
-          try {
-            const regionStrapi = await createNestedEntity(uid, strapi, region);
-            if (regionStrapi.id) {
-              strapi.log.info(
-                `Region created : ${regionStrapi.id} ${regionStrapi.name}`
-              );
-            }
-          } catch (e) {
-            strapi.log.error(`unable to sync region ${uid} ${region}`);
-          }
-        }
-      }
-      strapi.log.info("Regions synced");
-      return true;
-    } catch (e) {
-      handleError(strapi, e);
-      strapi.log.error(JSON.stringify(e));
-      return false;
-    }
-  },
-  /*
+					if (found) {
+						continue;
+					}
+					try {
+						const regionStrapi = await createNestedEntity(uid, strapi, region);
+						if (regionStrapi.id) {
+							strapi.log.info(`Region created : ${regionStrapi.id} ${regionStrapi.name}`);
+						}
+					} catch (e) {
+						strapi.log.error(`unable to sync region ${uid} ${region}`);
+					}
+				}
+			}
+			strapi.log.info('Regions synced');
+			return true;
+		} catch (e) {
+			handleError(strapi, e);
+			strapi.log.error(JSON.stringify(e));
+			return false;
+		}
+	},
+	/*
   // Many "X" to One "region"
   async handleManyToOneRelation(region) {
     try {
@@ -125,7 +117,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       })
     )[0];
   },*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+	async delete(strapi_id, params = {}) {
+		return await strapi.entityService.delete(uid, strapi_id, params);
+	},
 }));

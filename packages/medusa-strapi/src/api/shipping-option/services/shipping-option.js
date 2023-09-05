@@ -1,15 +1,14 @@
-"use strict";
+'use strict';
 
-const { createNestedEntity } = require("../../../utils/utils");
+const { createNestedEntity } = require('../../../utils/utils');
 
-const handleError = require("../../../utils/utils").handleError;
-const getStrapiDataByMedusaId =
-  require("../../../utils/utils").getStrapiDataByMedusaId;
+const handleError = require('../../../utils/utils').handleError;
+const getStrapiDataByMedusaId = require('../../../utils/utils').getStrapiDataByMedusaId;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-const uid = "api::shipping-option.shipping-option";
+const uid = 'api::shipping-option.shipping-option';
 /* async function createShippingOptionAfterDelegation(shippingOption, strapi) {
   const {
     region,
@@ -47,48 +46,44 @@ const uid = "api::shipping-option.shipping-option";
   return create.id;
 }*/
 
-const { createCoreService } = require("@strapi/strapi").factories;
+const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService(uid, ({ strapi }) => ({
-  async bootstrap(data) {
-    strapi.log.debug("Syncing Shipping Options....");
+	async bootstrap(data) {
+		strapi.log.debug('Syncing Shipping Options....');
 
-    try {
-      if (data && data.length) {
-        for (const shipping_option of data) {
-          if (!shipping_option.medusa_id) {
-            shipping_option.medusa_id = shipping_option.id.toString();
-            delete shipping_option.id;
-          }
+		try {
+			if (data && data.length) {
+				for (const shipping_option of data) {
+					if (!shipping_option.medusa_id) {
+						shipping_option.medusa_id = shipping_option.id.toString();
+						delete shipping_option.id;
+					}
 
-          const found = await getStrapiDataByMedusaId(
-            uid,
-            strapi,
-            shipping_option.medusa_id,
-            ["id", "medusa_id"]
-          );
+					const found = await getStrapiDataByMedusaId(uid, strapi, shipping_option.medusa_id, [
+						'id',
+						'medusa_id',
+					]);
 
-          if (found) {
-            continue;
-          }
-          try {
-            await createNestedEntity(uid, strapi, shipping_option);
-          } catch (e) {
-            strapi.log.error(
-              `unable to sync shipping option ${uid} ${shipping_option}`
-            );
-          }
-        }
-      }
-      strapi.log.info("Shipping Options Synced");
-      return true;
-    } catch (e) {
-      handleError(strapi, e);
-      return false;
-    }
-  },
+					if (found) {
+						continue;
+					}
+					try {
+						await createNestedEntity(uid, strapi, shipping_option);
+					} catch (e) {
+						strapi.log.error(`unable to sync shipping option ${uid} ${shipping_option}`);
+					}
+				}
+			}
+			strapi.log.info('Shipping Options Synced');
+			return true;
+		} catch (e) {
+			handleError(strapi, e);
+			return false;
+		}
+	},
 
-  /* async handleOneToManyRelation(shippingOptions, caller) {
+	/* async handleOneToManyRelation(shippingOptions, caller) {
     const shippingOptionsStrapiIds = [];
 
     try {
@@ -145,7 +140,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
     })
   )[0];
 },*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+	async delete(strapi_id, params = {}) {
+		return await strapi.entityService.delete(uid, strapi_id, params);
+	},
 }));
