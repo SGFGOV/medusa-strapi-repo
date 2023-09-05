@@ -520,6 +520,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	strapiPluginLog(logType: string, message: string, data?: Record<string, any>) {
+		data.password = data.password ? '######' : undefined;
 		switch (logType) {
 			case 'error':
 				this.logger.error(`${message},data: ${data ? JSON.stringify(data) : ''}`);
