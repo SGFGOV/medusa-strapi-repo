@@ -2147,6 +2147,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await axios(config);
 			if (result.status >= 200 && result.status < 300) {
+				if (this.enableAdminDataLogging && data?.password) {
+					data.password = '#####';
+				}
 				this.strapiPluginLog(
 					'info',
 					`Strapi Ok : ${method}, ${id ?? ''}` +
@@ -2162,6 +2165,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return result;
 		} catch (error) {
 			//  this.strapiPluginLog("error",'Admin endpoint error');
+			if (this.enableAdminDataLogging && data?.password) {
+				data.password = '#####';
+			}
 			this._axiosError(error, id, type, this.enableAdminDataLogging ? data : {}, method, basicConfig.url);
 		}
 	}
