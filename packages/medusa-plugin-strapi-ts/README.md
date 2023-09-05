@@ -82,8 +82,8 @@ const strapiOptions =
         STRAPI_SUPER_USER_EMAIL: The super user account email 
 
         STRAPI_PORT: number;
-        strapi_secret?: string; - a secret key to encrypt the jwt between medusa and strapi
-        strapi_public_key?: string; - a public key if the secret is not used
+        STRAPI_SECRET?: string; - a secret key to encrypt the jwt between medusa and strapi
+        STRAPI_PUBLIC_KEY?: string; - a public key if the secret is not used
 
 #### Advanced options	
         strapi_ignore_threshold: number; 
