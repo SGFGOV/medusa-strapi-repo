@@ -40,12 +40,13 @@ ADD ./src ./src
 
 RUN ls
 
-ENV NODE_ENV production
-
-RUN yarn install --ignore-platform --network-timeout 10000000 --force && yarn build
+ENV NODE_ENV development
 
 COPY ./public ./public
 COPY ./favicon.ico ./favicon.ico
+
+RUN yarn install --ignore-platform --network-timeout 10000000 --force && yarn build
+
 
 EXPOSE 1337
 

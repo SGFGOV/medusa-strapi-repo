@@ -95,8 +95,9 @@ export type AdminGetResult = {
 	};
 	status: number;
 };
-export type StrapiGetResult = {
-	data: any[];
+
+export type MedusaGetResult<T> = {
+	data: T;
 	meta?: any;
 
 	status: number;
@@ -112,6 +113,17 @@ export type StrapiResult = {
 	status: number;
 	query?: string;
 };
+
+export type StrapiGetResult =
+	| StrapiResult
+	| {
+			data: any[];
+			meta?: any;
+
+			status: number;
+			medusa_id?: string;
+			id?: number | string;
+	  };
 const IGNORE_THRESHOLD = 3; // seconds
 
 export interface StrapiQueryInterface {
@@ -225,7 +237,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 						const startUpResult = await this.startInterface();
 						startupStatus = startUpResult.status < 300;
 					} catch (error) {
-						this.logger.error(error.message);
+						this.strapiPluginLog('error', error.message);
 					}
 
 					if (!startupStatus) {
@@ -269,11 +281,14 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async startInterface(): Promise<any> {
 		try {
 			const result = await this.intializeServer();
-			this.logger.info('Successfully Bootstrapped the strapi server');
+			this.strapiPluginLog('info', 'Successfully Bootstrapped the strapi server');
 			return result;
 		} catch (e) {
-			this.logger.error(`Unable to  bootstrap the strapi server, 
-        please check configuration , ${e}`);
+			this.strapiPluginLog(
+				'error',
+				`Unable to  bootstrap the strapi server, 
+        please check configuration , ${e}`
+			);
 			throw e;
 		}
 	}
@@ -360,7 +375,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				meta: result?.meta,
 			};
 		} catch (e) {
-			this.logger.error(`Unable to retrieve ${params.strapiEntityType}, ${params.id ?? 'any'}`);
+			this.strapiPluginLog('error', `Unable to retrieve ${params.strapiEntityType}, ${params.id ?? 'any'}`);
 			return { data: undefined, status: 404, meta: undefined };
 		}
 	}
@@ -425,21 +440,21 @@ export class UpdateStrapiService extends TransactionBaseService {
 			 */
 			if (product) {
 				const productToSend = _.cloneDeep(product);
-				productToSend['product-type'] = _.cloneDeep(productToSend.type);
+				productToSend['product_type'] = _.cloneDeep(productToSend.type);
 				delete productToSend.type;
-				productToSend['product-tags'] = _.cloneDeep(productToSend.tags);
+				productToSend['product_tags'] = _.cloneDeep(productToSend.tags);
 				delete productToSend.tags;
-				productToSend['product-options'] = _.cloneDeep(productToSend.options);
+				productToSend['product_options'] = _.cloneDeep(productToSend.options);
 				delete productToSend.options;
-				productToSend['product-variants'] = _.cloneDeep(productToSend.variants);
+				productToSend['product_variants'] = _.cloneDeep(productToSend.variants);
 				delete productToSend.variants;
 
-				productToSend['product-collection'] = _.cloneDeep(productToSend.collection);
+				productToSend['product_collection'] = _.cloneDeep(productToSend.collection);
 				delete productToSend.collection;
 
-				productToSend['product-categories'] = _.cloneDeep(productToSend.categories);
+				productToSend['product_categories'] = _.cloneDeep(productToSend.categories);
 				delete productToSend.categories;
-
+				this.strapiPluginLog('info', `creating product in strapi - ${JSON.stringify(productToSend)}`);
 				const result = await this.createEntryInStrapi({
 					type: 'products',
 					authInterface,
@@ -486,7 +501,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					data: { ...collection, ...data },
 					method: 'put',
 				});
-				this.logger.info(`Successfully updated collection ${collection.id} in Strapi`, {
+				this.strapiPluginLog('info', `Successfully updated collection ${collection.id} in Strapi`, {
 					'response.status': response.status,
 					'response.data': response.data,
 					'entity.id': collection.id,
@@ -496,11 +511,32 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return { status: 400 };
 		} catch (error) {
-			this.logger.info('Failed to update product collection', {
+			this.strapiPluginLog('info', 'Failed to update product collection', {
 				'entity.id': data.id,
 				'error.message': error.message,
 			});
 			return { status: 400 };
+		}
+	}
+
+	strapiPluginLog(logType: string, message: string, data?: Record<string, any>) {
+		if (data && _.isObject(data)) {
+			data = _.cloneDeep(data);
+			if (data.password) data.password = data.password ? '######' : undefined;
+		}
+		switch (logType) {
+			case 'error':
+				this.logger.error(`${message},data: ${data ? JSON.stringify(data) : ''}`);
+				break;
+			case 'warn':
+				this.logger.warn(`${message},data: ${data ? JSON.stringify(data) : ''}`);
+				break;
+			case 'debug':
+				this.logger.debug(`${message},data: ${data ? JSON.stringify(data) : ''}`);
+				break;
+			default:
+				this.logger.info(`${message},data: ${data ? JSON.stringify(data) : ''}`);
+				break;
 		}
 	}
 
@@ -517,7 +553,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const collection = await this.productCollectionService.retrieve(collectionId);
 
-			// this.logger.info(variant)
+			// this.strapiPluginLog("info",variant)
 			if (collection) {
 				const collectionToSend = _.cloneDeep(collection);
 
@@ -531,7 +567,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return result;
 			}
 		} catch (error) {
-			this.logger.error(`unable to create collection ${collectionId} ${error.message}`);
+			this.strapiPluginLog('error', `unable to create collection ${collectionId} ${error.message}`);
 		}
 	}
 
@@ -566,7 +602,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					data: { ...category, ...data },
 					method: 'put',
 				});
-				this.logger.info(`Successfully updated category ${category.id} in Strapi`, {
+				this.strapiPluginLog('info', `Successfully updated category ${category.id} in Strapi`, {
 					'response.status': response.status,
 					'response.data': response.data,
 					'entity.id': category.id,
@@ -576,7 +612,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return { status: 400 };
 		} catch (error) {
-			this.logger.info('Failed to update product category', {
+			this.strapiPluginLog('info', 'Failed to update product category', {
 				'entity.id': data.id,
 				'error.message': error.message,
 			});
@@ -610,7 +646,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				return result;
 			}
 		} catch (error) {
-			this.logger.error(`unable to create category ${categoryId} ${error.message}`);
+			this.strapiPluginLog('error', `unable to create category ${categoryId} ${error.message}`);
 		}
 	}
 
@@ -631,10 +667,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 				relations: ['prices', 'options', 'product'],
 			});
 
-			// this.logger.info(variant)
+			// this.strapiPluginLog("info",variant)
 			if (variant) {
 				const variantToSend = _.cloneDeep(variant);
-				variantToSend['money-amount'] = _.cloneDeep(variantToSend.prices);
+				variantToSend['money_amount'] = _.cloneDeep(variantToSend.prices);
 				delete variantToSend.prices;
 
 				/* const variantOptionValues = variantToSend.options;
@@ -642,7 +678,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					this.convertOptionValueToMedusaReference(variantOption);
 				}*/
 
-				variantToSend['product-option-value'] = _.cloneDeep(variantToSend.options);
+				variantToSend['product_option_value'] = _.cloneDeep(variantToSend.options);
 
 				return await this.createEntryInStrapi({
 					type: 'product-variants',
@@ -662,10 +698,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		for (const key of keys) {
 			if (key != 'medusa_id' && key.includes('_id')) {
 				const medusaService = key.split('_')[0];
-				const api = `product-${medusaService}`;
+				const fieldName = `product_${medusaService}`;
 				const value = data[key];
 
-				data[api] = {
+				data[fieldName] = {
 					medusa_id: value,
 				};
 			}
@@ -678,7 +714,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			.then(() => true)
 			.catch(() => false);
 		if (!hasType) {
-			this.logger.info('Type "Regions" doesnt exist in Strapi');
+			this.strapiPluginLog('info', 'Type "Regions" doesnt exist in Strapi');
 			return { status: 400 };
 		}
 
@@ -689,7 +725,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				select: ['id', 'name', 'tax_rate', 'tax_code', 'metadata'],
 			});
 
-			// this.logger.info(region)
+			// this.strapiPluginLog("info",region)
 
 			return await this.createEntryInStrapi({
 				type: 'regions',
@@ -706,11 +742,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async updateRegionInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
 		const hasType = this.getType('regions', authInterface)
 			.then(() => {
-				// this.logger.info(res.data)
+				// this.strapiPluginLog("info",res.data)
 				return true;
 			})
 			.catch(() => {
-				// this.logger.info(error.response.status)
+				// this.strapiPluginLog("info",error.response.status)
 				return false;
 			});
 		if (!hasType) {
@@ -736,7 +772,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				relations: ['countries', 'payment_providers', 'fulfillment_providers', 'currency'],
 				select: ['id', 'name', 'tax_rate', 'tax_code', 'metadata'],
 			});
-			// this.logger.info(region)
+			// this.strapiPluginLog("info",region)
 
 			if (region) {
 				// Update entry in Strapi
@@ -746,7 +782,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					authInterface,
 					data: { ...region, ...data },
 				});
-				this.logger.info('Region Strapi Id - ', response);
+				this.strapiPluginLog('info', 'Region Strapi Id - ', response);
 				return response;
 			} else {
 				return { status: 400 };
@@ -838,7 +874,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 			for (const productId of data.productIds) {
 				const ignore = await this.shouldIgnore_(productId, 'strapi');
 				if (ignore) {
-					this.logger.info(
+					this.strapiPluginLog(
+						'info',
 						'Strapi has just added this product to collection which triggered this function. IGNORING... '
 					);
 					continue;
@@ -856,7 +893,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			return { status: 200 };
 		} catch (error) {
-			this.logger.error('Error updating products in collection', error);
+			this.strapiPluginLog('error', 'Error updating products in collection', error);
 			throw error;
 		}
 		return { status: 400 };
@@ -886,7 +923,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 			for (const productId of data.productIds) {
 				const ignore = await this.shouldIgnore_(productId, 'strapi');
 				if (ignore) {
-					this.logger.info(
+					this.strapiPluginLog(
+						'info',
 						'Strapi has just added this product to category which triggered this function. IGNORING... '
 					);
 					continue;
@@ -904,7 +942,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			return { status: 200 };
 		} catch (error) {
-			this.logger.error('Error updating products in category', error);
+			this.strapiPluginLog('error', 'Error updating products in category', error);
 			throw error;
 		}
 		return { status: 400 };
@@ -916,18 +954,18 @@ export class UpdateStrapiService extends TransactionBaseService {
 	): Promise<StrapiResult> {
 		const hasType = this.getType('products', authInterface)
 			.then(() => {
-				// this.logger.info(res.data)
+				// this.strapiPluginLog("info",res.data)
 				return true;
 			})
 			.catch(() => {
-				// this.logger.info(error.response.status)
+				// this.strapiPluginLog("info",error.response.status)
 				return false;
 			});
 		if (!hasType) {
 			return { status: 400 };
 		}
 
-		// this.logger.info(data)
+		// this.strapiPluginLog("info",data)
 		const updateFields = [
 			'variants',
 			'options',
@@ -957,7 +995,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const ignore = await this.shouldIgnore_(data.id, 'strapi');
 			if (ignore) {
-				this.logger.info(
+				this.strapiPluginLog(
+					'info',
 					'Strapi has just updated this product' + ' which triggered this function. IGNORING... '
 				);
 				return { status: 400 };
@@ -1007,7 +1046,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 							return result;
 						}
 					} catch (e) {
-						this.logger.error('unable to update product', 'e.message');
+						this.strapiPluginLog('error', 'unable to update product', e.message);
 						return { status: 400 };
 					}
 				} else {
@@ -1043,7 +1082,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const keysToUpdate = ['collection', 'categories', 'type', 'tags', 'variants', 'options'];
 		for (const key of keysToUpdate) {
 			if (key in dataToUpdate) {
-				dataToUpdate[`product-${key}`] = dataToUpdate[key];
+				dataToUpdate[`product_${key}`] = dataToUpdate[key];
 				delete dataToUpdate[key];
 			}
 		}
@@ -1063,8 +1102,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			result = await this.getType(type, authInterface);
 		} catch (error) {
-			this.logger.error(`${type} type not found in strapi`);
-			this.logger.error(JSON.stringify(error));
+			this.strapiPluginLog('error', `${type} type not found in strapi`);
+			this.strapiPluginLog('error', JSON.stringify(error));
 			result = undefined;
 		}
 		return result ? true : false;
@@ -1104,7 +1143,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				variant = await this.productVariantService_.retrieve(data.id, {
 					relations: ['prices', 'options'],
 				});
-				this.logger.info(JSON.stringify(variant));
+				this.strapiPluginLog('info', JSON.stringify(variant));
 				try {
 					if (variant) {
 						// Update entry in Strapi
@@ -1117,22 +1156,22 @@ export class UpdateStrapiService extends TransactionBaseService {
 							method: 'put',
 							query: data.query,
 						});
-						this.logger.info('Variant Strapi Id - ', response);
+						this.strapiPluginLog('info', 'Variant Strapi Id - ', response);
 						return response;
 					}
 				} catch (e) {
-					this.logger.info(JSON.stringify(variant));
+					this.strapiPluginLog('info', JSON.stringify(variant));
 				}
 			} catch (e) {
 				if (!variant) {
 					response = await this.createProductVariantInStrapi(data.id, authInterface);
-					this.logger.info('Created Variant Strapi Id - ', response);
+					this.strapiPluginLog('info', 'Created Variant Strapi Id - ', response);
 					return response;
 				}
 			}
 			return response;
 		} catch (error) {
-			this.logger.info('Failed to update product variant', data.id);
+			this.strapiPluginLog('info', 'Failed to update product variant', data.id);
 			return { status: 400 };
 		}
 	}
@@ -1141,7 +1180,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('product-metafields', authInterface)
 			.then(() => true)
 			.catch((err) => {
-				this.logger.info(err);
+				this.strapiPluginLog('info', err);
 				return false;
 			});
 		if (!hasType) {
@@ -1166,7 +1205,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('products', authInterface)
 			.then(() => true)
 			.catch((err) => {
-				this.logger.info(err);
+				this.strapiPluginLog('info', err);
 				return false;
 			});
 		if (!hasType) {
@@ -1192,7 +1231,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('product-types', authInterface)
 			.then(() => true)
 			.catch((err) => {
-				this.logger.info(err);
+				this.strapiPluginLog('info', err);
 				return false;
 			});
 		if (!hasType) {
@@ -1216,7 +1255,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => {
-				// this.logger.info(err)
+				// this.strapiPluginLog("info",err)
 				return false;
 			});
 		if (!hasType) {
@@ -1241,7 +1280,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => {
-				// this.logger.info(err)
+				// this.strapiPluginLog("info",err)
 				return false;
 			});
 		if (!hasType) {
@@ -1265,7 +1304,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => {
-				// this.logger.info(err)
+				// this.strapiPluginLog("info",err)
 				return false;
 			});
 		if (!hasType) {
@@ -1288,7 +1327,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => {
-				// this.logger.info(err)
+				// this.strapiPluginLog("info",err)
 				return false;
 			});
 		if (!hasType) {
@@ -1321,13 +1360,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const config = {
 			url: `${this.strapi_url}/_health`,
 		};
-		this.logger.info(`Checking Strapi Health `);
+		this.strapiPluginLog('info', `Checking Strapi Health `);
 		if (process.env.NODE_ENV == 'test' && this.selfTestMode) {
-			this.logger.info('running in self test mode');
+			this.strapiPluginLog('info', 'running in self test mode');
 			return true;
 		}
 
-		this.logger.debug(`check-url: ${config.url} `);
+		this.strapiPluginLog('debug', `check-url: ${config.url} `);
 
 		try {
 			let response = undefined;
@@ -1336,21 +1375,21 @@ export class UpdateStrapiService extends TransactionBaseService {
 				try {
 					response = await axios.head(config.url);
 				} catch (e) {
-					this.logger.error(`health check error ${e.message}`);
+					this.strapiPluginLog('error', `health check error ${e.message}`);
 				}
 				if (response && response?.status) {
 					break;
 				}
-				this.logger.error(`response from the server: ${response?.status ?? 'no-response'}`);
+				this.strapiPluginLog('error', `response from the server: ${response?.status ?? 'no-response'}`);
 				await sleep(3000);
 			}
 			UpdateStrapiService.lastHealthCheckTime = Date.now();
 			if (response) {
 				UpdateStrapiService.isHealthy = response.status < 300 ? true : false;
 				if (UpdateStrapiService.isHealthy) {
-					this.logger.info('Strapi is healthy');
+					this.strapiPluginLog('info', 'Strapi is healthy');
 				} else {
-					this.logger.info('Strapi is unhealthy');
+					this.strapiPluginLog('info', 'Strapi is unhealthy');
 				}
 			} else {
 				UpdateStrapiService.isHealthy = false;
@@ -1358,7 +1397,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			return UpdateStrapiService.isHealthy;
 		} catch (error) {
-			this.logger.error('Strapi health check failed');
+			this.strapiPluginLog('error', 'Strapi health check failed');
 			UpdateStrapiService.isHealthy = false;
 			return false;
 		}
@@ -1417,7 +1456,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			const registerResponse = await this.executeRegisterMedusaUser(authParams);
 			return registerResponse?.data;
 		} catch (error) {
-			this.logger.error('unable to register default user', (error as Error).message);
+			this.strapiPluginLog('error', 'unable to register default user', { error: (error as Error).message });
 		}
 	}
 	/**
@@ -1432,7 +1471,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			delete this.userTokens[this.defaultAuthInterface.email];
 			return response;
 		} catch (error) {
-			this.logger.error('unable to delete default user: ' + (error as Error).message);
+			this.strapiPluginLog('error', 'unable to delete default user: ' + (error as Error).message);
 		}
 	}
 
@@ -1451,7 +1490,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			authInterface,
 		});
 
-		this.logger.info('found user: ' + JSON.stringify(fetchedUser));
+		this.strapiPluginLog('info', 'found user: ' + JSON.stringify(fetchedUser));
 
 		const result = await this.executeStrapiSend({
 			method: 'delete',
@@ -1484,7 +1523,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/,
 				}
 			);
-			this.logger.info('successfully initiated two way syncs trapi<-->medusa');
+			this.strapiPluginLog('info', 'successfully initiated two way syncs trapi<-->medusa');
 			return result;
 		} catch (error) {
 			this._axiosError(
@@ -1507,14 +1546,14 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const jwt = (await this.strapiLoginSendDatalayer(authInterface)).token;
 			if (!jwt) {
-				this.logger.error('no jwt for this user: ' + email);
+				this.strapiPluginLog('error', 'no jwt for this user: ' + email);
 				return { status: 400 };
 			}
 			const result = await this.executeSync(jwt);
 			return { status: result.status };
 		} catch (error) {
 			// Handle error.
-			this.logger.info('Unable to sync An error occurred:', error);
+			this.strapiPluginLog('info', 'Unable to sync An error occurred:', error);
 			return { status: 400 };
 		}
 	}
@@ -1529,7 +1568,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			const diff = Math.floor(currentTime / 1000) - Math.floor((lastRetrived.time ?? 0) / 1000);
 			if (diff < strapiRetryDelay) {
-				this.logger.debug('using cached user credentials ');
+				this.strapiPluginLog('debug', 'using cached user credentials ');
 				return lastRetrived;
 			}
 		}
@@ -1541,11 +1580,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 					time: Date.now(),
 					user: res.data.user,
 				};
-				this.logger.info(`${email} ` + 'successfully logged in to Strapi');
+				this.strapiPluginLog('info', `${email} ` + 'successfully logged in to Strapi');
 				return this.userTokens[email.toLowerCase()];
 			}
 		} catch (error) {
-			this.logger.error(`${email} ` + 'error logging in in to Strapi');
+			this.strapiPluginLog('error', `${email} ` + 'error logging in in to Strapi');
 			this._axiosError(error);
 		}
 	}
@@ -1572,7 +1611,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				identifier: authInterface.email.toLowerCase(),
 				password: authInterface.password,
 			};
-			this.logger.info(`firing: ${this.strapi_url}/api/auth/local`);
+			this.strapiPluginLog('info', `firing: ${this.strapi_url}/api/auth/local`);
 			const response = await axios.post(`${this.strapi_url}/api/auth/local`, authData);
 			// } catch (e) {
 			/* if (e.response.status == 429) {
@@ -1581,7 +1620,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					while (i++ < 60000) {
 						if (timeOut) {
 							clearTimeout(timeOut);
-							this.logger.info(
+							this.strapiPluginLog("info",
 								`429 recieved backing off  seconds: ${timeOut} remaining`
 							);
 						}
@@ -1626,7 +1665,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			const result = await this.strapiSendDataLayer(command);
 			return result;
 		} catch (e) {
-			this.logger.error('Unable to process strapi entry request: ' + e.message);
+			this.strapiPluginLog('error', 'Unable to process strapi entry request: ' + e.message);
 			return { status: 400, data: undefined };
 		}
 	}
@@ -1665,7 +1704,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				}
 			}
 		} catch (e) {
-			this.logger.info(e.message);
+			this.strapiPluginLog('info', e.message);
 		}
 
 		const createResponse = await this.processStrapiEntry({
@@ -1705,7 +1744,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 			return putResult;
 		} catch (e) {
-			this.logger.error(
+			this.strapiPluginLog(
+				'error',
 				`entity doesn't exist in strapi :${e.message} : ${command.id}` + ' , update not possible'
 			);
 		}
@@ -1741,12 +1781,35 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return dataToSend;
 		}
 
-		if (key.includes('_')) {
-			dataToSend[key.replace('_', '-')] = dataToSend[key];
+		if (key.includes('-')) {
+			dataToSend[key.replace('-', '_')] = dataToSend[key];
 			delete dataToSend[key];
 		}
 
 		return dataToSend;
+	}
+	private translateRelationNamesToMedusaFormat(dataReceived: StrapiGetResult, key: string): StrapiGetResult {
+		let testObject = null;
+
+		if (_.isArray(dataReceived[key])) {
+			if (dataReceived[key].length > 0) {
+				testObject = dataReceived[key][0];
+			}
+		} else {
+			testObject = dataReceived[key];
+		}
+
+		// if the object is a not empty array or object without id or medusa_id, it's not relation
+		if (testObject && !this.isEntity(testObject)) {
+			return dataReceived;
+		}
+
+		if (key.includes('_') && key != 'meudsa_id') {
+			dataReceived[key.replace('_', '-')] = dataReceived[key];
+			delete dataReceived[key];
+		}
+
+		return dataReceived;
 	}
 
 	translateDataToStrapiFormat(dataToSend: StrapiEntity): StrapiEntity {
@@ -1775,6 +1838,32 @@ export class UpdateStrapiService extends TransactionBaseService {
 		return dataToSend as BaseEntity & { medusa_id?: string };
 	}
 
+	translateDataToMedusaFormat(dataReceived: StrapiGetResult): MedusaGetResult<typeof dataReceived.data> {
+		const keys = Object.keys(dataReceived);
+		const keysToIgnore = ['id', 'created_at', 'updated_at', 'deleted_at'];
+
+		for (const key of keys) {
+			if (_.isArray(dataReceived[key])) {
+				for (const element of dataReceived[key]) {
+					this.isEntity(element) && this.translateDataToStrapiFormat(element);
+				}
+				this.translateRelationNamesToMedusaFormat(dataReceived, key);
+			}
+
+			if (dataReceived[key] instanceof Object && this.isEntity(dataReceived[key])) {
+				this.translateDataToStrapiFormat(dataReceived[key]);
+				this.translateRelationNamesToMedusaFormat(dataReceived, key);
+			} else if (key == 'medusa_id') {
+				dataReceived['id'] = dataReceived[key];
+			}
+
+			if (this.isEntity(dataReceived) && keysToIgnore.includes(key)) {
+				delete dataReceived[key];
+			}
+		}
+		return dataReceived as MedusaGetResult<typeof dataReceived.data>;
+	}
+
 	/* using cached tokens */
 	/* @todo enable api based access */
 	/* automatically converts "id" into medusa "id"*/
@@ -1783,7 +1872,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 		const userCreds = await this.strapiLoginSendDatalayer(authInterface);
 		if (!userCreds) {
-			this.logger.error(`no such user:${authInterface.email}`);
+			this.strapiPluginLog('error', `no such user:${authInterface.email}`);
 			return { status: 400 };
 		}
 		let dataToSend: BaseEntity & { medusa_id?: string };
@@ -1817,7 +1906,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			if (e instanceof AxiosError) {
 				if (method.toLowerCase() == 'get' && e.response.status == 404) {
-					this.logger.info(`unable to find ${type} id: ${id ?? 'any'} ${e.message}`);
+					this.strapiPluginLog('info', `unable to find ${type} id: ${id ?? 'any'} ${e.message}`);
 					return {
 						id: undefined,
 						medusa_id: undefined,
@@ -1830,7 +1919,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				}
 			}
 
-			this.logger.error(e.message);
+			this.strapiPluginLog('error', e.message);
 			return { status: 400 };
 		}
 	}
@@ -1847,7 +1936,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			if (health) {
 				break;
 			}
-			this.logger.debug('Awaiting Strapi Health');
+			this.strapiPluginLog('debug', 'Awaiting Strapi Health');
 
 			await sleep(1000);
 		}
@@ -1891,7 +1980,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		/*} else {
 			endPoint = `${this.strapi_url}/api/${type}`;
 		}*/
-		this.logger.info(`User endpoint: ${endPoint}`);
+		this.strapiPluginLog('info', `User endpoint: ${endPoint}`);
 		const basicConfig = {
 			method: method,
 			url: endPoint,
@@ -1899,7 +1988,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				Authorization: `Bearer ${token}`,
 			},
 		};
-		this.logger.info(`${basicConfig.method} ${basicConfig.url}`);
+		this.strapiPluginLog('info', `${basicConfig.method} ${basicConfig.url}`);
 		const config = data
 			? {
 					...basicConfig,
@@ -1910,12 +1999,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 			  };
 
 		try {
-			this.logger.info(`User Endpoint firing: ${endPoint} method: ${method} query:${query}`);
+			this.strapiPluginLog('info', `User Endpoint firing: ${endPoint} method: ${method} query:${query}`);
 			const result = await axios(config);
-			this.logger.info(`User Endpoint fired: ${endPoint} method : ${method} query:${query}`);
+			this.strapiPluginLog('info', `User Endpoint fired: ${endPoint} method : ${method} query:${query}`);
 			// console.log("attempting action:"+result);
 			if (result.status >= 200 && result.status < 300) {
-				this.logger.info(
+				this.strapiPluginLog(
+					'info',
 					`Strapi Ok : method: ${method}, id:${id}, type:${type},` +
 						` data:${JSON.stringify(data)}, :status:${result.status} query:${query}`
 				);
@@ -1946,7 +2036,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 	_axiosError(error: AxiosError, id?: string, type?: string, data?: any, method?: Method, endPoint?: string): void {
 		if (endPoint) {
-			this.logger.info(`Endpoint Attempted: ${endPoint}`);
+			this.strapiPluginLog('info', `Endpoint Attempted: ${endPoint}`);
 		}
 		try {
 			if (error?.response?.status != 200) {
@@ -1980,8 +2070,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 	handleError(error: any, id?: string, type?: string, data?: any, method?: Method, endPoint?: string) {
 		const theError = `${(error as Error).message} `;
 		const responseData = _.isEmpty(data) ? {} : error?.response?.data ?? 'none';
-		data.password = data.password ? '#' : undefined;
-		this.logger.error(
+		if (data) data.password = data?.password ? '#' : undefined;
+		this.strapiPluginLog(
+			'error',
 			'Error occur while sending request to strapi:  ' +
 				JSON.stringify({
 					'error.message': theError,
@@ -1998,7 +2089,8 @@ export class UpdateStrapiService extends TransactionBaseService {
 		);
 
 		if (!endPoint?.includes('register-admin')) {
-			this.logger.error(
+			this.strapiPluginLog(
+				'error',
 				`Error while trying ${method}` +
 					`,${type ?? ''} -  ${id ? `id: ${id}` : ''}  ,
                 }  entry in strapi ${theError}`
@@ -2016,7 +2108,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	): Promise<AxiosResponse | undefined> {
 		const result = await this.executeLoginAsStrapiSuperAdmin();
 		if (!result) {
-			this.logger.error('No user Bearer token, check axios request');
+			this.strapiPluginLog('error', 'No user Bearer token, check axios request');
 			return;
 		}
 
@@ -2043,7 +2135,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			url: finalUrl,
 			headers,
 		};
-		this.logger.info(`Admin Endpoint fired: ${basicConfig.url}`);
+		this.strapiPluginLog('info', `Admin Endpoint fired: ${basicConfig.url}`);
 		const config = data
 			? {
 					...basicConfig,
@@ -2055,20 +2147,27 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await axios(config);
 			if (result.status >= 200 && result.status < 300) {
-				this.logger.info(
+				if (this.enableAdminDataLogging && data?.password) {
+					data.password = '#####';
+				}
+				this.strapiPluginLog(
+					'info',
 					`Strapi Ok : ${method}, ${id ?? ''}` +
 						`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${
 							result.status
 						}`
 				);
-				this.logger.info(`Strapi Data : ${JSON.stringify(result.data)}`);
+				this.strapiPluginLog('info', `Strapi Data : ${JSON.stringify(result.data)}`);
 			} else {
-				this.logger.info('Admin endpoint error recieved', result);
+				this.strapiPluginLog('info', 'Admin endpoint error recieved', result);
 			}
 
 			return result;
 		} catch (error) {
-			//  this.logger.error('Admin endpoint error');
+			//  this.strapiPluginLog("error",'Admin endpoint error');
+			if (this.enableAdminDataLogging && data?.password) {
+				data.password = '#####';
+			}
 			this._axiosError(error, id, type, this.enableAdminDataLogging ? data : {}, method, basicConfig.url);
 		}
 	}
@@ -2080,7 +2179,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			await this.executeLoginAsStrapiSuperAdmin();
 			if (!this.selfTestMode) await this.waitForHealth();
 		} catch (e) {
-			if (this.selfTestMode) this.logger.warn('running in self testmode');
+			if (this.selfTestMode) this.strapiPluginLog('warn', 'running in self testmode');
 		}
 
 		try {
@@ -2091,7 +2190,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				timeout: 3600e3 /** temp workaround to stop retransmissions over 900ms*/,
 			});
 		} catch (e) {
-			this.logger.error('user registration error');
+			this.strapiPluginLog('error', 'user registration error');
 			this._axiosError(e);
 		}
 
@@ -2107,7 +2206,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			const result = await this.executeStrapiAdminSend(method, type, id, action, data, query);
 			return { data: result.data, status: result.status };
 		} catch (e) {
-			this.logger.error(e.message);
+			this.strapiPluginLog('error', e.message);
 			return { data: undefined, status: 400 };
 		}
 	}
@@ -2120,7 +2219,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 			const result = await this.executeStrapiAdminSend('post', 'register-admin', undefined, undefined, auth);
 			return result.data?.user;
 		} catch (e) {
-			this.logger.warn(`unable to register super user,` + ` super user may already registered, ${e.message}`);
+			this.strapiPluginLog(
+				'warn',
+				`unable to register super user,` + ` super user may already registered, ${e.message}`
+			);
 		}
 	}
 	async registerAdminUserInStrapi(
@@ -2227,7 +2329,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	fetchUserToken(email: string = this.defaultUserEmail): string {
 		const token = this.userTokens[email].token;
 		if (token) {
-			this.logger.info('fetched token for: ' + email);
+			this.strapiPluginLog('info', 'fetched token for: ' + email);
 		}
 		return token;
 	}
@@ -2258,9 +2360,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 				},
 			});
 
-			this.logger.info('Logged In   Admin ' + auth.email + ' with strapi');
-			this.logger.info('Admin profile', response.data.data.user);
-			this.logger.info('Admin token', response.data.data.token);
+			this.strapiPluginLog('info', 'Logged In   Admin ' + auth.email + ' with strapi');
+			this.strapiPluginLog('info', 'Admin profile', response.data.data.user);
+			this.strapiPluginLog('info', 'Admin token', response.data.data.token);
 
 			this.strapiSuperAdminAuthToken = response.data.data.token;
 			this.userAdminProfile = response.data.data.user;
@@ -2272,7 +2374,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			};
 		} catch (error) {
 			// Handle error.
-			this.logger.info('An error occurred' + ' while logging into admin:');
+			this.strapiPluginLog('info', 'An error occurred' + ' while logging into admin:');
 			this._axiosError(error, undefined, undefined, undefined, undefined, `${this.strapi_url}/admin/login`);
 
 			throw error;
@@ -2289,14 +2391,17 @@ export class UpdateStrapiService extends TransactionBaseService {
 					password: this.options_.strapi_default_user.password
 				});*/
 				if (response.status < 300) {
-					this.logger.info('medusa - strap -bootstrap confirmed ..please wait till sync completes');
+					this.strapiPluginLog(
+						'info',
+						'medusa - strap -bootstrap confirmed ..please wait till sync completes'
+					);
 					return response;
 				}
 			} else {
-				this.logger.error('unable to login default user');
+				this.strapiPluginLog('error', 'unable to login default user');
 			}
 		} else {
-			this.logger.error('unable to connect as super user');
+			this.strapiPluginLog('error', 'unable to connect as super user');
 		}
 	}
 	async registerOrLoginAdmin(): Promise<{
@@ -2308,7 +2413,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			await this.registerSuperAdminUserInStrapi();
 		} catch (e) {
-			this.logger.info('super admin already registered', JSON.stringify(e));
+			this.strapiPluginLog('info', 'super admin already registered', e);
 		}
 		return await this.executeLoginAsStrapiSuperAdmin();
 	}
@@ -2318,10 +2423,10 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			userCrds = await this.strapiLoginSendDatalayer(this.defaultAuthInterface);
 
-			this.logger.info('Default Medusa User Logged In');
+			this.strapiPluginLog('info', 'Default Medusa User Logged In');
 		} catch (error) {
 			if (!userCrds) {
-				this.logger.error('Unable to login default medusa user: ' + (error as Error).message);
+				this.strapiPluginLog('error', 'Unable to login default medusa user: ' + (error as Error).message);
 			}
 		}
 		return userCrds;
@@ -2330,9 +2435,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 	async registerOrLoginDefaultMedusaUser(): Promise<UserCreds> {
 		try {
 			await this.registerDefaultMedusaUser();
-			this.logger.info('registered default user');
+			this.strapiPluginLog('info', 'registered default user');
 		} catch (e) {
-			this.logger.info('default user already registered', JSON.stringify(e));
+			this.strapiPluginLog('info', 'default user already registered', e);
 		}
 		return await this.loginAsDefaultMedusaUser();
 	}
@@ -2348,7 +2453,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					});
 				});
 			} catch (e) {
-				this.logger.error(JSON.stringify(e));
+				this.strapiPluginLog('error', JSON.stringify(e));
 			}
 		}
 		return found;

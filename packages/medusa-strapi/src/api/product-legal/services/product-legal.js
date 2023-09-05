@@ -1,14 +1,15 @@
-"use strict";
-const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
+'use strict';
+const handleError = require('../../../utils/utils').handleError;
+const getFields = require('../../../utils/utils').getFields;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
 
-const { createCoreService } = require("@strapi/strapi").factories;
-const uid = "api::product-legal.product-legal";
-module.exports = createCoreService(uid, ({ strapi }) => ({ /*
+const { createCoreService } = require('@strapi/strapi').factories;
+const uid = 'api::product-legal.product-legal';
+module.exports = createCoreService(uid, ({ strapi }) => ({
+	/*
   async handleManyToOneRelation(product_legal) {
     try {
       if (!product_legal.medusa_id) {
@@ -52,7 +53,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({ /*
       })
     )[0];
   },*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+	async delete(strapi_id, params = {}) {
+		return await strapi.entityService.delete(uid, strapi_id, params);
+	},
 }));

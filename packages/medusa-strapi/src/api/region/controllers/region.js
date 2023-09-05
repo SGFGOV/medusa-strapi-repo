@@ -1,13 +1,12 @@
-"use strict";
-const handleError = require("../../../utils/utils").handleError;
-const controllerfindOne = require("../../../utils/utils").controllerfindOne;
+'use strict';
+const handleError = require('../../../utils/utils').handleError;
+const controllerfindOne = require('../../../utils/utils').controllerfindOne;
 
 /**
  *  region controller
  */
-const createMedusaDefaultController =
-  require("../../../utils/utils").createMedusaDefaultController;
-const uid = "api::region.region";
+const createMedusaDefaultController = require('../../../utils/utils').createMedusaDefaultController;
+const uid = 'api::region.region';
 module.exports = createMedusaDefaultController(uid);
 
 /*

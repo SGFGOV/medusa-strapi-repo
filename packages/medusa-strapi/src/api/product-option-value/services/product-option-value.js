@@ -1,14 +1,15 @@
-"use strict";
-const handleError = require("../../../utils/utils").handleError;
-const getFields = require("../../../utils/utils").getFields;
+'use strict';
+const handleError = require('../../../utils/utils').handleError;
+const getFields = require('../../../utils/utils').getFields;
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
 
-const { createCoreService } = require("@strapi/strapi").factories;
-const uid = "api::product-option-value.product-option-value";
-module.exports = createCoreService(uid, ({ strapi }) => ({ /*
+const { createCoreService } = require('@strapi/strapi').factories;
+const uid = 'api::product-option-value.product-option-value';
+module.exports = createCoreService(uid, ({ strapi }) => ({
+	/*
   async handleOneToManyRelation(product_option_values, forceUpdate) {
     const productOptionValuesStrapiIds = [];
     if (product_option_values && product_option_values.length) {
@@ -72,7 +73,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({ /*
     })
   )[0];
 },*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+	async delete(strapi_id, params = {}) {
+		return await strapi.entityService.delete(uid, strapi_id, params);
+	},
 }));
