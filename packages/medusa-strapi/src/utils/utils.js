@@ -107,10 +107,30 @@ async function controllerfindOne(ctx, strapi, uid) {
 
 async function controllerfindMany(ctx, strapi, uid) {
 	try {
-		const entity = await strapi.entityService.findMany(uid, ctx.query);
+		if (!ctx.query.fields?.includes('medusa_id')) {
+			ctx.query = {
+				...ctx.query,
+				fields: ctx.query.fields ? ctx.query.fields.push('medusa_id') : ['medusa_id', 'id'],
+			};
+		}
+		if (!ctx.query.pagination) {
+			ctx.query = {
+				...ctx.query,
+
+				page: 1,
+				pageSize: 25,
+				withCount: true,
+			};
+		} else {
+			ctx.query = {
+				...ctx.query,
+				...ctx.query.pagination,
+			};
+		}
+		const entity = await strapi.entityService.findPage(uid, ctx.query);
 		strapi.log.debug(`requested  ${uid} query: ${JSON.stringify(ctx.query)}`);
-		if (entity && entity.length > 0) {
-			return (ctx.body = { data: entity });
+		if (entity && entity.results.length > 0) {
+			return (ctx.body = { data: entity.results, meta: entity.pagination });
 		}
 		return ctx.notFound(ctx);
 	} catch (e) {

@@ -581,9 +581,20 @@ describe('StrapiService Tests', () => {
 			it('clean up products ', async () => {
 				if (!isMockEnabled()) {
 					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
-					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists-3') }, defaultAuthInterface);
-					expect(result.status).toBe(200);
 					let falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'products',
+						authInterface: defaultAuthInterface,
+						id: IdMap.getId('exists-3'),
+					});
+					if (falseResult.status == 200) {
+						result = await service.deleteProductInStrapi(
+							{ id: IdMap.getId('exists-3') },
+							defaultAuthInterface
+						);
+						expect(result.status).toBe(200);
+					}
+
+					falseResult = await service.getEntitiesFromStrapi({
 						strapiEntityType: 'products',
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
@@ -607,17 +618,26 @@ describe('StrapiService Tests', () => {
 						id: result.data?.medusa_id,
 					});
 
-					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists-2') }, defaultAuthInterface);
+					//result = await service.deleteProductInStrapi({ id: IdMap.getId('exists-2') }, defaultAuthInterface);
+					falseResult = await service.getEntitiesFromStrapi({
+						strapiEntityType: 'products',
+						authInterface: defaultAuthInterface,
+						id: IdMap.getId('exists-2'),
+					});
+					if (falseResult.status == 200) {
+						result = await service.deleteProductInStrapi(
+							{ id: IdMap.getId('exists-2') },
+							defaultAuthInterface
+						);
+						expect(result.status).toBe(200);
+					}
 					expect(result.status).toBe(200);
 					falseResult = await service.getEntitiesFromStrapi({
 						strapiEntityType: 'products',
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
 					});
-					expect(falseResult.status).toBe(200);
-					expect(
-						falseResult.data?.filter((d: { id: any }) => d.id == result.data.deletedData.id).length
-					).toBe(0);
+					expect(falseResult.status).toBe(404);
 				} else {
 					console.warn('disabled when not connected to test server');
 					expect(true).toBe(true);
@@ -678,7 +698,7 @@ describe('StrapiService Tests', () => {
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
 					});
-					expect(falseResult.status).toBe(200);
+					expect(falseResult.status).toBe(404);
 					expect(falseResult.data?.length).toBe(1);
 				} else {
 					console.warn('disabled when not connected to test server');
@@ -755,6 +775,9 @@ describe('region checks', () => {
 					id: IdMap.getId('exists'),
 					authInterface: defaultAuthInterface,
 					strapiEntityType: 'regions',
+					urlQuery: {
+						fields: ['name', 'id', 'medusa_id'],
+					},
 				})) as StrapiResult;
 				expect(result).toMatchObject({
 					data: [{ name: 'new-name', medusa_id: IdMap.getId('exists') }],
