@@ -22,7 +22,6 @@ module.exports = {
 			const respondViaPlugin = strapi.plugins['strapi-plugin-medusajs'];
 			const theService = respondViaPlugin.service('setup');
 			return await theService.sendResult('region', result.result);
-			4;
 		} /* await axios.post(
       `${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"

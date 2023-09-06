@@ -1,31 +1,27 @@
-"use strict";
+'use strict';
 
-const { createNestedEntity } = require("../../../utils/utils");
+const { createNestedEntity } = require('../../../utils/utils');
 
-const handleError = require("../../../utils/utils").handleError;
-const getStrapiDataByMedusaId =
-  require("../../../utils/utils").getStrapiDataByMedusaId;
+const handleError = require('../../../utils/utils').handleError;
+const getStrapiDataByMedusaId = require('../../../utils/utils').getStrapiDataByMedusaId;
 
 /*
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
-const uid = "api::product.product";
+const uid = 'api::product.product';
 
-const { createCoreService } = require("@strapi/strapi").factories;
+const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService(uid, ({ strapi }) => ({
-  async syncProduct(product) {
-    if (!product.medusa_id) {
-      product.medusa_id = product.id.toString();
-      delete product.id;
-    }
+	async syncProduct(product) {
+		if (!product.medusa_id) {
+			product.medusa_id = product.id.toString();
+			delete product.id;
+		}
 
-    const medusa_id = product.medusa_id;
-    const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, [
-      "id",
-      "medusa_id",
-    ]);
+		const medusa_id = product.medusa_id;
+		const found = await getStrapiDataByMedusaId(uid, strapi, medusa_id, ['id', 'medusa_id']);
 
     if (found) {
       return found.id;
@@ -114,7 +110,7 @@ module.exports = createCoreService(uid, ({ strapi }) => ({
       })
     )[0];
   },*/
-  async delete(strapi_id, params = {}) {
-    return await strapi.entityService.delete(uid, strapi_id, params);
-  },
+	async delete(strapi_id, params = {}) {
+		return await strapi.entityService.delete(uid, strapi_id, params);
+	},
 }));

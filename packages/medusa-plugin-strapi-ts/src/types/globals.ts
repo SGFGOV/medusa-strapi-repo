@@ -87,4 +87,6 @@ export interface GetFromStrapiParams {
 	id?: string;
 	authInterface: AuthInterface;
 	strapiEntityType: string;
+	urlParams?: Record<string, string>;
+	urlQuery?: Record<string, unknown>;
 }

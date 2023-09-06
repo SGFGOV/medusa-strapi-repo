@@ -122,3 +122,5 @@ jest-html-reporters-attach/
 !babel.config.js
 !.env.test
 !!src/**/*
+
+**/*.db-journal

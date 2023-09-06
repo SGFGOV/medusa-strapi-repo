@@ -6,11 +6,18 @@ import cors from 'cors';
 import utils from '../../middleware/utils';
 import { StrapiMedusaPluginOptions } from '../../../types/globals';
 import strapiSignal from '../../controllers/hooks/strapi-signal';
+import rateLimiter from 'express-rate-limit';
 
+const limiter = rateLimiter({
+	max: 5,
+	windowMs: 10000, // 10 seconds
+	message: "You can't make any more requests at the moment. Try again later",
+});
 const hooksRouter = Router();
 export default (app: Router, options: StrapiMedusaPluginOptions) => {
 	app.use('/strapi/hooks', hooksRouter);
 	hooksRouter.use(utils);
+	hooksRouter.use(limiter);
 	const strapiUrl = `${options.strapi_protocol}://${options.strapi_host}:${options.strapi_port}`;
 
 	// Authenticated routes

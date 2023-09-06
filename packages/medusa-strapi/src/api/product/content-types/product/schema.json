@@ -49,7 +49,7 @@
         "published",
         "rejected"
       ],
-      "default": "draft",
+      "default": "published",
       "required": true
     },
     "thumbnail": {
@@ -90,13 +90,13 @@
     "metafields": {
       "type": "json"
     },
-    "product-variants": {
+    "product_variants": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-variant.product-variant",
       "mappedBy": "product"
     },
-    "product-options": {
+    "product_options": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-option.product-option",
@@ -108,49 +108,49 @@
       "target": "api::image.image",
       "mappedBy": "product"
     },
-    "product-collection": {
+    "product_collection": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product-collection.product-collection",
       "inversedBy": "products"
     },
-    "product-categories": {
+    "product_categories": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::product-category.product-category",
       "mappedBy": "products"
     },
-    "product-type": {
+    "product_type": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product-type.product-type",
       "inversedBy": "products"
     },
-    "product-tags": {
+    "product_tags": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::product-tag.product-tag",
       "mappedBy": "products"
     },
-    "product-medias": {
+    "product_medias": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-media.product-media",
       "mappedBy": "product"
     },
-    "product-metafield": {
+    "product_metafield": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::product-metafield.product-metafield",
       "inversedBy": "product"
     },
-    "product-documents": {
+    "product_documents": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product-document.product-document",
       "mappedBy": "product"
     },
-    "product-legal": {
+    "product_legal": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::product-legal.product-legal",

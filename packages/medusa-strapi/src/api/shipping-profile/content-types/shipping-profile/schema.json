@@ -38,11 +38,11 @@
     "metadata": {
       "type": "json"
     },
-    "shipping-options": {
+    "shipping_options": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::shipping-option.shipping-option",
-      "mappedBy": "shipping-profiles"
+      "mappedBy": "shipping_profiles"
     }
   }
 }

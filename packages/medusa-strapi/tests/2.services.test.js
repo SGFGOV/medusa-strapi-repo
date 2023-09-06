@@ -46,8 +46,9 @@ function clearRequireCache() {
 	});
 }
 
-function getSchemaFromApi(strapi, apiName) {
+function getSchemaFromApi(strapi, apiNameOrig) {
 	const PATH = `${__dirname}/../src/api`;
+	const apiName = apiNameOrig.replace('_', '-');
 	for (const key of Object.keys(strapi.contentTypes)) {
 		if (
 			strapi.contentTypes[key].info.pluralName == apiName ||
@@ -110,7 +111,10 @@ describe('Testing strapi ', () => {
 							const entityCreated = await service.create({ data: data });
 							expect(entityCreated.id).toBeDefined();
 							let entityRead = await service.findOne(entityCreated.id);
+							let entityReadAll = await service.find({ medusa_id: entityCreated.id });
 							expect(entityRead.id).toBeDefined();
+							expect(entityReadAll.results.length > 0).toBeTruthy();
+
 							const entityUpdated = await service.update(entityCreated.id, {
 								data: data,
 							});
@@ -120,6 +124,8 @@ describe('Testing strapi ', () => {
 							expect(entityDeleted.id).toBeDefined();
 							try {
 								entityRead = await service.findOne(entityCreated.id);
+								let entityReadAll = await service.find({ medusa_id: entityCreated.id });
+								expect(entityReadAll.results.length == 0).toBeTruthy();
 							} catch (e) {
 								entityRead = undefined;
 							}

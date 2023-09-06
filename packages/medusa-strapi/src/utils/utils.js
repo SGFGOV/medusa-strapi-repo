@@ -105,8 +105,22 @@ async function controllerfindOne(ctx, strapi, uid) {
 		handleError(strapi, e);
 		return ctx.internalServerError(ctx);
 	}
-	// const entity = await strapi.service("api::entity-service.entity-service").findOne({ region_id: medusaId });
 }
+
+async function controllerfindMany(ctx, strapi, uid) {
+	try {
+		const entity = await strapi.entityService.findMany(uid, ctx.query);
+		strapi.log.debug(`requested  ${uid} query: ${JSON.stringify(ctx.query)}`);
+		if (entity && entity.length > 0) {
+			return (ctx.body = { data: entity });
+		}
+		return ctx.notFound(ctx);
+	} catch (e) {
+		handleError(strapi, e);
+		return ctx.internalServerError(ctx);
+	}
+}
+
 async function uploadFile(strapi, uid, fileData, processedData, fieldName = 'files') {
 	const service = strapi.service('plugin::upload.upload');
 	const id = processedData.id;
@@ -233,7 +247,8 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, cal
 				if (!strapiId) {
 					strapi.log.debug(`${uid} creating, ${JSON.stringify(dataReceived)}`);
 					const newEntity = await strapi.entityService.create(uid, {
-						data: { ...dataReceived, updateHash: objectHash(dataReceived) },
+						data:  { ...dataReceived, updateHash: objectHash(dataReceived) },
+						populate: '*',
 					});
 					dataReceived['id'] = newEntity.id;
 				} else {
@@ -278,10 +293,6 @@ async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
 			filters[field] = dataReceived[field];
 
 			// we're not iterating over empty fields as they're not unique
-
-			if (dataReceived[field] === null || dataReceived[field] === '') {
-				continue;
-			}
 
 			if (dataReceived[field] === null || dataReceived[field] === '') {
 				continue;
@@ -424,7 +435,7 @@ async function controllerDelete(ctx, strapi, uid) {
 		if (!entityId) {
 			return ctx.notFound(ctx);
 		}
-		const result = await strapi.services[uid].delete(entityId);
+		const result = await strapi.services[uid].delete(entityId, { populate: '*' });
 		if (result) {
 			return (ctx.body = { deletedData: result });
 		}
@@ -437,7 +448,7 @@ async function controllerDelete(ctx, strapi, uid) {
 async function controllerUpdate(ctx, strapi, uid) {
 	const { id: medusa_id } = ctx.params;
 	delete ctx.request.body?.data?.id;
-	const data = ctx.request.body.data;
+	const data = ctx.request.body.data || ctx.request.body;
 
 	strapi.log.info(`Medusa is updating entity ${medusa_id} of type ${uid} in Strapi`, { data: data });
 
@@ -474,7 +485,7 @@ function createMedusaDefaultController(uid) {
 	return createCoreController(uid, {
 		async find(ctx) {
 			// eslint-disable-next-line no-undef
-			return await strapi.entityService.findMany(uid, { fields: ['id', 'medusa_id'] });
+			return await controllerfindMany(ctx, strapi, uid);
 		},
 
 		async findOne(ctx) {

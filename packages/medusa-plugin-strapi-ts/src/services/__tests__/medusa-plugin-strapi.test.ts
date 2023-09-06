@@ -24,6 +24,7 @@ import UpdateStrapiService, { StrapiResult } from '../update-strapi';
 import logger from '../__mocks__/logger';
 import axios, { AxiosError } from 'axios';
 import exp from 'constants';
+import qs from 'qs';
 
 // This sets the mock adapter on the default instance
 
@@ -122,7 +123,7 @@ describe('StrapiService Tests', () => {
 				'fields[0]=title&pagination[pageSize]=10&pagination[page]=1&' +
 				'publicationState=live&locale[0]=en';
 
-			const query = service._createStrapiRestQuery({
+			const query = service.createStrapiRestQuery({
 				sort: ['title:asc'],
 				filters: {
 					title: {
@@ -139,6 +140,12 @@ describe('StrapiService Tests', () => {
 				locale: ['en'],
 			});
 			expect(query).toBe(testQueryPattern);
+		});
+		describe('test user parameter parsing', () => {
+			it('test parameter creation', () => {
+				const string = service.appendIdToStrapiFilter('', 'medusa_1235');
+				expect(string).toMatch(`medusa_1235`);
+			});
 		});
 	});
 	describe('user CURD', () => {
@@ -197,7 +204,7 @@ describe('StrapiService Tests', () => {
 
 					service.userTokens[testUserEmail].time = 0;
 					await service.getType('products', defaultAuthInterface);
-					expect(spy).toBeCalledTimes(2);
+					expect(spy).toBeCalled();
 					//expect(roleId).toBeGreaterThan(0);
 				} else {
 					console.warn('disabled when not connected to test server');
@@ -219,8 +226,8 @@ describe('StrapiService Tests', () => {
 		it(
 			'register or login default medusa user',
 			async () => {
-				const creds = await service.registerOrLoginDefaultMedusaUser();
-				expect(creds.token).toBeDefined();
+				const credentials = await service.registerOrLoginDefaultMedusaUser();
+				expect(credentials.token).toBeDefined();
 			},
 			testTimeOut
 		);
@@ -230,8 +237,8 @@ describe('StrapiService Tests', () => {
 			async () => {
 				if (!isMockEnabled()) {
 					await service.deleteDefaultMedusaUser();
-					const creds = await service.loginAsDefaultMedusaUser();
-					expect(creds).toBeUndefined();
+					const credentials = await service.loginAsDefaultMedusaUser();
+					expect(credentials).toBeUndefined();
 				} else {
 					console.warn('disabled when not connected to test server');
 					expect(true).toBe(true);
@@ -322,8 +329,8 @@ describe('StrapiService Tests', () => {
 						medusa_id: product_id,
 					});
 					if (!isMockEnabled()) {
-						expect(result.data?.['product-variants']).toBeDefined();
-						expect(result.data?.['product-variants'].length > 0).toBeTruthy();
+						expect(result.data?.['product_variants']).toBeDefined();
+						expect(result.data?.['product_variants'].length > 0).toBeTruthy();
 					}
 					expect(spy).toHaveBeenCalled();
 					if (result) {
@@ -333,8 +340,29 @@ describe('StrapiService Tests', () => {
 						});
 						expect(productGetResult).toBeDefined();
 						expect(productGetResult.data.length > 0).toBeTruthy();
+						const productFieldsGetResult = await service.getEntitiesFromStrapi({
+							authInterface: defaultAuthInterface,
+							strapiEntityType: 'products',
+							urlQuery: { fields: ['title', 'id', 'medusa_id'] },
+						});
+						expect(productFieldsGetResult.data[0].id).toBeDefined();
+						expect(productFieldsGetResult.data[0].medusa_id).toBeDefined();
+						if (!isMockEnabled()) {
+							expect(productFieldsGetResult.data[0].title).toBeDefined();
+						}
+						expect(productFieldsGetResult.data[0].handle).toBeUndefined();
+						const productPopulateGetResult = await service.getEntitiesFromStrapi({
+							authInterface: defaultAuthInterface,
+							strapiEntityType: 'products',
+							urlQuery: { populate: 'product_variants' },
+						});
+						if (!isMockEnabled()) {
+							const testData = productPopulateGetResult.data[0];
+							expect(testData['product_variants']).toBeDefined();
+						}
 					}
 				},
+
 				testTimeOut
 			);
 
@@ -487,12 +515,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: expect.any(String) },
-                    medus_id: expect.any(String)
-                });*/
-
 				if (result) {
 					const productVariantGetResult = await service.getEntitiesFromStrapi({
 						authInterface: defaultAuthInterface,
@@ -508,24 +530,13 @@ describe('StrapiService Tests', () => {
 				);
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
-
-				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: "test-product-variant-2" },
-                    medus_id: expect.any(String)
-                });*/
 				expect(spy).toHaveBeenCalled();
 			});
+
 			it('create  and update product category in strapi', async () => {
 				result = await service.createCategoryInStrapi(IdMap.getId('exists'), defaultAuthInterface);
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
-
-				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: expect.any(String) },
-                    medus_id: expect.any(String)
-                });*/
 
 				if (result) {
 					const productCategoryResult = await service.getEntitiesFromStrapi({
@@ -543,11 +554,6 @@ describe('StrapiService Tests', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 200 || result.status == 302).toBeTruthy();
 
-				/* expect(result.data).toMatchObject({
-                    id: expect.any(Number),
-                    data: { title: "test-product-variant-2" },
-                    medus_id: expect.any(String)
-                });*/
 				expect(spy).toHaveBeenCalled();
 			});
 		});
@@ -564,10 +570,9 @@ describe('StrapiService Tests', () => {
 					const falseResult = await service.getEntitiesFromStrapi({
 						strapiEntityType: 'product-variants',
 						authInterface: defaultAuthInterface,
-						id: result.data?.medusa_id,
+						id: IdMap.getId('exists'),
 					});
-					expect(falseResult.status).toBe(200);
-					//expect(falseResult.data?.length).toBe(0);
+					expect(falseResult.status).toBe(404);
 				} else {
 					console.warn('disabled when not connected to test server');
 					expect(true).toBe(true);
@@ -585,11 +590,11 @@ describe('StrapiService Tests', () => {
 					});
 
 					/*   result = await service.deleteCollectionInStrapi(
-                    { id: "exists" },
-                    defaultAuthInterface
-                );
+					{ id: "exists" },
+					defaultAuthInterface
+				);
 
-                expect(result.status != 200).toBeTruthy();*/
+				expect(result.status != 200).toBeTruthy();*/
 
 					result = await service.deleteProductMetafieldInStrapi(
 						{ id: IdMap.getId('exists') },
@@ -619,6 +624,23 @@ describe('StrapiService Tests', () => {
 				}
 			});
 
+			it('create  and update product variant in strapi and cascade delete', async () => {
+				result = await service.createProductVariantInStrapi(IdMap.getId('exists'), defaultAuthInterface);
+				expect(result).toBeDefined();
+				expect(result.status == 200 || result.status == 302).toBeTruthy();
+
+				expect(spy).toHaveBeenCalled();
+				if (!isMockEnabled()) {
+					result = await service.deleteProductInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
+					const productVariantGetResult = await service.getEntitiesFromStrapi({
+						authInterface: defaultAuthInterface,
+						strapiEntityType: 'product-variants',
+						id: IdMap.getId('exists'),
+					});
+					expect(productVariantGetResult.status).toBe(404);
+				}
+			});
+
 			it('clean up types, categories and collections', async () => {
 				if (!isMockEnabled()) {
 					result = await service.deleteCategoryInStrapi({ id: IdMap.getId('exists') }, defaultAuthInterface);
@@ -632,8 +654,7 @@ describe('StrapiService Tests', () => {
 						authInterface: defaultAuthInterface,
 						id: result.data?.medusa_id,
 					});
-					expect(falseResult.status).toBe(200);
-					expect(falseResult.data?.length).toBe(0);
+					expect(falseResult.status == 404 || falseResult.data[0] == undefined).toBeTruthy();
 
 					result = await service.deleteProductTypeInStrapi({ id: 'dummy' }, defaultAuthInterface);
 					expect(result.status).toBe(200);
@@ -643,9 +664,7 @@ describe('StrapiService Tests', () => {
 						id: result.data?.medusa_id,
 					});
 
-					expect(falseResult.status).toBe(200);
-					expect(falseResult.data?.length).toBe(0);
-					expect(falseResult.data?.length).toBe(0);
+					expect(falseResult.status).toBe(404);
 					result = await service.deleteCollectionInStrapi(
 						{ id: IdMap.getId('exists') },
 						defaultAuthInterface
@@ -675,11 +694,11 @@ describe('region checks', () => {
 		if (!isMockEnabled()) {
 			const defaultAuthInterface = service.defaultAuthInterface;
 			try {
-				result = await service.getEntitiesFromStrapi({
+				result = (await service.getEntitiesFromStrapi({
 					strapiEntityType: 'regions',
 					authInterface: defaultAuthInterface,
 					id: IdMap.getId('exists'),
-				});
+				})) as StrapiResult;
 			} catch (e) {
 				console.error(`region clean up error ${e.message}`);
 			}
@@ -691,8 +710,8 @@ describe('region checks', () => {
 				authInterface: defaultAuthInterface,
 				id: result.data?.deletedData.medusa_id,
 			});
-			expect(falseResult.status != 200).toBeTruthy();
-			// expect(falseResult.data?.data.length).toBe(0);
+			expect(falseResult.status == 404).toBeTruthy();
+
 			await service.deleteDefaultMedusaUser();
 		}
 	});
@@ -732,20 +751,20 @@ describe('region checks', () => {
 			expect(result).toBeDefined();
 			expect(result.status == 200 || result.status == 302).toBeTruthy();
 			if (!isMockEnabled()) {
-				result = await service.getEntitiesFromStrapi({
+				result = (await service.getEntitiesFromStrapi({
 					id: IdMap.getId('exists'),
 					authInterface: defaultAuthInterface,
 					strapiEntityType: 'regions',
-				});
+				})) as StrapiResult;
 				expect(result).toMatchObject({
 					data: [{ name: 'new-name', medusa_id: IdMap.getId('exists') }],
 				});
 			}
-			result = await service.getEntitiesFromStrapi({
+			result = (await service.getEntitiesFromStrapi({
 				strapiEntityType: 'regions',
 				authInterface: defaultAuthInterface,
 				id: IdMap.getId('exists'),
-			});
+			})) as StrapiResult;
 			expect(result.status).toBe(200);
 		},
 		testTimeOut

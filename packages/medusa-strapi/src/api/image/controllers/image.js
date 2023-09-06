@@ -1,6 +1,5 @@
-"use strict";
-const createMedusaDefaultController =
-  require("../../../utils/utils").createMedusaDefaultController;
+'use strict';
+const createMedusaDefaultController = require('../../../utils/utils').createMedusaDefaultController;
 
-const uid = "api::image.image";
+const uid = 'api::image.image';
 module.exports = createMedusaDefaultController(uid);

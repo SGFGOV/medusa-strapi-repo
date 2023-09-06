@@ -1,8 +1,9 @@
 name: medusa-plugin-strapi-ts
 on:
-  push:
+  push: 
     branches:
       - master
+      - 'release/**'
   pull_request:
     branches:
       - master
