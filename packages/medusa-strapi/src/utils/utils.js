@@ -110,7 +110,7 @@ async function controllerfindMany(ctx, strapi, uid) {
 		if (!ctx.query.fields?.includes('medusa_id')) {
 			ctx.query = {
 				...ctx.query,
-				fields: ctx.query.fields ? ctx.query.fields.push('medusa_id') : ['medusa_id', 'id'],
+				fields: ctx.query.fields ? ctx.query.fields.push('medusa_id') : ['*'],
 			};
 		}
 		if (!ctx.query.pagination) {
