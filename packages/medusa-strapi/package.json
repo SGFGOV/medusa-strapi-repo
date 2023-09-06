@@ -1,11 +1,7 @@
 {
   "name": "medusa-strapi",
   "private": true,
-<<<<<<< HEAD
-  "version": "0.1.4",
-=======
   "version": "1.0.0",
->>>>>>> cf4c9fd53be5efd4b49ec6ef974ec739320423af
   "type": "commonjs",
   "description": "Strapi Implementation for medusa market ",
   "repository": {

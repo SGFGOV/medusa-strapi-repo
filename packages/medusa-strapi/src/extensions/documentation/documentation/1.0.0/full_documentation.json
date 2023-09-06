@@ -14,11 +14,7 @@
       "name": "Apache 2.0",
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-<<<<<<< HEAD
-    "x-generation-date": "2023-09-04T07:19:42.154Z"
-=======
-    "x-generation-date": "2023-09-05T10:50:18.855Z"
->>>>>>> cf4c9fd53be5efd4b49ec6ef974ec739320423af
+    "x-generation-date": "2023-09-06T05:03:05.646Z"
   },
   "x-strapi-config": {
     "path": "/documentation",
@@ -29,7 +25,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:1337/api",
+      "url": "http://127.0.0.1:1337/api",
       "description": "Development server"
     }
   ],
@@ -21495,7 +21491,9 @@
                 "type": "string"
               },
               "value": {},
-              "country_compliance": {},
+              "country_compliance": {
+                "type": "string"
+              },
               "legal_status": {
                 "type": "string",
                 "enum": [
@@ -21608,6 +21606,9 @@
               "versionNumber": {
                 "type": "integer"
               },
+              "versionComment": {
+                "type": "string"
+              },
               "isVisibleInListView": {
                 "type": "boolean"
               },
@@ -21671,7 +21672,9 @@
             "type": "string"
           },
           "value": {},
-          "country_compliance": {},
+          "country_compliance": {
+            "type": "string"
+          },
           "legal_status": {
             "type": "string",
             "enum": [
@@ -21828,7 +21831,7 @@
                       },
                       "metadata": {},
                       "metafields": {},
-                      "product-variants": {
+                      "product_variants": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -21918,7 +21921,7 @@
                                         }
                                       }
                                     },
-                                    "money-amount": {
+                                    "money_amount": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -21946,7 +21949,7 @@
                                                   "pattern": "^\\d*$",
                                                   "example": "123456789"
                                                 },
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -22289,6 +22292,9 @@
                                                 "versionNumber": {
                                                   "type": "integer"
                                                 },
+                                                "versionComment": {
+                                                  "type": "string"
+                                                },
                                                 "isVisibleInListView": {
                                                   "type": "boolean"
                                                 },
@@ -22301,7 +22307,7 @@
                                         }
                                       }
                                     },
-                                    "product-option-value": {
+                                    "product_option_value": {
                                       "type": "object",
                                       "properties": {
                                         "data": {
@@ -22320,7 +22326,7 @@
                                                   "type": "string"
                                                 },
                                                 "metadata": {},
-                                                "product-variants": {
+                                                "product_variants": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -22340,7 +22346,7 @@
                                                     }
                                                   }
                                                 },
-                                                "product-option": {
+                                                "product_option": {
                                                   "type": "object",
                                                   "properties": {
                                                     "data": {
@@ -22361,7 +22367,7 @@
                                                                 "type": "string"
                                                               },
                                                               "metadata": {},
-                                                              "product-option-values": {
+                                                              "product_option_values": {
                                                                 "type": "object",
                                                                 "properties": {
                                                                   "data": {
@@ -22467,6 +22473,9 @@
                                                               "versionNumber": {
                                                                 "type": "integer"
                                                               },
+                                                              "versionComment": {
+                                                                "type": "string"
+                                                              },
                                                               "isVisibleInListView": {
                                                                 "type": "boolean"
                                                               },
@@ -22552,6 +22561,9 @@
                                                 "versionNumber": {
                                                   "type": "integer"
                                                 },
+                                                "versionComment": {
+                                                  "type": "string"
+                                                },
                                                 "isVisibleInListView": {
                                                   "type": "boolean"
                                                 },
@@ -22636,6 +22648,9 @@
                                     "versionNumber": {
                                       "type": "integer"
                                     },
+                                    "versionComment": {
+                                      "type": "string"
+                                    },
                                     "isVisibleInListView": {
                                       "type": "boolean"
                                     },
@@ -22649,7 +22664,7 @@
                           }
                         }
                       },
-                      "product-options": {
+                      "product_options": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -22779,6 +22794,9 @@
                                     "versionNumber": {
                                       "type": "integer"
                                     },
+                                    "versionComment": {
+                                      "type": "string"
+                                    },
                                     "isVisibleInListView": {
                                       "type": "boolean"
                                     },
@@ -22792,7 +22810,7 @@
                           }
                         }
                       },
-                      "product-collection": {
+                      "product_collection": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -22906,6 +22924,9 @@
                                   "versionNumber": {
                                     "type": "integer"
                                   },
+                                  "versionComment": {
+                                    "type": "string"
+                                  },
                                   "isVisibleInListView": {
                                     "type": "boolean"
                                   },
@@ -22918,7 +22939,7 @@
                           }
                         }
                       },
-                      "product-categories": {
+                      "product_categories": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -23034,6 +23055,9 @@
                                     "versionNumber": {
                                       "type": "integer"
                                     },
+                                    "versionComment": {
+                                      "type": "string"
+                                    },
                                     "isVisibleInListView": {
                                       "type": "boolean"
                                     },
@@ -23047,7 +23071,7 @@
                           }
                         }
                       },
-                      "product-type": {
+                      "product_type": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -23158,6 +23182,9 @@
                                   "versionNumber": {
                                     "type": "integer"
                                   },
+                                  "versionComment": {
+                                    "type": "string"
+                                  },
                                   "isVisibleInListView": {
                                     "type": "boolean"
                                   },
@@ -23170,7 +23197,7 @@
                           }
                         }
                       },
-                      "product-tags": {
+                      "product_tags": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -23283,6 +23310,9 @@
                                     "versionNumber": {
                                       "type": "integer"
                                     },
+                                    "versionComment": {
+                                      "type": "string"
+                                    },
                                     "isVisibleInListView": {
                                       "type": "boolean"
                                     },
@@ -23296,7 +23326,7 @@
                           }
                         }
                       },
-                      "product-medias": {
+                      "product_medias": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -23791,6 +23821,9 @@
                                     "versionNumber": {
                                       "type": "integer"
                                     },
+                                    "versionComment": {
+                                      "type": "string"
+                                    },
                                     "isVisibleInListView": {
                                       "type": "boolean"
                                     },
@@ -23804,7 +23837,7 @@
                           }
                         }
                       },
-                      "product-metafield": {
+                      "product_metafield": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -23910,6 +23943,9 @@
                                   "versionNumber": {
                                     "type": "integer"
                                   },
+                                  "versionComment": {
+                                    "type": "string"
+                                  },
                                   "isVisibleInListView": {
                                     "type": "boolean"
                                   },
@@ -23922,7 +23958,7 @@
                           }
                         }
                       },
-                      "product-documents": {
+                      "product_documents": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -24174,6 +24210,9 @@
                                     "versionNumber": {
                                       "type": "integer"
                                     },
+                                    "versionComment": {
+                                      "type": "string"
+                                    },
                                     "isVisibleInListView": {
                                       "type": "boolean"
                                     },
@@ -24187,7 +24226,7 @@
                           }
                         }
                       },
-                      "product-legal": {
+                      "product_legal": {
                         "type": "object",
                         "properties": {
                           "data": {
@@ -24309,6 +24348,9 @@
                                   },
                                   "versionNumber": {
                                     "type": "integer"
+                                  },
+                                  "versionComment": {
+                                    "type": "string"
                                   },
                                   "isVisibleInListView": {
                                     "type": "boolean"
@@ -24512,6 +24554,9 @@
                       "versionNumber": {
                         "type": "integer"
                       },
+                      "versionComment": {
+                        "type": "string"
+                      },
                       "isVisibleInListView": {
                         "type": "boolean"
                       },
@@ -24588,7 +24633,9 @@
                           "type": "string"
                         },
                         "value": {},
-                        "country_compliance": {},
+                        "country_compliance": {
+                          "type": "string"
+                        },
                         "legal_status": {
                           "type": "string",
                           "enum": [
@@ -24759,6 +24806,9 @@
                         "versionNumber": {
                           "type": "integer"
                         },
+                        "versionComment": {
+                          "type": "string"
+                        },
                         "isVisibleInListView": {
                           "type": "boolean"
                         },
@@ -24777,6 +24827,9 @@
           },
           "versionNumber": {
             "type": "integer"
+          },
+          "versionComment": {
+            "type": "string"
           },
           "isVisibleInListView": {
             "type": "boolean"
