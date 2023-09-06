@@ -63,11 +63,11 @@
     "strapi-plugin-generate-data": "^1.0.21",
     "strapi-plugin-io": "^1.1.2",
     "strapi-plugin-local-image-sharp": "*",
-    "strapi-plugin-medusajs": "^4.0.10",
+    "strapi-plugin-medusajs": "^5.0.0",
     "strapi-plugin-meilisearch": "^0.8.2",
     "strapi-plugin-multi-select": "^1.1.0",
     "strapi-plugin-sitemap": "^2.0.8",
-    "strapi-plugin-sso-medusa": "^0.1.12",
+    "strapi-plugin-sso-medusa": "^1.0.0",
     "style-loader": "^3.3.1"
   },
   "author": {
