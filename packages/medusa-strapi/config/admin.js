@@ -43,5 +43,10 @@ module.exports = ({ env }) => ({
 	apiToken: {
 		salt: env('API_TOKEN_SALT'),
 	},
+    transfer: {
+    token: {
+      salt:env('TRANSFER_TOKEN_SALT'),
+    }
+  },
 	rateLimit: process.env.NODE_ENV == 'test' ? { enabled: false } : { interval: 60000, max: 100000 },
 });
