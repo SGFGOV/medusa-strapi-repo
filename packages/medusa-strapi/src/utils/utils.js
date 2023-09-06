@@ -108,9 +108,10 @@ async function controllerfindOne(ctx, strapi, uid) {
 async function controllerfindMany(ctx, strapi, uid) {
 	try {
 		if (!ctx.query.fields?.includes('medusa_id')) {
+			const fields = ctx.query.fields ? ctx.query.fields.push('medusa_id') : ['*'];
 			ctx.query = {
 				...ctx.query,
-				fields: ctx.query.fields ? ctx.query.fields.push('medusa_id') : ['*'],
+				fields,
 			};
 		}
 		if (!ctx.query.pagination) {
@@ -119,6 +120,16 @@ async function controllerfindMany(ctx, strapi, uid) {
 
 				page: 1,
 				pageSize: 25,
+				withCount: true,
+			};
+		} else if (ctx.query.pagination.start) {
+			const page =
+				Math.floor(parseInt(ctx.query.pagination.start ?? '0') / parseInt(ctx.query.pagination.limit ?? '1')) +
+				1;
+			ctx.query = {
+				...ctx.query,
+				page,
+				pageSize: ctx.query.pagination.limit,
 				withCount: true,
 			};
 		} else {

@@ -356,6 +356,7 @@ describe('StrapiService Tests', () => {
 							strapiEntityType: 'products',
 							urlQuery: { populate: 'product_variants' },
 						});
+
 						if (!isMockEnabled()) {
 							const testData = productPopulateGetResult.data[0];
 							expect(testData['product_variants']).toBeDefined();
@@ -365,6 +366,29 @@ describe('StrapiService Tests', () => {
 
 				testTimeOut
 			);
+
+			it('product pagination', async () => {
+				const productPopulateStartGetResult = await service.getEntitiesFromStrapi({
+					authInterface: defaultAuthInterface,
+					strapiEntityType: 'products',
+					urlQuery: { fields: ['title', 'id', 'medusa_id'], pagination: { start: 0, limit: 10 } },
+				});
+				expect(productPopulateStartGetResult.data[0].id).toBeDefined();
+
+				const productPopulatePageStartGetResult = await service.getEntitiesFromStrapi({
+					authInterface: defaultAuthInterface,
+					strapiEntityType: 'products',
+					urlQuery: { fields: ['title', 'id', 'medusa_id'], pagination: { page: 1, pagesize: 25 } },
+				});
+				expect(productPopulatePageStartGetResult.data[0].id).toBeDefined();
+				expect(productPopulatePageStartGetResult.data[0].id).toBe(productPopulateStartGetResult.data[0].id);
+				/*productPopulateStartGetResult = await service.getEntitiesFromStrapi({
+					authInterface: defaultAuthInterface,
+					strapiEntityType: 'products',
+					urlQuery: { fields: ['title', 'id', 'medusa_id'], pagination: { start: 10, limit: 10 } },
+				});
+				expect(productPopulateStartGetResult.data[0].id).toBeUndefined();*/
+			});
 
 			it(
 				'product recreation',
