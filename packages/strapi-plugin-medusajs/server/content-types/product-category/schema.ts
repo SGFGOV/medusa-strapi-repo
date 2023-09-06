@@ -1,0 +1,45 @@
+import pluginId from "../../../admin/src/pluginId";
+
+export default {
+  "kind": "collectionType",
+  "collectionName": "product_categories",
+  "info": {
+    "singularName": "product-category",
+    "pluralName": "product-categories",
+    "displayName": "Product Category",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
+  "attributes": {
+    "medusa_id": {
+      "type": "uid"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "handle": {
+      "type": "string",
+      "required": false
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": `plugin::${pluginId}.product`,
+      "inversedBy": "product-categories"
+    }
+  }
+}

@@ -147,32 +147,32 @@ export async function createMedusaUser(medusaUser: MedusaUserParams): Promise<an
 	params['role'] = medusaRole;
 	try {
 		const user = await strapi.plugins['users-permissions'].services.user.add(params);
-		if (user && user.id) {
-			strapi.log.info(`User ${params.username} ${params.email} created successfully with id ${user.id}`);
-
-			strapi.log.info(`Attaching admin author role to ${params.username} ${params.email}`);
-
-			const authorRole = await hasAuthorRole();
-			if (authorRole) {
-				const adminRolesService = strapi.service('admin::role');
-				const authorRole = await adminRolesService.findOne({
-					name: 'Author',
-				});
-				try {
-					const result = await createUserWithAdminRole(params, authorRole);
-					if (result) {
-						strapi.log.info(`Attached admin author role to ${params.username} ${params.email}`);
-					}
-				} catch (e) {
-					strapi.log.info(`Unable to attach admin author role to ${params.username} ${params.email}`);
-				}
-			}
-
-			return user;
-		} else {
+		if (!user || !user.id) {
 			strapi.log.error(`Failed to create user  ${params.username} ${params.email} `);
 			return false;
 		}
+
+		strapi.log.info(`User ${params.username} ${params.email} created successfully with id ${user.id}`);
+
+		strapi.log.info(`Attaching admin author role to ${params.username} ${params.email}`);
+
+		const authorRole = await hasAuthorRole();
+		if (authorRole) {
+			const adminRolesService = strapi.service('admin::role');
+			const authorRole = await adminRolesService.findOne({
+				name: 'Author',
+			});
+			try {
+				const result = await createUserWithAdminRole(params, authorRole);
+				if (result) {
+					strapi.log.info(`Attached admin author role to ${params.username} ${params.email}`);
+				}
+			} catch (e) {
+				strapi.log.info(`Unable to attach admin author role to ${params.username} ${params.email}`);
+			}
+		}
+
+		return user;
 	} catch (error) {
 		strapi.log.error((error as Error).message);
 		return false;
