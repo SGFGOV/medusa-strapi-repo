@@ -359,15 +359,22 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	async getEntitiesFromStrapi(params: GetFromStrapiParams): Promise<StrapiGetResult> {
 		await this.checkType(params.strapiEntityType, params.authInterface);
-		try {
-			const getEntityParams: StrapiSendParams = {
-				type: params.strapiEntityType,
-				authInterface: params.authInterface,
-				method: 'GET',
-				id: params.id,
-				query: params.urlQuery ? qs.stringify(params.urlQuery) : undefined,
-			};
 
+		const getEntityParams: StrapiSendParams = {
+			type: params.strapiEntityType,
+			authInterface: params.authInterface,
+			method: 'GET',
+			id: params.id,
+			query: params.urlQuery
+				? qs.stringify(params.urlQuery)
+				: params.id
+				? undefined
+				: qs.stringify({
+						fields: ['id', 'medusa_id'],
+						populate: '*',
+				  }),
+		};
+		try {
 			const result = await this.getEntriesInStrapi(getEntityParams);
 			return {
 				data: result?.data,
@@ -375,7 +382,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 				meta: result?.meta,
 			};
 		} catch (e) {
-			this.strapiPluginLog('error', `Unable to retrieve ${params.strapiEntityType}, ${params.id ?? 'any'}`);
+			this.strapiPluginLog(
+				'error',
+				`Unable to retrieve ${params.strapiEntityType}, ${params.id ?? 'any'}`,
+				getEntityParams
+			);
 			return { data: undefined, status: 404, meta: undefined };
 		}
 	}
@@ -1907,7 +1918,11 @@ export class UpdateStrapiService extends TransactionBaseService {
 			}
 			if (e instanceof AxiosError) {
 				if (method.toLowerCase() == 'get' && e.response.status == 404) {
-					this.strapiPluginLog('info', `unable to find ${type} id: ${id ?? 'any'} ${e.message}`);
+					this.strapiPluginLog(
+						'error',
+						`unable to find ${type} id: ${id ?? ''} query:${query ?? ''} message: ${e.message}`,
+						params
+					);
 					return {
 						id: undefined,
 						medusa_id: undefined,
@@ -2000,9 +2015,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 			  };
 
 		try {
-			this.strapiPluginLog('info', `User Endpoint firing: ${endPoint} method: ${method} query:${query}`);
+			this.strapiPluginLog('debug', `User Endpoint firing: ${endPoint} method: ${method} query:${query}`);
 			const result = await axios(config);
-			this.strapiPluginLog('info', `User Endpoint fired: ${endPoint} method : ${method} query:${query}`);
+			this.strapiPluginLog('debug', `User Endpoint fired: ${endPoint} method : ${method} query:${query}`);
 			// console.log("attempting action:"+result);
 			if (result.status >= 200 && result.status < 300) {
 				this.strapiPluginLog(
