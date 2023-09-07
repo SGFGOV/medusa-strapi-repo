@@ -100,14 +100,6 @@ yarn run test
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/SGFGOV/medusa-strapi-repo/issues). You can also take a look at the [contributing guide](./CONTRIBUTING.md).
 
-## Show your support
-
-I love developing software and building products that are useful. 
-I sincerely hope you this project helps you. I'm happy to help if you need support setting this up. 
-Give a ⭐️ if this project helped you! Catch me on discord @govdiw
-
-As you might have guessed by now that considerable time and effort has gone into make this product useful to the community at large, and I'd love to keep maintaining and upgrading this. However, As much as we love FOSS software, nothing in this world is truly free. Please help by [sponsoring or supporting the project]. (https://github.com/sponsors/SGFGOV)
-
 ***
 ## An Appeal
 ## Medusa-Strapi: Unlock Developer Efficiency: Sponsor Our MedusaJS - Strapi CMS! 🚀
