@@ -116,7 +116,7 @@ Your sponsorship, regardless of its size, will help us bring this powerful tool 
 
 By supporting us, you're not just investing in a project; you're investing in the collective efficiency and productivity of developers worldwide. You're making it possible for them to deliver exceptional e-commerce solutions faster and more effectively.
 
-To be a part of this journey and empower developers globally, please visit our GitHub sponsorship page [![GitHub Sponsors](https://img.shields.io/github/sponsors/SGFGOV?label=Sponsor%20Medusa-Strapi&style=social)](https://github.com/sponsors/SGFGOV)
+To be a part of this journey and empower developers globally, please visit our GitHub sponsorship page [GitHub Sponsors](https://img.shields.io/github/sponsors/SGFGOV?label=Sponsor%20Medusa-Strapi&style=social)(https://github.com/sponsors/SGFGOV)
 . Your support will make a tangible difference in the lives of countless developers.
 
 Thank you for considering our request. We're enthusiastic about the impact this project can have, and we genuinely appreciate your support.
