@@ -41,29 +41,16 @@ jobs:
           node-version: ${{ matrix.node-verion }}
 
       - name: 'yarn install'
-        working-directory: ./packages/medusa-strapi
+        working-directory: ./
         run: yarn install --frozen-lockfile
 
-      - name: 'yarn install strapi plugin medusajs'
-        working-directory: ./packages/strapi-plugin-medusajs
-        run: yarn install --frozen-lockfile 
-
-      - name: 'yarn build strapi plugin medusajs'
-        working-directory: ./packages/strapi-plugin-medusajs
+      - name: 'yarn build '
+        working-directory: ./
         run: yarn run build 
 
-      - name: 'yarn build medusa-strapi'
+      - name: 'setup up strapi test environment'
         working-directory: ./packages/medusa-strapi
-        run: yarn run build 
-
-      - name: 'setup up stram test environment'
-        working-directory: ./packages/medusa-strapi
-        run: yarn run start
-        
-
-      - name: 'yarn install medusa strapi dependencies'
-        working-directory: ./packages/medusa-plugin-strapi-ts
-        run: yarn
+        run: yarn run start &
 
       - name: 'run medusa plugin strapi unit tests'
         working-directory: ./packages/medusa-plugin-strapi-ts
