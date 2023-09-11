@@ -51,7 +51,9 @@ jobs:
       - name: 'setup up strapi test environment'
         working-directory: ./packages/medusa-strapi
         run: yarn run start &
-
+      - name: wait for server to start
+        run: sleep 60s
+        shell: bash
       - name: 'run medusa plugin strapi unit tests'
         working-directory: ./packages/medusa-plugin-strapi-ts
         run: yarn run test
