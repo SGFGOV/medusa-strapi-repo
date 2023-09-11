@@ -1,4 +1,4 @@
-name: medusa-strapi
+name: medusa-strapi integration
 on:
   push:
     branches:
@@ -11,7 +11,15 @@ on:
       - development
 
 jobs:
-  unit-test:
+  integration-test:
+    env:
+      NODE_ENV: 'test'
+      APP_KEYS: ${{secrets.APP_KEYS}}
+      TRANSFER_TOKEN: ${{secrets.TRANSFER_TOKEN}}
+      API_TOKEN_SALT: ${{secrets.API_TOKEN_SALT}}
+      ADMIN_JWT_SECRET: ${{secrets.ADMIN_JWT_SECRET}}
+      MEDUSA_STRAPI_SECRET: ${{secrets.MEDUSA_STRAPI_SECRET}}
+## Admin Settings
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,31 +41,19 @@ jobs:
           node-version: ${{ matrix.node-verion }}
 
       - name: 'yarn install'
-        working-directory: ./packages/medusa-strapi
+        working-directory: ./
         run: yarn install --frozen-lockfile
 
-      - name: 'yarn install strapi plugin medusajs'
-        working-directory: ./packages/strapi-plugin-medusajs
-        run: yarn install --frozen-lockfile 
-
-      - name: 'yarn build strapi plugin medusajs'
-        working-directory: ./packages/strapi-plugin-medusajs
+      - name: 'yarn build '
+        working-directory: ./
         run: yarn run build 
 
-      - name: 'yarn build medusa-strapi'
+      - name: 'setup up strapi test environment'
         working-directory: ./packages/medusa-strapi
-        run: yarn run build 
-
-      - name: 'run unit tests'
-        working-directory: ./packages/medusa-strapi
-        run: yarn run start
-        env:
-          NODE_ENV: 'test'
-
-      - name: 'yarn install medusa strapi dependencies'
-        working-directory: ./packages/medusa-plugin-strapi-ts
-        run: yarn
-
-      - name: 'run unit tests'
+        run: yarn run start &
+      - name: wait for server to start
+        run: sleep 60s
+        shell: bash
+      - name: 'run medusa plugin strapi unit tests'
         working-directory: ./packages/medusa-plugin-strapi-ts
         run: yarn run test
