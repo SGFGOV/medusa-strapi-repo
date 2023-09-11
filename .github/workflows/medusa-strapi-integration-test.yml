@@ -1,10 +1,10 @@
-name: medusa-plugin-strapi-ts
+name: medusa-strapi
 on:
-  push: 
+  push:
     branches:
       - master
-      - development
       - 'release/**'
+      - development
   pull_request:
     branches:
       - master
@@ -33,6 +33,28 @@ jobs:
           node-version: ${{ matrix.node-verion }}
 
       - name: 'yarn install'
+        working-directory: ./packages/medusa-strapi
+        run: yarn install --frozen-lockfile
+
+      - name: 'yarn install strapi plugin medusajs'
+        working-directory: ./packages/strapi-plugin-medusajs
+        run: yarn install --frozen-lockfile 
+
+      - name: 'yarn build strapi plugin medusajs'
+        working-directory: ./packages/strapi-plugin-medusajs
+        run: yarn run build 
+
+      - name: 'yarn build medusa-strapi'
+        working-directory: ./packages/medusa-strapi
+        run: yarn run build 
+
+      - name: 'run unit tests'
+        working-directory: ./packages/medusa-strapi
+        run: yarn run start
+        env:
+          NODE_ENV: 'test'
+
+      - name: 'yarn install medusa strapi dependencies'
         working-directory: ./packages/medusa-plugin-strapi-ts
         run: yarn
 

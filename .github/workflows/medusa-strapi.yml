@@ -4,9 +4,11 @@ on:
     branches:
       - master
       - 'release/**'
+      - development
   pull_request:
     branches:
       - master
+      - development
 
 jobs:
   unit-test:
