@@ -1,4 +1,4 @@
-name: medusa-strapi
+name: medusa-strapi integration
 on:
   push:
     branches:
@@ -11,7 +11,9 @@ on:
       - development
 
 jobs:
-  unit-test:
+  integration-test:
+    env:
+      NODE_ENV: 'test'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -48,16 +50,15 @@ jobs:
         working-directory: ./packages/medusa-strapi
         run: yarn run build 
 
-      - name: 'run unit tests'
+      - name: 'setup up stram test environment'
         working-directory: ./packages/medusa-strapi
         run: yarn run start
-        env:
-          NODE_ENV: 'test'
+        
 
       - name: 'yarn install medusa strapi dependencies'
         working-directory: ./packages/medusa-plugin-strapi-ts
         run: yarn
 
-      - name: 'run unit tests'
+      - name: 'run medusa plugin strapi unit tests'
         working-directory: ./packages/medusa-plugin-strapi-ts
         run: yarn run test
