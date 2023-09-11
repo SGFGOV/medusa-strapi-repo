@@ -3,10 +3,12 @@ on:
   push: 
     branches:
       - master
+      - development
       - 'release/**'
   pull_request:
     branches:
       - master
+      - development
 
 jobs:
   unit-test:
