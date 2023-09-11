@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master" , 'release/**']
+    branches: [ "master" , 'release/**', "development"]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master","development" ]
 
 jobs:
 
@@ -25,5 +25,5 @@ jobs:
       run: ls
       working-directory: ./packages/medusa-strapi
     - name: Build the Docker image
-      run: docker build . -t sgf-strapi --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID  --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --build-arg AWS_DEFAULT_REGION="ap-south-1"  --no-cache
+      run: docker build -f ./Dockerfile.prod -t sgf-strapi --build-arg AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID  --build-arg AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --build-arg AWS_DEFAULT_REGION="ap-south-1"  --no-cache .
       working-directory: ./packages/medusa-strapi
