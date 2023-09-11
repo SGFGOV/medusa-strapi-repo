@@ -16,7 +16,7 @@ jobs:
       NODE_ENV: 'test'
       APP_KEYS: ${{secrets.APP_KEYS}}
       TRANSFER_TOKEN: ${{secrets.TRANSFER_TOKEN}}
-      API_TOKEN_SALT: ${{secrets.API_TOKEN}}
+      API_TOKEN_SALT: ${{secrets.API_TOKEN_SALT}}
       ADMIN_JWT_SECRET: ${{secrets.ADMIN_JWT_SECRET}}
       MEDUSA_STRAPI_SECRET: ${{secrets.MEDUSA_STRAPI_SECRET}}
 ## Admin Settings
