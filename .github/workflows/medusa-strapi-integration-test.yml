@@ -1,0 +1,63 @@
+name: medusa-strapi
+on:
+  push:
+    branches:
+      - master
+      - 'release/**'
+      - development
+  pull_request:
+    branches:
+      - master
+      - development
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-verion: [16.x]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout
+        uses: actions/checkout@v2.3.5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: ${{ matrix.node-verion }}
+
+      - name: 'yarn install'
+        working-directory: ./packages/medusa-strapi
+        run: yarn install --frozen-lockfile
+
+      - name: 'yarn install strapi plugin medusajs'
+        working-directory: ./packages/strapi-plugin-medusajs
+        run: yarn install --frozen-lockfile 
+
+      - name: 'yarn build strapi plugin medusajs'
+        working-directory: ./packages/strapi-plugin-medusajs
+        run: yarn run build 
+
+      - name: 'yarn build medusa-strapi'
+        working-directory: ./packages/medusa-strapi
+        run: yarn run build 
+
+      - name: 'run unit tests'
+        working-directory: ./packages/medusa-strapi
+        run: yarn run start
+        env:
+          NODE_ENV: 'test'
+
+      - name: 'yarn install medusa strapi dependencies'
+        working-directory: ./packages/medusa-plugin-strapi-ts
+        run: yarn
+
+      - name: 'run unit tests'
+        working-directory: ./packages/medusa-plugin-strapi-ts
+        run: yarn run test
