@@ -14,6 +14,12 @@ jobs:
   integration-test:
     env:
       NODE_ENV: 'test'
+      APP_KEYS: ${{secrets.APP_KEYS}}
+      TRANSFER_TOKEN: ${{secrets.TRANSFER_TOKEN}}
+      API_TOKEN: ${{secrets.API_TOKEN}}
+      ADMIN_JWT_SECRET: ${{secrets.ADMIN_JWT_SECRET}}
+      MEDUSA_STRAPI_SECRET: ${{secrets.MEDUSA_STRAPI_SECRET}}
+## Admin Settings
     runs-on: ubuntu-latest
     strategy:
       matrix:
