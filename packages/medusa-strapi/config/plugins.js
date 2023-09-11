@@ -57,6 +57,7 @@ module.exports = ({ env }) => ({
 			jwt: {
 				expiresIn: '1h',
 			},
+			jwtSecret: env('JWT_SECRET', 'test-jwt'),
 			ratelimit:
 				process.env.NODE_ENV == 'test'
 					? {
