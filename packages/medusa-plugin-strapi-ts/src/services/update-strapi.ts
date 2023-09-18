@@ -424,26 +424,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					'categories',
 					'tags',
 					'images',
-				],
-				select: [
-					'id',
-					'title',
-					'subtitle',
-					'description',
-					'handle',
-					'is_giftcard',
-					'discountable',
-					'thumbnail',
-					'weight',
-					'length',
-					'height',
-					'width',
-					'hs_code',
-					'origin_country',
-					'mid_code',
-					'material',
-					'metadata',
-				],
+				]
 			});
 
 			/**
@@ -1025,26 +1006,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 						'categories',
 						'tags',
 						'images',
-					],
-					select: [
-						'id',
-						'title',
-						'subtitle',
-						'description',
-						'handle',
-						'is_giftcard',
-						'discountable',
-						'thumbnail',
-						'weight',
-						'length',
-						'height',
-						'width',
-						'hs_code',
-						'origin_country',
-						'mid_code',
-						'material',
-						'metadata',
-					],
+					]
 				});
 
 				if (product) {
