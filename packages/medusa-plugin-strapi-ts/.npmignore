@@ -9,3 +9,6 @@ index.ts
 tsconfig.tsbuildinfo
 *.log
 tsconfig.*.*
+!**/*.d.ts
+**/*.html
+src/**
