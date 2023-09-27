@@ -27,7 +27,6 @@
     "@aws-sdk/util-format-url": "^3.78.0",
     "@notum-cz/strapi-plugin-content-versioning": "^0.4.7",
     "@offset-dev/strapi-calendar": "^0.0.10",
-    "@sgftech/strapi-plugin-multi-country-select": "^1.0.1",
     "@strapi/design-system": "^1.4.1",
     "@strapi/icons": "^1.4.1",
     "@strapi/logger": "4.13.1",
@@ -68,6 +67,7 @@
     "strapi-plugin-meilisearch": "^0.8.2",
     "strapi-plugin-multi-country-select": "^1.2.0",
     "strapi-plugin-multi-select": "^1.1.0",
+    "strapi-plugin-sgftech-multi-country-select": "^1.0.2",
     "strapi-plugin-sitemap": "^2.0.8",
     "strapi-plugin-sso-medusa": "^1.0.0",
     "style-loader": "^3.3.1"
