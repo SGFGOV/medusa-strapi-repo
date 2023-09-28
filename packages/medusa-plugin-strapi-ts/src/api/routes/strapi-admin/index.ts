@@ -7,7 +7,7 @@ import cors from 'cors';
 
 import authenticate from '@medusajs/medusa/dist/api/middlewares/authenticate';
 import { StrapiMedusaPluginOptions } from '../../../types/globals';
-import { ConfigModule } from '@medusajs/medusa/dist/types/global';
+import { ConfigModule } from '@medusajs/types';
 import { UserService } from '@medusajs/medusa';
 
 const adminRouter = Router();
