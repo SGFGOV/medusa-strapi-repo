@@ -19,8 +19,8 @@
     "e-commerce",
     "content management"
   ],
-  "funding":{
-    "type":"github",
+  "funding": {
+    "type": "github",
     "url": "https://github.com/sponsors/SGFGOV"
   },
   "author": "Govind Diwakar",
@@ -67,6 +67,7 @@
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
+    "@medusajs/admin": "^7.1.2",
     "@medusajs/medusa": "^1.16.1",
     "@strapi/plugin-users-permissions": "^4.6.1",
     "axios": "^0.27.2",
