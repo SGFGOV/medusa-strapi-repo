@@ -29,7 +29,7 @@ export default (app: Router, options: StrapiMedusaPluginOptions, config: ConfigM
 	if (process.env.NODE_ENV != 'test') {
 		adminRouter.use(cors(adminCors));
 	}
-	const jwtSecret = config.projectConfig.jwt_secret;
+	const jwtSecret = config.projectConfig.jwt_secret || (config.projectConfig as any).jwtSecret;
 	adminRouter.options('/login', cors(adminCors));
 	adminRouter.get('/login', cors(adminCors));
 	adminRouter.get('/login', authenticate());
