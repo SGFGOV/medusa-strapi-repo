@@ -161,6 +161,9 @@
       "relation": "manyToOne",
       "target": "api::store.store",
       "inversedBy": "products"
+    },
+    "updateHash":{
+      "type": "string"
     }
   }
 }

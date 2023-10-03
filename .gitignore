@@ -249,3 +249,4 @@ dist
 !babel.config.j
 node_modules/
 
+.vscode/

@@ -91,7 +91,7 @@ function DatabaseConfiguration({ env }) {
 	};
 
 	const schema =
-		process.env.NODE_ENV == 'test' ? undefined : env('DATABASE_SCHEMA', process.env.RDS_SCHEMA || 'public');
+		process.env.NODE_ENV == 'test' ? undefined : env('DATABASE_SCHEMA', process.env.RDS_DABASE_SCHEMA || 'public');
 
 	const awsConnection = {
 		connection: {
@@ -102,6 +102,7 @@ function DatabaseConfiguration({ env }) {
 				database: env('DATABASE_NAME', process.env.RDS_DATABASE || 'postgres_strapi'),
 				user: env('DATABASE_USERNAME', process.env.RDS_USERNAME || 'postgres'),
 				password: getToken || env('DATABASE_PASSWORD', 'postgres'),
+				schema,
 				ssl: env.bool('DATABASE_SSL', {
 					rejectUnauthorized: false,
 					ca: getCertificate(),
@@ -121,6 +122,11 @@ function DatabaseConfiguration({ env }) {
 				user: env('DATABASE_USERNAME', 'postgres'),
 				password: env('DATABASE_PASSWORD', 'postgres'),
 				schema,
+				ssl: env('DATABASE_HOST', '127.0.0.1').includes('neon')
+					? {
+							rejectUnauthorized: false,
+					  }
+					: undefined,
 			},
 		},
 	};

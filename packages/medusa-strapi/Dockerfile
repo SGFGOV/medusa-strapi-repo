@@ -31,6 +31,7 @@ WORKDIR /app
 
 COPY ./package*.json ./
 COPY ./package.json ./
+COPY ./public ./public
 RUN mkdir ./config
 RUN mkdir ./data
 RUN mkdir ./src

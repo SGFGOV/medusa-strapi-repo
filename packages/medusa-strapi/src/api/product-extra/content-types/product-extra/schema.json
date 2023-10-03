@@ -1,0 +1,111 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_extras",
+  "info": {
+    "singularName": "product-extra",
+    "pluralName": "product-extras",
+    "displayName": "Product Extra",
+    "description": "Additional Information specific to the product"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true,
+    "comment": ""
+  },
+  "pluginOptions": {
+    "versions": {
+      "versioned": true
+    }
+  },
+  "attributes": {
+    "medusa_id": {
+      "type": "uid"
+    },
+    "value": {
+      "type": "json"
+    },
+    "country_compliance":{
+      "type":"string"
+    },
+
+    "legal_status":{
+      "type":"enumeration",
+      "enum":["Natural","Synthetic","Nature Identical","Not Applicable"]
+    },
+
+    "mto_mts":{
+      "type":"enumeration",
+      "enum":["Made To Stock","Made To Order","Not Applicable"],
+      "defaultTo":"Made To Order"
+    },
+    "pH_Stability":{
+      "type":"richtext"
+    },
+    "light_Stability":{
+      "type":"richtext"
+    },
+
+    "heat_Stability":{
+      "type":"richtext"
+    },
+    "certifications":{
+      "type":"customField",
+      "customField":"plugin::multi-select.multi-select"
+    },
+    "unit_pack":{
+      "type":"string",
+      "maxLength":5,
+      "minLength":0,
+      "defaultsTo":"Kg"
+    },
+    "storage_conditions":{
+      "type":"enumeration",
+        "enum":["Ambient","Refrigerated but not frozen","Freezer"]
+    },
+    "application_dosage":{
+      "type":"decimal",
+      "max":100,
+      "min":0
+    },
+    "solubility":{
+      "type":"enumeration",
+      "enum":["Oil","Water","Not Applicable"]
+    },
+    "appearance":{
+      "type":"enumeration",
+      "enum":["powder","liquid","Not Applicable"]
+    },
+    "best_before":{
+      "type":"date"
+    },
+    "benefits_to_user":{
+      "type":"richtext"
+    },
+    "benefits_to_consumer":{
+      "type":"richtext"
+    },
+    "country_of_origin":{
+      "type":"customField",
+      "customField":"plugin::country-select.country"
+    },
+    "manufacturer_brand":  {
+      "type":"text"
+    },
+    "manufacturer_name":   {
+      "type":"text"
+    },
+    "service_provider_name":  {
+      "type":"text"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product",
+      "mappedBy": "product-extra"
+    }
+  }
+}

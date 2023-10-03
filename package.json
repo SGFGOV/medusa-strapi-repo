@@ -63,7 +63,7 @@
     "**/sharp": "0.32.0",
     "**/class-validator": "^0.14.0",
     "**/engine.io": "^6.4.2",
-    "**/strapi-plugin-multi-country-select": "npm:@sgftech/plugin-multi-country-select",
+    "**/strapi-plugin-multi-country-select": "npm:strapi-plugin-sgftech-multi-country-select",
     "**/typescript": "4.9.5",
     "**/codemirror": "5.65.11",
     "**/protobufjs": "^7.2.4",

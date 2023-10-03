@@ -1,5 +1,7 @@
 const { createCoreController } = require('@strapi/strapi').factories;
+const hash = require('object-hash');
 const _ = require('lodash');
+const objectHash = require('object-hash');
 async function hasSuperUser(strapi) {
 	strapi.log.debug(`Checking if Superuser exists`);
 	const superAdminRole = await strapi.service('admin::user').exists();
@@ -254,7 +256,7 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, cal
 			}
 		}
 		try {
-			let strapiId;
+			let strapiId = undefined;
 			if (keys.includes('medusa_id')) {
 				const key = 'medusa_id';
 				const medusa_id = dataReceived[key];
@@ -268,39 +270,48 @@ async function attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, cal
 				try {
 					const strapiData = await getStrapiEntityByUniqueField(uid, strapi, dataReceived, callBack);
 					strapiId = strapiData?.id;
+					if (!strapiId) {
+						try {
+							const strapiData = await strapi.db.query(uid).findOne({
+								select: ['id'],
+								where: { medusa_id: medusa_id },
+							});
+							strapiId = strapiData?.id;
+						} catch (e) {}
+					}
 				} catch (e) {
 					strapi.log.error(`unique field error${dataReceived['medusa_id']} ${e.message}`);
 				}
-			}
-			try {
-				if (!strapiId) {
-					strapi.log.debug(`${uid} creating, ${JSON.stringify(dataReceived)}`);
-					const newEntity = await strapi.entityService.create(uid, {
-						data: dataReceived,
-						populate: '*',
-					});
-					dataReceived['id'] = newEntity.id;
-				} else {
-					dataReceived['id'] = strapiId;
+			} else
+				try {
+					if (!strapiId) {
+						strapi.log.debug(`${uid} creating, ${JSON.stringify(dataReceived)}`);
+						const newEntity = await strapi.entityService.create(uid, {
+							data: { ...dataReceived },
+							populate: '*',
+						});
+						dataReceived['id'] = newEntity.id;
+					} else {
+						dataReceived['id'] = strapiId;
+					}
+					if (callBack) {
+						await callBack(dataReceived);
+					}
+				} catch (e) {
+					switch (e.name) {
+						case 'ValidationError':
+							strapi.log.error(
+								`Cannot create ${uid}. Validation errors occured on ${
+									dataReceived['medusa_id']
+								}: ${e.details.errors.map((error) => error.message + ' ')}`
+							);
+							break;
+						default:
+							strapi.log.error(`unable to create ${uid} ${e.message} ${dataReceived['medusa_id']}`);
+							break;
+					}
+					// throw e;
 				}
-				if (callBack) {
-					await callBack(dataReceived);
-				}
-			} catch (e) {
-				switch (e.name) {
-					case 'ValidationError':
-						strapi.log.error(
-							`Cannot create ${uid}. Validation errors occured on ${
-								dataReceived['medusa_id']
-							}: ${e.details.errors.map((error) => error.message + ' ')}`
-						);
-						break;
-					default:
-						strapi.log.error(`unable to create ${uid} ${e.message} ${dataReceived['medusa_id']}`);
-						break;
-				}
-				// throw e;
-			}
 		} catch (e) {
 			strapi.log.error(`no such service  ${e.message} ${uid}`);
 			throw e;
@@ -346,56 +357,6 @@ async function getStrapiEntityByUniqueField(uid, strapi, dataReceived) {
 
 async function createNestedEntity(uid, strapi, dataReceived, callBack) {
 	return attachOrCreateStrapiIdFromMedusaId(uid, strapi, dataReceived, callBack);
-
-	/* if (!dataReceived) {
-    return;
-  }
-  const keys = Object.keys(dataReceived);
-  if (keys.includes("medusa_id")) {
-    for (const key of keys) {
-      if (Array.isArray(dataReceived[key])) {
-        for (const element of dataReceived[key]) {
-          const objectUid = findContentUid(key, strapi);
-          if (objectUid) {
-            createNestedEntity(objectUid, strapi, element);
-          }
-        }
-      } else if (dataReceived[key] instanceof Object) {
-        const objectUid = findContentUid(key, strapi);
-        createNestedEntity(objectUid, strapi, dataReceived[key]);
-      }
-        try {
-          const objectUid = findContentUid(key, strapi);
-          const service = strapi.service(objectUid);
-          let existingEntity;
-          if (keys.includes("medusa_id")) {
-            existingEntity = await getStrapiIdFromMedusaId(
-              uid,
-              strapi,
-              dataReceived["medusa_id"]
-            );
-            return existingEntity;
-          } else {
-            existingEntity = await getStrapiEntityByUniqueField(
-              uid,
-              strapi,
-              dataReceived[key]
-            );
-            if (!existingEntity) {
-              const newEntity = service.create({ data: dataReceived[key] });
-              return newEntity;
-            }
-            return existingEntity;
-          }
-        } catch (e) {
-          strapi.log.error(`no such servce ${uid}`);
-        }
-      }
-      return dataReceived;
-    }
-  }
-
-  return dataReceived;*/
 }
 
 async function translateStrapiIdsToMedusaIds(uid, strapi, dataToSend) {
@@ -433,11 +394,16 @@ async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
 	const filters = {
 		medusa_id: medusa_id,
 	};
-	const entities = await strapi.entityService.findMany(uid, {
-		fields,
-		filters,
-	});
-	let entity = entities?.length ? entities[0] : undefined;
+	try {
+		const entity = await strapi.db.query(uid).findOne(uid, {
+			select: fields,
+			where: filters,
+		});
+		return entity;
+	} catch (e) {
+		strapi.log.debug(`${JSON.stringify(filters)} (entity doesn't exist)`);
+	}
+	/*let entity = entities?.length ? entities[0] : undefined;
 	if (!entity) {
 		const allEntities = await strapi.entityService.findMany(uid);
 		entity = allEntities.filter((e) => {
@@ -453,8 +419,6 @@ async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
       strapi,
       entity
     );*/
-	}
-	return entity;
 }
 
 async function controllerDelete(ctx, strapi, uid) {
@@ -482,14 +446,25 @@ async function controllerUpdate(ctx, strapi, uid) {
 	strapi.log.info(`Medusa is updating entity ${medusa_id} of type ${uid} in Strapi`, { data: data });
 
 	try {
+		const inputData = _.cloneDeep(data);
 		const entityId = await getStrapiIdFromMedusaId(uid, strapi, medusa_id);
 		if (entityId) {
+		//	const currentEntity = await strapi.db.query(uid).findOne(entityId);
+			/** We store the hash of the last update request, and compare that to the hash received */
+			/*const inputHash = objectHash(inputData);
+			if (inputHash == currentEntity.updateHash) {
+				return (ctx.body = {
+					data: currentEntity,
+				});
+			}*/
 			const processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
-			const result = await strapi.services[uid].update(entityId, {
-				data: processedData,
+			delete processedData.medusa_id
+			let result = await strapi.services[uid].update(entityId, {
+				data: { ...processedData },
 			});
+			const returnResult = await strapi.db.query(uid).findOne(entityId);
 			return (ctx.body = {
-				data: result,
+				data: returnResult,
 			});
 		} else {
 			strapi.log.warn(`Cannot update entity ${medusa_id} of type ${uid} as it doesnt exist in strapi`);

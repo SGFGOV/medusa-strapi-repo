@@ -962,6 +962,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		const updateFields = [
 			'variants',
 			'options',
+			'categories',
 			'tags',
 			'title',
 			'subtitle',

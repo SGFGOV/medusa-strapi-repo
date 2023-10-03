@@ -168,7 +168,6 @@ class StrapiSubscriber {
 			await this.strapiService_.deleteRegionInStrapi(data, authInterace);
 		});
 	}
-
 	async getLoggedInUserStrapiCreds(): Promise<AuthInterface> {
 		return this.loggedInUserAuth;
 	}
