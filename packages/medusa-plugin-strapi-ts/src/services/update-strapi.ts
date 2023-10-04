@@ -282,6 +282,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await this.intializeServer();
 			this.strapiPluginLog('info', 'Successfully Bootstrapped the strapi server');
+			this.isStarted = true;
 			return result;
 		} catch (e) {
 			this.strapiPluginLog(
@@ -291,6 +292,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 			);
 			throw e;
 		}
+	}
+
+	async waitForStart() {
+		if (process.env.NODE_ENV != 'test')
+			while (!this.isStarted) {
+				await sleep(3000);
+			}
 	}
 
 	async addIgnore_(id, side): Promise<any> {
@@ -1428,6 +1436,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				...this.options_.strapi_default_user,
 			};
 			const registerResponse = await this.executeRegisterMedusaUser(authParams);
+			this.isStarted = true;
 			return registerResponse?.data;
 		} catch (error) {
 			this.strapiPluginLog('error', 'unable to register default user', { error: (error as Error).message });
@@ -1580,6 +1589,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	): Promise<AxiosResponse> {
 		await this.waitForHealth();
+		await this.waitForStart();
 		try {
 			const authData = {
 				identifier: authInterface.email.toLowerCase(),
@@ -1937,6 +1947,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}): Promise<AxiosResponse> {
 		let endPoint: string = undefined;
 		await this.waitForHealth();
+		await this.waitForStart();
 		let tail = '';
 		//	if (method.toLowerCase() != 'post') {
 		if (method.toLowerCase() != 'post') {
