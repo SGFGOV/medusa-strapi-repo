@@ -1,13 +1,12 @@
 import UpdateMedusaService from '../../../services/update-medusa';
-import * as jwt from "jsonwebtoken";
-import {ConfigModule} from "@medusajs/medusa/dist/types/global";
-import {StrapiSignalInterface} from "./strapi-signal";
+import * as jwt from 'jsonwebtoken';
+import { ConfigModule } from '@medusajs/medusa/dist/types/global';
+import { StrapiSignalInterface } from './strapi-signal';
 
 export interface UpdateMedusaDataInterface {
 	type: string;
 	data: any;
 }
-
 
 export default async (req, res, next) => {
 	const config = req.scope.resolve('configModule') as ConfigModule;

@@ -459,12 +459,12 @@ async function controllerUpdate(ctx, strapi, uid) {
 			delete processedData.medusa_id;
 			strapi.log.debug('updating strapi data ' + uid + ' - time: ' + Date.now());
 			let result = await strapi.services[uid].update(entityId, {
-				data: processedData,
+				data: { ...processedData },
 			});
 			strapi.log.debug('updated updated strapi data ' + uid + ' - time: ' + Date.now());
-			const returnResult = await strapi.db.query(uid).findOne(result.id);
+			//const returnResult = await strapi.db.query(uid).findOne(result.id);
 			return (ctx.body = {
-				data: returnResult,
+				data: result,
 			});
 		} else {
 			strapi.log.warn(`Cannot update entity ${medusa_id} of type ${uid} as it doesnt exist in strapi`);

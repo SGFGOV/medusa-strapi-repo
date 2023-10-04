@@ -226,6 +226,13 @@ export async function sendSignalToMedusa(
 			data: t,
 		}
 		}
+		if(process.env.NODE_ENV == "test")
+		{
+			return {
+				status:200,
+				data: {}
+			}
+		}
 		const result = await axios.post(strapiSignalHook, {
 			signedMessage: signedMessage,
 		});

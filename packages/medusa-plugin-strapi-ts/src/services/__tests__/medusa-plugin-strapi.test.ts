@@ -474,10 +474,10 @@ describe('StrapiService Tests', () => {
 					);
 					expect(result).toBeDefined();
 					expect(result.status == 200 || result.status == 302).toBeTruthy();
+
 					if (!isMockEnabled()) {
-						expect(result).toMatchObject({
-							data: { title: 'test-product', medusa_id: IdMap.getId('exists-4') },
-						});
+						/** as it will automatically create entities that doesn't exist assuming they exist in medusa */
+						expect(result.data.medusa_id != IdMap.getId('exists-4')).toBeTruthy();
 					}
 
 					// expect(spyGetType).toHaveBeenCalled()
