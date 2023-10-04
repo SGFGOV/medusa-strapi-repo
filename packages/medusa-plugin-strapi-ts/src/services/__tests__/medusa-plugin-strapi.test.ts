@@ -23,8 +23,6 @@ import { IdMap, MockManager } from 'medusa-test-utils';
 import UpdateStrapiService, { StrapiResult } from '../update-strapi';
 import logger from '../__mocks__/logger';
 import axios, { AxiosError } from 'axios';
-import exp from 'constants';
-import qs from 'qs';
 
 // This sets the mock adapter on the default instance
 
