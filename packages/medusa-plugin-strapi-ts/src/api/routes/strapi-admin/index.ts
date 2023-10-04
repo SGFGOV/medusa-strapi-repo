@@ -7,7 +7,7 @@ import cors from 'cors';
 
 import authenticate from '@medusajs/medusa/dist/api/middlewares/authenticate';
 import { StrapiMedusaPluginOptions } from '../../../types/globals';
-import { ConfigModule } from '@medusajs/medusa/dist/types/global';
+import { ConfigModule } from '@medusajs/types';
 import { UserService } from '@medusajs/medusa';
 
 const adminRouter = Router();
@@ -29,7 +29,7 @@ export default (app: Router, options: StrapiMedusaPluginOptions, config: ConfigM
 	if (process.env.NODE_ENV != 'test') {
 		adminRouter.use(cors(adminCors));
 	}
-	const jwtSecret = config.projectConfig.jwt_secret;
+	const jwtSecret = config.projectConfig.jwt_secret || (config.projectConfig as any).jwtSecret;
 	adminRouter.options('/login', cors(adminCors));
 	adminRouter.get('/login', cors(adminCors));
 	adminRouter.get('/login', authenticate());
