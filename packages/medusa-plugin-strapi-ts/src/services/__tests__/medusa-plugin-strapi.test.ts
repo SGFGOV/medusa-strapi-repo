@@ -30,11 +30,11 @@ import qs from 'qs';
 
 let service: StrapiService;
 let result: StrapiResult;
-const testTimeOut = 120e3;
-jest.setTimeout(testTimeOut);
+const testBaseTimeOut = 20e3;
+jest.setTimeout(testBaseTimeOut);
 
 describe('StrapiService Tests', () => {
-	jest.setTimeout(testTimeOut);
+	jest.setTimeout(testBaseTimeOut);
 	try {
 		axios.head(`${strapiPath}/_health`).then(
 			() => disableMocks(),
@@ -159,7 +159,7 @@ describe('StrapiService Tests', () => {
 				const roleId = await service.getRoleId('Author');
 				expect(roleId).toBeGreaterThan(0);
 			},
-			testTimeOut
+			testBaseTimeOut * 5
 		);
 
 		it(
@@ -191,7 +191,7 @@ describe('StrapiService Tests', () => {
 					expect(1).toBe(1);
 				}
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 
 		it(
@@ -211,7 +211,7 @@ describe('StrapiService Tests', () => {
 					expect(1).toBe(1);
 				}
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 
 		it(
@@ -220,7 +220,7 @@ describe('StrapiService Tests', () => {
 				const roleId = await service.getRoleId('new role');
 				expect(roleId).toBe(-1);
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 
 		it(
@@ -229,7 +229,7 @@ describe('StrapiService Tests', () => {
 				const credentials = await service.registerOrLoginDefaultMedusaUser();
 				expect(credentials.token).toBeDefined();
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 
 		it(
@@ -244,7 +244,7 @@ describe('StrapiService Tests', () => {
 					expect(true).toBe(true);
 				}
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 	});
 	describe('user actions and signal send', () => {
@@ -262,7 +262,7 @@ describe('StrapiService Tests', () => {
 				expect(result.status).toBeGreaterThanOrEqual(200);
 				expect(result.status).toBeLessThan(300);
 			},
-			testTimeOut
+			testBaseTimeOut * 3
 		);
 	});
 
@@ -310,7 +310,7 @@ describe('StrapiService Tests', () => {
 						expect(productGetResult.data.length > 0).toBeTruthy();
 					}
 				},
-				testTimeOut
+				testBaseTimeOut
 			);
 
 			it(
@@ -364,7 +364,7 @@ describe('StrapiService Tests', () => {
 					}
 				},
 
-				testTimeOut
+				testBaseTimeOut * 3
 			);
 
 			it('product pagination', async () => {
@@ -415,7 +415,7 @@ describe('StrapiService Tests', () => {
 						expect(true).toBe(true);
 					}
 				},
-				testTimeOut
+				testBaseTimeOut
 			);
 
 			it(
@@ -445,7 +445,7 @@ describe('StrapiService Tests', () => {
 						expect(true).toBe(true);
 					}
 				},
-				testTimeOut
+				testBaseTimeOut
 			);
 
 			it(
@@ -465,7 +465,7 @@ describe('StrapiService Tests', () => {
 
 					// expect(spyGetType).toHaveBeenCalled()
 				},
-				testTimeOut
+				testBaseTimeOut * 3
 			);
 			it(
 				'attempt to update non existing product',
@@ -484,7 +484,7 @@ describe('StrapiService Tests', () => {
 
 					// expect(spyGetType).toHaveBeenCalled()
 				},
-				testTimeOut
+				testBaseTimeOut * 3
 			);
 			it('create metafields in strapi', async () => {
 				result = await service.createProductMetafieldInStrapi(
@@ -814,7 +814,7 @@ describe('region checks', () => {
 			})) as StrapiResult;
 			expect(result.status).toBe(200);
 		},
-		testTimeOut
+		testBaseTimeOut
 	);
 });
 describe('admin CURD', () => {
@@ -841,7 +841,7 @@ describe('admin CURD', () => {
 			//  expect(result.id).toBeDefined();
 			//  expect(result.id).toBeGreaterThan(0);
 		},
-		testTimeOut
+		testBaseTimeOut
 	);
 	it(
 		'find all admin users',
@@ -852,7 +852,7 @@ describe('admin CURD', () => {
 			//  expect(result.id).toBeDefined();
 			//  expect(result.id).toBeGreaterThan(0);
 		},
-		testTimeOut
+		testBaseTimeOut
 	);
 	if (!isMockEnabled()) {
 		it(
@@ -862,7 +862,7 @@ describe('admin CURD', () => {
 				expect(result).toBeDefined();
 				expect(result.status == 201 || result.status == 200).toBeTruthy();
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 	}
 	if (!isMockEnabled()) {
@@ -872,7 +872,7 @@ describe('admin CURD', () => {
 				result = await service.registerAdminUserInStrapi('testAuthor@test.com', 'Editor');
 				expect(result.status == 201 || result.status == 200).toBeTruthy();
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 	}
 	it(
@@ -882,7 +882,7 @@ describe('admin CURD', () => {
 			expect(result).toBeDefined();
 			expect(result.status == 201 || result.status == 200).toBeTruthy();
 		},
-		testTimeOut
+		testBaseTimeOut
 	);
 	if (!isMockEnabled())
 		it(
@@ -902,6 +902,6 @@ describe('admin CURD', () => {
 				expect(result.status).toBe(200);
 				expect(result.data).toBeUndefined();
 			},
-			testTimeOut
+			testBaseTimeOut
 		);
 });

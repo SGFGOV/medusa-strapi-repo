@@ -194,8 +194,8 @@ async function controllerCreate(ctx, strapi, uid) {
 		}
 
 		strapi.log.info(`created element ${uid} ${JSON.stringify(processedData)}`);
-		const result = await getStrapiDataByMedusaId(uid, strapi, processedData.medusa_id, ['id', 'medusa']);
-		return (ctx.body = { data: result });
+		//const result = await getStrapiDataByMedusaId(uid, strapi, processedData.medusa_id, ['id', 'medusa']);
+		return (ctx.body = { data: processedData });
 	} catch (e) {
 		handleError(strapi, e);
 		return ctx.internalServerError(ctx);
@@ -453,11 +453,15 @@ async function controllerUpdate(ctx, strapi, uid) {
 	try {
 		const entityId = await getStrapiIdFromMedusaId(uid, strapi, medusa_id);
 		if (entityId) {
+			strapi.log.debug('converting to strapi data - time: ' + Date.now());
 			const processedData = await attachOrCreateStrapiIdFromMedusaId(uid, strapi, data);
+			strapi.log.debug('converted to strapi data - time: ' + Date.now());
 			delete processedData.medusa_id;
+			strapi.log.debug('updating strapi data ' + uid + ' - time: ' + Date.now());
 			let result = await strapi.services[uid].update(entityId, {
-				data: { ...processedData },
+				data: processedData,
 			});
+			strapi.log.debug('updated updated strapi data ' + uid + ' - time: ' + Date.now());
 			const returnResult = await strapi.db.query(uid).findOne(result.id);
 			return (ctx.body = {
 				data: returnResult,
