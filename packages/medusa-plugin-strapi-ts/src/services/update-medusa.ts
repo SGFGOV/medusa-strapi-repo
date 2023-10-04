@@ -81,7 +81,13 @@ class UpdateMedusaService extends TransactionBaseService {
 		const result = await this.atomicPhase_(async (manager) => {
 			try {
 				const product = await this.productService_.withTransaction(manager).retrieve(productId);
-
+				if (product.handle.toLowerCase().trim() != productEntry.handle.toLowerCase().trim()) {
+					this.logger.error(`handle and id mismatch in strapi, `);
+					throw new Error(
+						'Synchronization Error - handles mismatched, ' +
+							'please resync with strapi after dumping strapi database'
+					);
+				}
 				const update = {};
 				this.logger.debug('old data in medusa : ' + JSON.stringify(product));
 				this.logger.debug('data received from strapi : ' + JSON.stringify(productEntry));
@@ -92,34 +98,6 @@ class UpdateMedusaService extends TransactionBaseService {
 							update[key] = productEntry[key];
 					}
 				}
-
-				// update Medusa product with Strapi product fields
-				/*const title = productEntry.title;
-				const subtitle = productEntry.subtitle;
-				const description = productEntry.description;
-				const handle = productEntry.handle;
-
-				if (product.title !== title) {
-					update['title'] = title;
-				}
-
-				if (product.subtitle !== subtitle) {
-					update['subtitle'] = subtitle;
-				}
-
-				if (product.description !== description) {
-					update['description'] = description;
-				}
-
-				if (product.handle !== handle) {
-					update['handle'] = handle;
-				}
-
-				// Get the thumbnail, if present
-				if (productEntry.thumbnail) {
-					const thumb = null;
-					update['thumbnail'] = thumb;
-				}*/
 
 				if (!isEmptyObject(update)) {
 					await this.productService_
