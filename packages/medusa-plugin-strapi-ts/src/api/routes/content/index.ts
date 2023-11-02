@@ -24,9 +24,10 @@ export default (app, options, config: ConfigModule) => {
 		return new URLSearchParams(queryString);
 	});*/
 	contentRouter.options('/:type/:id', (req, res, next) => {
-		next();
+		res.setHeader('Allow', 'GET').sendStatus(200);
 	});
 	contentRouter.options('/:type', (req, res, next) => {
+		res.setHeader('Allow', 'GET').sendStatus(200);
 		next();
 	});
 	contentRouter.get('/:type/:id', fetchContent);
