@@ -28,7 +28,7 @@ export default (app, options, config: ConfigModule) => {
 	});
 	contentRouter.options('/:type', (req, res, next) => {
 		res.setHeader('Allow', 'GET').sendStatus(200);
-		next();
+		//next();
 	});
 	contentRouter.get('/:type/:id', fetchContent);
 	contentRouter.get('/:type', fetchContent);
