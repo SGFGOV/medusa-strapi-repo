@@ -19413,7 +19413,7 @@ medusa-interfaces@^1.3.7, medusa-interfaces@1.x:
   integrity sha512-vU1PjepGeglUmEqoBY72gx5Pfj5Uv3VCO3oqYpj6hSz55jhy4xnUNhf4Ttw1mhqGmwtyi9UkHx+aTuCcYx24Ww==
 
 "medusa-plugin-strapi-ts@file:/home/ec2-user/hercules/public-plugins/medusa-strapi-repo/packages/medusa-plugin-strapi-ts":
-  version "5.0.11"
+  version "5.0.12"
   resolved "file:packages/medusa-plugin-strapi-ts"
   dependencies:
     "@types/bcrypt" "^5.0.0"
