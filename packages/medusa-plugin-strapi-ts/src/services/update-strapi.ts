@@ -191,7 +191,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	logger: Logger;
 	static isHealthy: boolean;
 	lastAdminLoginAttemptTime: number;
-	isStarted: boolean;
+	isServiceAccountRegistered: boolean;
 	productCollectionService: ProductCollectionService;
 	productCategoryService: any;
 	private enableAdminDataLogging: boolean;
@@ -282,7 +282,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await this.intializeServer();
 			this.strapiPluginLog('info', 'Successfully Bootstrapped the strapi server');
-			this.isStarted = true;
+			this.isServiceAccountRegistered = true;
 			return result;
 		} catch (e) {
 			this.strapiPluginLog(
@@ -294,9 +294,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	}
 
-	async waitForStart() {
+	async waitForServiceAccountCreation() {
 		if (process.env.NODE_ENV != 'test')
-			while (!this.isStarted) {
+			while (!this.isServiceAccountRegistered) {
 				await sleep(3000);
 			}
 	}
@@ -1436,7 +1436,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				...this.options_.strapi_default_user,
 			};
 			const registerResponse = await this.executeRegisterMedusaUser(authParams);
-			this.isStarted = true;
+			this.isServiceAccountRegistered = true;
 			return registerResponse?.data;
 		} catch (error) {
 			this.strapiPluginLog('error', 'unable to register default user', { error: (error as Error).message });
@@ -1589,7 +1589,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	): Promise<AxiosResponse> {
 		await this.waitForHealth();
-		await this.waitForStart();
+		await this.waitForServiceAccountCreation();
 		try {
 			const authData = {
 				identifier: authInterface.email.toLowerCase(),
@@ -1947,7 +1947,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}): Promise<AxiosResponse> {
 		let endPoint: string = undefined;
 		await this.waitForHealth();
-		await this.waitForStart();
+		await this.waitForServiceAccountCreation();
 		let tail = '';
 		//	if (method.toLowerCase() != 'post') {
 		if (method.toLowerCase() != 'post') {
