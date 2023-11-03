@@ -459,7 +459,7 @@ async function controllerUpdate(ctx, strapi, uid) {
 			delete processedData.medusa_id;
 			strapi.log.debug('updating strapi data ' + uid + ' - time: ' + Date.now());
 			let result = await strapi.services[uid].update(entityId, {
-				data: { ...processedData },
+				data: { ...processedData, updateFrom: 'medusa' },
 			});
 			strapi.log.debug('updated updated strapi data ' + uid + ' - time: ' + Date.now());
 			//const returnResult = await strapi.db.query(uid).findOne(result.id);
