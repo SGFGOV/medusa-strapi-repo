@@ -6,6 +6,7 @@ import { StrapiSignalInterface } from './strapi-signal';
 export interface UpdateMedusaDataInterface {
 	type: string;
 	data: any;
+	origin: 'strapi' | 'medusa';
 }
 
 export default async (req, res, next) => {
@@ -20,8 +21,14 @@ export default async (req, res, next) => {
 
 		// find Strapi entry type from body of webhook
 		const strapiType = body.type;
+		const origin = body.origin;
 		// get the ID
 		let entryId: string;
+
+		if (origin == 'medusa') {
+			res.sendStatus(200);
+			return;
+		}
 
 		let updated = {};
 		switch (strapiType) {

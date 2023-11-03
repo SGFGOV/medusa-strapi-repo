@@ -193,7 +193,8 @@ export interface MedusaData {
 export async function sendSignalToMedusa(
 	message = 'Ok',
 	code = 200,
-	data?: Record<string, any>
+	data?: Record<string, any>,
+	origin:"medusa"|"strapi" = "strapi"
 ): Promise<MedusaData | undefined> {
 	if (process.env.NODE_ENV == 'test') {
 		// return;
@@ -205,6 +206,7 @@ export async function sendSignalToMedusa(
 		message,
 		code,
 		data,
+		origin
 	};
 	if ((await checkMedusaReady(medusaServer)) == 0) {
 		strapi.log.error('abandoning, medusa server dead');
@@ -354,10 +356,11 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
 	return result;
 }
 
-export async function sendResult(type: string, result: any): Promise<MedusaData | undefined> {
+export async function sendResult(type: string, result: any,origin:"medusa"|"strapi"): Promise<MedusaData | undefined> {
 	const postRequestResult = await sendSignalToMedusa('UPDATE MEDUSA', 200, {
 		type,
 		data: result,
+		origin
 	});
 
 	if (postRequestResult?.status ?? (0 < 300 && postRequestResult?.status) ?? 0 >= 200) {
