@@ -1,6 +1,6 @@
 import UpdateMedusaService from '../../../services/update-medusa';
 import * as jwt from 'jsonwebtoken';
-import { ConfigModule } from '@medusajs/medusa/dist/types/global';
+import { ConfigModule, Logger } from '@medusajs/medusa/dist/types/global';
 import { StrapiSignalInterface } from './strapi-signal';
 
 export interface UpdateMedusaDataInterface {
@@ -12,7 +12,7 @@ export interface UpdateMedusaDataInterface {
 export default async (req, res, next) => {
 	const config = req.scope.resolve('configModule') as ConfigModule;
 	const updateMedusaService = req.scope.resolve('updateMedusaService') as UpdateMedusaService;
-
+	const logger = req.scope.resolve('logger') as Logger;
 	try {
 		const medusaSecret = config.projectConfig.jwt_secret;
 		const signedMessage = req.body['signedMessage'];
@@ -27,6 +27,7 @@ export default async (req, res, next) => {
 
 		if (origin == 'medusa') {
 			res.sendStatus(200);
+			logger.info('received update confirmation');
 			return;
 		}
 
