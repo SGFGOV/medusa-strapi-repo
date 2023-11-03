@@ -7,21 +7,25 @@
 const axios = require('axios');
 
 module.exports = {
-	async afterUpdate(result, params, data) {
+	async beforeUpdate({ params, state, action, model }) {
+		if (params.data.updateFrom == 'medusa') state.updateFrom = 'medusa';
+	},
+
+	async afterUpdate({ params, state, result, model, action }) {
 		let medusaReady = false;
-		while (!medusaReady) {
+		/*while (!medusaReady) {
 			try {
 				const response = await axios.head(`${process.env.MEDUSA_BACKEND_URL}/health`);
 				medusaReady = response.status < 300 ? true : false;
 			} catch (e) {
-				console.log('awaiting medusa to start');
+				handleError(strapi, e);
 				return;
 			}
-		}
-		const respondViaPlugin = strapi.plugins['strapi-plugin-medusajs'];
-		const theService = respondViaPlugin.service('setup');
-		return await theService.sendResult('region', result.result); /* await axios.post(
-      `${
+		}*/
+		const origin = state.updateFrom ?? 'strapi';
+		const respondViaPlugin = strapi.plugins['strapi-plugin-medusajs'].service('setup');
+		return await respondViaPlugin.sendResult('region', result, origin); /* await axios.post(
+    ${
         process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
       }/hooks/strapi/update-medusa`,
       {

@@ -58,13 +58,15 @@ async function testPost(testInfo) {
 	const isSingleType = testInfo.schema.kind == 'singleType';
 	const apiEndpoint = isSingleType ? testInfo.schema.info.singularName : testInfo.schema.info.pluralName;
 	const mediaFields = namesAttributeOfType(schema, 'media');
-	const data = sanitizeData(testInfo);
+	const testData = _.cloneDeep(testInfo);
+	const data = sanitizeData(testData);
 
 	await delay(100);
 	const creds = await request(strapi.server.httpServer).post(`/api/auth/local`).send(authCreds);
 	expect(creds.status).toBe(200);
-	// console.log(`posting  ${apiName}`);
+	console.log(`posting  ${apiEndpoint}`);
 	let postResult;
+	try{
 	if (!isMedia) {
 		if (!isSingleType) {
 			postResult = await request(strapi.server.httpServer)
@@ -122,8 +124,13 @@ async function testPost(testInfo) {
 	} else {
 		postResults[apiEndpoint] = postResult.body;
 	}
+}catch(e)
+{
+	console.log(e.message)
+	expect(0).toBe(1)
+}
 	const id =
-		postResults[apiEndpoint]?.id || postResults[apiEndpoint]?.data?.id || postResults[apiEndpoint]?.data?.slug;
+		postResults[apiEndpoint]?.id || postResults[apiEndpoint]?.data?.id || postResults[apiEndpoint]?.data?.slug 
 	expect(id).toBeDefined();
 	return postResults[apiEndpoint];
 }

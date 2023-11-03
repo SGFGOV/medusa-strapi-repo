@@ -193,7 +193,8 @@ export interface MedusaData {
 export async function sendSignalToMedusa(
 	message = 'Ok',
 	code = 200,
-	data?: Record<string, any>
+	data?: Record<string, any>,
+	origin:"medusa"|"strapi" = "strapi"
 ): Promise<MedusaData | undefined> {
 	if (process.env.NODE_ENV == 'test') {
 		// return;
@@ -205,6 +206,7 @@ export async function sendSignalToMedusa(
 		message,
 		code,
 		data,
+		origin
 	};
 	if ((await checkMedusaReady(medusaServer)) == 0) {
 		strapi.log.error('abandoning, medusa server dead');
@@ -212,6 +214,27 @@ export async function sendSignalToMedusa(
 	}
 	try {
 		const signedMessage = jwt.sign(messageData, process.env.MEDUSA_STRAPI_SECRET || 'no-secret');
+		if(process.env.NODE_ENV=="test" && message == "SEED"){
+			const t:StrapiSeedInterface={
+				meta: {
+					pageNumber: 1,
+					pageLimit: 0,
+					hasMore: {products:false}
+				},
+				data: {products:[]}
+			}
+			return {
+			status:200,
+			data: t,
+		}
+		}
+		if(process.env.NODE_ENV == "test")
+		{
+			return {
+				status:200,
+				data: {}
+			}
+		}
 		const result = await axios.post(strapiSignalHook, {
 			signedMessage: signedMessage,
 		});
@@ -224,7 +247,7 @@ export async function sendSignalToMedusa(
 			strapi.log.error(`unable to send message to medusa server  ${(error as Error).message}`);
 		}
 		else{
-			strapi.log.warn(`unable to send message to medusa server  ${(error as Error).message}`);
+			strapi.log.warn(`unable to send message to medusa server test mode  ${(error as Error).message}`);
 		}
 	}
 }
@@ -333,10 +356,11 @@ export async function synchroniseWithMedusa(): Promise<boolean | undefined> {
 	return result;
 }
 
-export async function sendResult(type: string, result: any): Promise<MedusaData | undefined> {
+export async function sendResult(type: string, result: any,origin:"medusa"|"strapi"): Promise<MedusaData | undefined> {
 	const postRequestResult = await sendSignalToMedusa('UPDATE MEDUSA', 200, {
 		type,
 		data: result,
+		origin
 	});
 
 	if (postRequestResult?.status ?? (0 < 300 && postRequestResult?.status) ?? 0 >= 200) {

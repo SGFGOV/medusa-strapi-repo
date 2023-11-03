@@ -191,7 +191,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	logger: Logger;
 	static isHealthy: boolean;
 	lastAdminLoginAttemptTime: number;
-	isStarted: boolean;
+	isServiceAccountRegistered: boolean;
 	productCollectionService: ProductCollectionService;
 	productCategoryService: any;
 	private enableAdminDataLogging: boolean;
@@ -282,6 +282,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await this.intializeServer();
 			this.strapiPluginLog('info', 'Successfully Bootstrapped the strapi server');
+			this.isServiceAccountRegistered = true;
 			return result;
 		} catch (e) {
 			this.strapiPluginLog(
@@ -291,6 +292,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 			);
 			throw e;
 		}
+	}
+
+	async waitForServiceAccountCreation() {
+		if (process.env.NODE_ENV != 'test')
+			while (!this.isServiceAccountRegistered) {
+				await sleep(3000);
+			}
 	}
 
 	async addIgnore_(id, side): Promise<any> {
@@ -404,12 +412,12 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createProductInStrapi(productId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = (await this.getType('products', authInterface)) ? true : false;
+		/*const hasType = (await this.getType('products', authInterface)) ? true : false;
 		if (!hasType) {
 			return Promise.resolve({
 				status: 400,
 			});
-		}
+		}*/
 
 		// eslint-disable-next-line no-useless-catch
 		try {
@@ -424,7 +432,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					'categories',
 					'tags',
 					'images',
-				]
+				],
 			});
 
 			/**
@@ -533,7 +541,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createCollectionInStrapi(collectionId: string, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-collections', authInterface)
+		/*const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -541,7 +549,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return Promise.resolve({
 				status: 400,
 			});
-		}
+		}*/
 		try {
 			const collection = await this.productCollectionService.retrieve(collectionId);
 
@@ -613,7 +621,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createCategoryInStrapi(categoryId: string, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-categories', authInterface)
+		/*const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -621,7 +629,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return Promise.resolve({
 				status: 400,
 			});
-		}
+		}*/
 		try {
 			const category = await this.productCategoryService.retrieve(categoryId);
 
@@ -643,7 +651,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createProductVariantInStrapi(variantId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-variants', authInterface)
+		/*const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => false);
 
@@ -651,7 +659,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return Promise.resolve({
 				status: 400,
 			});
-		}
+		}*/
 
 		// eslint-disable-next-line no-useless-catch
 		try {
@@ -702,13 +710,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async createRegionInStrapi(regionId, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('regions', authInterface)
+		/*const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => false);
 		if (!hasType) {
 			this.strapiPluginLog('info', 'Type "Regions" doesnt exist in Strapi');
 			return { status: 400 };
-		}
+		}*/
 
 		// eslint-disable-next-line no-useless-catch
 		try {
@@ -732,7 +740,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async updateRegionInStrapi(data, authInterface: AuthInterface = this.defaultAuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('regions', authInterface)
+		/*const hasType = this.getType('regions', authInterface)
 			.then(() => {
 				// this.strapiPluginLog("info",res.data)
 				return true;
@@ -744,7 +752,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		if (!hasType) {
 			return { status: 400 };
 		}
-
+		*/
 		const updateFields = ['name', 'currency_code', 'countries', 'payment_providers', 'fulfillment_providers'];
 
 		// check if update contains any fields in Strapi to minimize runs
@@ -846,7 +854,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		data,
 		authInterface: AuthInterface = this.defaultAuthInterface
 	): Promise<StrapiResult> {
-		const hasType = this.getType('products', authInterface)
+		/*const hasType = this.getType('products', authInterface)
 			.then(() => {
 				return true;
 			})
@@ -856,7 +864,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		if (!hasType) {
 			return { status: 400 };
 		}
-
+		*/
 		const updateFields = ['productIds', 'productCollection'];
 
 		if (!this.verifyDataContainsFields(data, updateFields)) {
@@ -895,7 +903,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		data,
 		authInterface: AuthInterface = this.defaultAuthInterface
 	): Promise<StrapiResult> {
-		const hasType = this.getType('products', authInterface)
+		/*const hasType = this.getType('products', authInterface)
 			.then(() => {
 				return true;
 			})
@@ -905,6 +913,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		if (!hasType) {
 			return { status: 400 };
 		}
+		*/
 
 		const updateFields = ['productIds', 'productCategories'];
 
@@ -944,7 +953,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		data: Partial<Product>,
 		authInterface: AuthInterface = this.defaultAuthInterface
 	): Promise<StrapiResult> {
-		const hasType = this.getType('products', authInterface)
+		/*const hasType = this.getType('products', authInterface)
 			.then(() => {
 				// this.strapiPluginLog("info",res.data)
 				return true;
@@ -956,7 +965,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		if (!hasType) {
 			return { status: 400 };
 		}
-
+		*/
 		// this.strapiPluginLog("info",data)
 		const updateFields = [
 			'variants',
@@ -1005,7 +1014,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 						'categories',
 						'tags',
 						'images',
-					]
+					],
 				});
 
 				if (product) {
@@ -1150,7 +1159,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductMetafieldInStrapi(data: { id: string }, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-metafields', authInterface)
+		/*const hasType = this.getType('product-metafields', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.strapiPluginLog('info', err);
@@ -1160,7 +1169,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			return Promise.resolve({
 				status: 400,
 			});
-		}
+		}*/
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
 			return { status: 400 };
@@ -1175,7 +1184,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('products', authInterface)
+		/*const hasType = this.getType('products', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.strapiPluginLog('info', err);
@@ -1186,7 +1195,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				status: 400,
 			});
 		}
-
+		*/
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
 			return { status: 400 };
@@ -1201,7 +1210,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductTypeInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-types', authInterface)
+		/*const hasType = this.getType('product-types', authInterface)
 			.then(() => true)
 			.catch((err) => {
 				this.strapiPluginLog('info', err);
@@ -1209,7 +1218,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 		if (!hasType) {
 			return { status: 400 };
-		}
+		}*/
 
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
@@ -1225,7 +1234,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteProductVariantInStrapi(data, authInterface: AuthInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-variants', authInterface)
+		/*const hasType = this.getType('product-variants', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.strapiPluginLog("info",err)
@@ -1233,7 +1242,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 		if (!hasType) {
 			return { status: 400 };
-		}
+		}*/
 
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
@@ -1250,7 +1259,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	// Blocker - Delete Region API
 	async deleteRegionInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = this.getType('regions', authInterface)
+		/*const hasType = this.getType('regions', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.strapiPluginLog("info",err)
@@ -1258,7 +1267,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 		if (!hasType) {
 			return { status: 400 };
-		}
+		}*/
 
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
@@ -1274,7 +1283,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}
 
 	async deleteCollectionInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-collections', authInterface)
+		/*const hasType = this.getType('product-collections', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.strapiPluginLog("info",err)
@@ -1282,7 +1291,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 		if (!hasType) {
 			return { status: 400 };
-		}
+		}*/
 
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
@@ -1297,7 +1306,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		});
 	}
 	async deleteCategoryInStrapi(data, authInterface): Promise<StrapiResult> {
-		const hasType = this.getType('product-categories', authInterface)
+		/*const hasType = this.getType('product-categories', authInterface)
 			.then(() => true)
 			.catch(() => {
 				// this.strapiPluginLog("info",err)
@@ -1305,7 +1314,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			});
 		if (!hasType) {
 			return { status: 400 };
-		}
+		}*/
 
 		const ignore = await this.shouldIgnore_(data.id, 'strapi');
 		if (ignore) {
@@ -1427,6 +1436,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				...this.options_.strapi_default_user,
 			};
 			const registerResponse = await this.executeRegisterMedusaUser(authParams);
+			this.isServiceAccountRegistered = true;
 			return registerResponse?.data;
 		} catch (error) {
 			this.strapiPluginLog('error', 'unable to register default user', { error: (error as Error).message });
@@ -1579,6 +1589,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	): Promise<AxiosResponse> {
 		await this.waitForHealth();
+		await this.waitForServiceAccountCreation();
 		try {
 			const authData = {
 				identifier: authInterface.email.toLowerCase(),
@@ -1936,6 +1947,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}): Promise<AxiosResponse> {
 		let endPoint: string = undefined;
 		await this.waitForHealth();
+		await this.waitForServiceAccountCreation();
 		let tail = '';
 		//	if (method.toLowerCase() != 'post') {
 		if (method.toLowerCase() != 'post') {
@@ -1982,7 +1994,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 			// console.log("attempting action:"+result);
 			if (result.status >= 200 && result.status < 300) {
 				this.strapiPluginLog(
-					'info',
+					'debug',
 					`Strapi Ok : method: ${method}, id:${id}, type:${type},` +
 						` data:${JSON.stringify(data)}, :status:${result.status} query:${query}`
 				);
@@ -2128,7 +2140,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 					data.password = '#####';
 				}
 				this.strapiPluginLog(
-					'info',
+					'debug',
 					`Strapi Ok : ${method}, ${id ?? ''}` +
 						`, ${type ?? ''}, ${this.enableAdminDataLogging ? data ?? '' : ''}, ${action ?? ''} :status:${
 							result.status
