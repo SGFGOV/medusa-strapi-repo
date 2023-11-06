@@ -9,8 +9,8 @@ import strapiSignal from '../../controllers/hooks/strapi-signal';
 import rateLimiter from 'express-rate-limit';
 
 const limiter = rateLimiter({
-	max: 5,
-	windowMs: 10000, // 10 seconds
+	max: parseInt(process.env.STAPI_HOOKS_MAX_REQUESTS ?? '100') || 100,
+	windowMs: parseInt(process.env.STAPI_HOOKS_MAX_DELAY ?? '100000') || 100000, // 100 seconds
 	message: "You can't make any more requests at the moment. Try again later",
 });
 const hooksRouter = Router();

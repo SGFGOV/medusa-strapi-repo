@@ -94,6 +94,10 @@ const strapiOptions =
         auto_start?: boolean; - starts the interface automatically along with medusa, not recommended as the medusa server may not be ready to sync as soon as strapi is ready
         max_page_size?: number;
 
+##### advanced environemental options
+    STAPI_HOOKS_MAX_REQUESTS - number of requests before hooks ratelimit kicksin
+    STAPI_HOOKS_MAX_DELAY - number of requests before hooks ratelimit window
+
 
 ## Using Strapi Plugin
 
