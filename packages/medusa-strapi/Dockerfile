@@ -45,7 +45,7 @@ ENV NODE_ENV development
 COPY ./public ./public
 COPY ./favicon.ico ./favicon.ico
 
-RUN yarn install --ignore-platform --network-timeout 10000000 --force && yarn build
+RUN yarn install --ignore-platform --network-timeout 10000000 --force --ignore-engines && yarn build
 
 
 EXPOSE 1337
