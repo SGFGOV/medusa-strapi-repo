@@ -88,7 +88,7 @@ export default async (req: Request & { decodedMessage: StrapiSignalInterface }, 
 			'tags',
 			'type',
 			'collection',
-			'profile',
+			//'profile',
 		];
 		const regionRelations = ['countries', 'payment_providers', 'fulfillment_providers', 'currency'];
 		const shippingProfileRelations = [
