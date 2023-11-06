@@ -2351,7 +2351,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			this.strapiPluginLog('info', 'Logged In   Admin ' + auth.email + ' with strapi');
 			this.strapiPluginLog('info', 'Admin profile', response.data.data.user);
-			this.strapiPluginLog('info', 'Admin token', response.data.data.token);
+			//this.strapiPluginLog('info', 'Admin token', response.data.data.token);
 
 			this.strapiSuperAdminAuthToken = response.data.data.token;
 			this.userAdminProfile = response.data.data.user;
