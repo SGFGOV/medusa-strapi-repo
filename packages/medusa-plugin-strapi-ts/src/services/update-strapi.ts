@@ -191,7 +191,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	logger: Logger;
 	static isHealthy: boolean;
 	lastAdminLoginAttemptTime: number;
-	isServiceAccountRegistered: boolean;
+	static isServiceAccountRegistered: boolean;
 	productCollectionService: ProductCollectionService;
 	productCategoryService: any;
 	private enableAdminDataLogging: boolean;
@@ -282,7 +282,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await this.intializeServer();
 			this.strapiPluginLog('info', 'Successfully Bootstrapped the strapi server');
-			this.isServiceAccountRegistered = true;
+			UpdateStrapiService.isServiceAccountRegistered = true;
 			return result;
 		} catch (e) {
 			this.strapiPluginLog(
@@ -296,7 +296,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 	async waitForServiceAccountCreation() {
 		if (process.env.NODE_ENV != 'test')
-			while (!this.isServiceAccountRegistered) {
+			while (!UpdateStrapiService.isServiceAccountRegistered) {
 				await sleep(3000);
 			}
 	}
@@ -1436,7 +1436,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				...this.options_.strapi_default_user,
 			};
 			const registerResponse = await this.executeRegisterMedusaUser(authParams);
-			this.isServiceAccountRegistered = true;
+			UpdateStrapiService.isServiceAccountRegistered = true;
 			return registerResponse?.data;
 		} catch (error) {
 			this.strapiPluginLog('error', 'unable to register default user', { error: (error as Error).message });
