@@ -414,10 +414,11 @@ async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
 				}
 			}
 		} else {
-			entity = await strapi.db.query(uid).findOne(uid, {
-				select: fields,
-				where: filters,
+			const entities = await strapi.entityService.findMany(uid, {
+				fields,
+				filters,
 			});
+			return entities?.[0];
 		}
 		return entity;
 	} catch (e) {
