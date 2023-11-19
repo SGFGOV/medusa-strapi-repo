@@ -3,6 +3,7 @@ import { Method } from 'axios';
 import { BaseEntity } from '@medusajs/medusa';
 
 export interface StrapiMedusaPluginOptions {
+	sync_on_init?: boolean;
 	enable_auto_retry?: boolean;
 	encryption_algorithm: string;
 	strapi_protocol: string;
