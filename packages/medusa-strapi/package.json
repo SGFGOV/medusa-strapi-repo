@@ -55,7 +55,6 @@
     "sentry": "^0.1.2",
     "sharp": "^0.32.1",
     "strapi-google-translator": "^1.0.7",
-    "strapi-html-editor": "^1.0.2",
     "strapi-middleware-cache": "^2.1.8",
     "strapi-plugin-comments": "^2.2.3",
     "strapi-plugin-country-select": "^1.0.0",
