@@ -414,10 +414,11 @@ async function getStrapiDataByMedusaId(uid, strapi, medusa_id, fields) {
 				}
 			}
 		} else {
-			entity = await strapi.db.query(uid).findOne(uid, {
-				select: fields,
-				where: filters,
+			const entities = await strapi.entityService.findMany(uid, {
+				fields,
+				filters,
 			});
+			return entities?.[0];
 		}
 		return entity;
 	} catch (e) {
@@ -459,7 +460,7 @@ async function controllerUpdate(ctx, strapi, uid) {
 			delete processedData.medusa_id;
 			strapi.log.debug('updating strapi data ' + uid + ' - time: ' + Date.now());
 			let result = await strapi.services[uid].update(entityId, {
-				data: { ...processedData },
+				data: { ...processedData, updateFrom: 'medusa' },
 			});
 			strapi.log.debug('updated updated strapi data ' + uid + ' - time: ' + Date.now());
 			//const returnResult = await strapi.db.query(uid).findOne(result.id);

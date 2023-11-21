@@ -18,7 +18,7 @@ COPY ./package.json ./
 COPY ./src ./src
 COPY ./public ./public
 COPY ./favicon.ico ./favicon.ico
-RUN yarn config set network-timeout 600000 -g && yarn install --production
+RUN yarn config set network-timeout 600000 -g && yarn install --production --ignore-engines
 RUN yarn build
 
 

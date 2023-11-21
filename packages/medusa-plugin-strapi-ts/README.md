@@ -37,6 +37,7 @@ where the strapiOptions will be like
 ```
 const strapiOptions = 
     {
+        sync_on_init:true,
         encryption_algorithm: "aes-256-cbc",
         strapi_protocol: process?.env?.STRAPI_PROTOCOL,
         strapi_default_user: {
@@ -86,6 +87,7 @@ const strapiOptions =
         STRAPI_PUBLIC_KEY?: string; - a public key if the secret is not used
 
 #### Advanced options	
+        sync_on_init: initiates synchronisation when the strapi server is bootstrapped. However, this may not be ideal when there is a large number of products, or if you are spinning up multiple containerised deployments to deal with peak load. So its turned off by default. alternatively you can listend for a startup event and trigger executeStrapiSync from your code. 
         strapi_ignore_threshold: number; 
         enable_marketplace?: boolean; ## experiment doesn't do anything at the moment
         enable_auto_retry?: boolean; ## experiment doesn't do anything at the moment
@@ -93,6 +95,10 @@ const strapiOptions =
         strapi_healthcheck_timeout?: number;
         auto_start?: boolean; - starts the interface automatically along with medusa, not recommended as the medusa server may not be ready to sync as soon as strapi is ready
         max_page_size?: number;
+
+##### advanced environemental options
+    STAPI_HOOKS_MAX_REQUESTS - number of requests before hooks ratelimit kicksin
+    STAPI_HOOKS_MAX_DELAY - number of requests before hooks ratelimit window
 
 
 ## Using Strapi Plugin

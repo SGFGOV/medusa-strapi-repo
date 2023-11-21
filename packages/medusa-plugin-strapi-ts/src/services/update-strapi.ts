@@ -191,7 +191,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	logger: Logger;
 	static isHealthy: boolean;
 	lastAdminLoginAttemptTime: number;
-	isStarted: boolean;
+	static isServiceAccountRegistered: boolean;
 	productCollectionService: ProductCollectionService;
 	productCategoryService: any;
 	private enableAdminDataLogging: boolean;
@@ -282,6 +282,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		try {
 			const result = await this.intializeServer();
 			this.strapiPluginLog('info', 'Successfully Bootstrapped the strapi server');
+			UpdateStrapiService.isServiceAccountRegistered = true;
 			return result;
 		} catch (e) {
 			this.strapiPluginLog(
@@ -291,6 +292,13 @@ export class UpdateStrapiService extends TransactionBaseService {
 			);
 			throw e;
 		}
+	}
+
+	async waitForServiceAccountCreation() {
+		if (process.env.NODE_ENV != 'test')
+			while (!UpdateStrapiService.isServiceAccountRegistered) {
+				await sleep(3000);
+			}
 	}
 
 	async addIgnore_(id, side): Promise<any> {
@@ -1428,6 +1436,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 				...this.options_.strapi_default_user,
 			};
 			const registerResponse = await this.executeRegisterMedusaUser(authParams);
+			UpdateStrapiService.isServiceAccountRegistered = true;
 			return registerResponse?.data;
 		} catch (error) {
 			this.strapiPluginLog('error', 'unable to register default user', { error: (error as Error).message });
@@ -1580,6 +1589,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 		}
 	): Promise<AxiosResponse> {
 		await this.waitForHealth();
+		await this.waitForServiceAccountCreation();
 		try {
 			const authData = {
 				identifier: authInterface.email.toLowerCase(),
@@ -1937,6 +1947,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 	}): Promise<AxiosResponse> {
 		let endPoint: string = undefined;
 		await this.waitForHealth();
+		await this.waitForServiceAccountCreation();
 		let tail = '';
 		//	if (method.toLowerCase() != 'post') {
 		if (method.toLowerCase() != 'post') {
@@ -2340,7 +2351,7 @@ export class UpdateStrapiService extends TransactionBaseService {
 
 			this.strapiPluginLog('info', 'Logged In   Admin ' + auth.email + ' with strapi');
 			this.strapiPluginLog('info', 'Admin profile', response.data.data.user);
-			this.strapiPluginLog('info', 'Admin token', response.data.data.token);
+			//this.strapiPluginLog('info', 'Admin token', response.data.data.token);
 
 			this.strapiSuperAdminAuthToken = response.data.data.token;
 			this.userAdminProfile = response.data.data.user;
@@ -2362,6 +2373,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 		await this.registerOrLoginAdmin();
 		if (this.strapiSuperAdminAuthToken) {
 			const user = (await this.registerOrLoginDefaultMedusaUser()).user;
+			if (!this.options_.sync_on_init) {
+				return { status: 200 };
+			}
 			if (user) {
 				const response = await this.executeSync(this.strapiSuperAdminAuthToken);
 				/* const response = await this.configureStrapiMedusaForUser({

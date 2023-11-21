@@ -23,6 +23,13 @@ export default (app, options, config: ConfigModule) => {
 	/*app.set('query parser', (queryString) => {
 		return new URLSearchParams(queryString);
 	});*/
+	contentRouter.options('/:type/:id', (req, res, next) => {
+		res.setHeader('Allow', 'GET').sendStatus(200);
+	});
+	contentRouter.options('/:type', (req, res, next) => {
+		res.setHeader('Allow', 'GET').sendStatus(200);
+		//next();
+	});
 	contentRouter.get('/:type/:id', fetchContent);
 	contentRouter.get('/:type', fetchContent);
 
