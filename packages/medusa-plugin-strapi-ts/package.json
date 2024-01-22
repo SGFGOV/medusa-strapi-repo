@@ -27,7 +27,7 @@
   "license": "MIT",
   "scripts": {
     "integration-test": "yarn test",
-    "clean": "./node_modules/.bin/rimraf dist/ types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
+    "clean": "npx rimraf dist/ types/ services/ models/ migrations/ api/ subscribers/ utils/ index.js index.map.js",
     "build": "npm run clean && tsc -p tsconfig.json",
     "watch": "tsc --watch",
     "test": "jest --coverage --runInBand --setupFiles=dotenv/config "
