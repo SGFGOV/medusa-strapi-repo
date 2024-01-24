@@ -2373,6 +2373,9 @@ export class UpdateStrapiService extends TransactionBaseService {
 		await this.registerOrLoginAdmin();
 		if (this.strapiSuperAdminAuthToken) {
 			const user = (await this.registerOrLoginDefaultMedusaUser()).user;
+			if (!this.options_.sync_on_init) {
+				return { status: 200 };
+			}
 			if (user) {
 				const response = await this.executeSync(this.strapiSuperAdminAuthToken);
 				/* const response = await this.configureStrapiMedusaForUser({
