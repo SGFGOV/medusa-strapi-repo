@@ -36,11 +36,11 @@ export default (app: Router, options: StrapiMedusaPluginOptions, config: ConfigM
 	adminRouter.get('/login', async (req: Request, res: Response) => {
 		const userService = req.scope.resolve('userService') as UserService;
 		try {
-			const user = await userService.retrieve(req.cookies.ajs_user_id);
+			const user = await userService.retrieve(req.user.userId);
 			delete user.password_hash;
 			const signedCookie = jwt.sign(JSON.stringify(user), jwtSecret);
 			res.cookie('__medusa_session', signedCookie);
-			res.sendStatus(200);
+			res.status(200).json({ data: signedCookie });
 		} catch (error) {
 			res.sendStatus(500).send(JSON.stringify(error));
 		}

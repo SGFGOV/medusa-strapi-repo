@@ -108,9 +108,9 @@ Dear Fellow Developer,
 
 I hope this message finds you well. I'm excited to introduce you to a project that promises to be a game-changer for developers working on MedusaJS projects – our Strapi-based CMS Solution for MedusaJs.
 
-In the world of web development, time is of the essence, and our CMS solution is designed with this in mind. By using our solution, developers around the globe can save valuable hours when working on their MedusaJS projects. Imagine having a tool at your disposal that streamlines content management, allowing you to focus on what truly matters – creating exceptional e-commerce experiences.
+In the world of web development, time is of the essence, and our Strapi CMS solution is designed with this in mind. By using our solution, developers around the globe can save valuable hours when working on their MedusaJS projects. Imagine having a tool at your disposal that streamlines content management, allowing you to focus on what truly matters – creating exceptional e-commerce experiences.
 
-But the benefits don't stop there. Our CMS is engineered to enhance developer productivity. It offers a user-friendly interface, intuitive content management, and seamless integration with MedusaJS. This means fewer roadblocks, faster development cycles, and ultimately, more successful e-commerce projects.
+But the benefits don't stop there. Our implementation of the Strapi CMS is engineered to enhance developer productivity. It offers a user-friendly interface, intuitive content management, and seamless integration with MedusaJS. This means fewer roadblocks, faster development cycles, and ultimately, more successful e-commerce projects.
 
 Your sponsorship, regardless of its size, will help us bring this powerful tool to developers like you everywhere. It will enable us to refine and expand the CMS Solution, making it an indispensable asset for the MedusaJS community.
 

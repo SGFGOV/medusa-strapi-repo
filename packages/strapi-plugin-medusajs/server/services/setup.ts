@@ -84,8 +84,8 @@ export async function createMedusaRole(permissions: any): Promise<number | undef
 
 export async function hasMedusaUser(strapi: Strapi): Promise<number | boolean> {
 	strapi.log.debug('Checking if "medusa_user" exists');
-	const user = await strapi.query('plugin::users-permissions.user').findOne({
-		username: 'medusa_user',
+	const user = await strapi.query('plugin::users-permissions.user').findOne({ where: {
+		username: 'medusa_user'},
 	});
 	if (user && user.id) {
 		strapi.log.info('Found user with username "medusa_user"');

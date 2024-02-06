@@ -114,9 +114,6 @@ module.exports = ({ env }) => ({
 	'content-versioning': {
 		enabled: true,
 	},
-	'generate-data': {
-		enabled: true,
-	},
 
 	'strapi-google-translator': {
 		enabled: true,
